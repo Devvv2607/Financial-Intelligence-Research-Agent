@@ -12,6 +12,10 @@ dependencies = [
     "psycopg[binary]>=3.3.7",
     "weaviate-client>=4.24.1",
     "httpx>=0.28.1",
+    "alembic>=1.20.1",
+    "fastembed>=0.9.1",
+    "tokenizers>=0.23.3",
+    "numpy>=2.5.4",
 ]
 
 [build-system]

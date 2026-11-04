@@ -5,10 +5,13 @@ env var fails at startup instead of deep inside a request.
 """
 
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+ModelSlot = Literal["reasoning", "fast"]
 
 
 class Settings(BaseSettings):
@@ -20,6 +23,7 @@ class Settings(BaseSettings):
 
     app_env: Literal["local", "test", "production"] = "local"
     log_level: str = "INFO"
+    data_dir: Path = Path("data")
 
     # Postgres (psycopg 3 driver for both SQLAlchemy and the LangGraph checkpointer).
     database_url: str = "postgresql+psycopg://fira:fira@localhost:5442/fira"
@@ -35,11 +39,33 @@ class Settings(BaseSettings):
     groq_api_key: SecretStr | None = None
     groq_model_reasoning: str = ""
     groq_model_fast: str = ""
+    groq_base_url: str = "https://api.groq.com/openai/v1"
+    groq_timeout_s: float = 90.0
+    # Per-model account limits (free-tier defaults). Used for pacing and run projections.
+    groq_tokens_per_minute: int = 8_000
+    groq_requests_per_minute: int = 30
+    groq_tokens_per_day: int = 200_000
+    groq_requests_per_day: int = 1_000
+    # USD per 1M tokens: {"model": [input, output]}. Checked against Groq's model pages.
+    groq_prices_usd_per_mtok: dict[str, tuple[float, float]] = Field(default_factory=dict)
+
+    # Embeddings / chunking (D-001, D-009).
+    embedding_model: str = "BAAI/bge-small-en-v1.5"
+    chunk_tokens: int = 450
+    chunk_overlap_tokens: int = 60
 
     # Data sources.
     sec_user_agent: str = ""
+    sec_requests_per_second: float = 8.0
     newsapi_key: SecretStr | None = None
+    newsapi_base_url: str = "https://newsapi.org/v2"
+    news_window_days: int = 29
     news_live_fallback: bool = True  # forced off in production (NewsAPI free-tier terms)
+
+    # Risk tagging (D-003).
+    risk_tag_body_words: int = 150
+    risk_tag_batch_size: int = 12
+    risk_tag_inherit_similarity: float = 0.90
 
     # API.
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
@@ -48,6 +74,24 @@ class Settings(BaseSettings):
     @property
     def news_live_fallback_enabled(self) -> bool:
         return self.news_live_fallback and self.app_env != "production"
+
+    @property
+    def raw_dir(self) -> Path:
+        return self.data_dir / "raw"
+
+    @property
+    def models_dir(self) -> Path:
+        return self.data_dir / "models"
+
+    @property
+    def reports_dir(self) -> Path:
+        return self.data_dir / "reports"
+
+    def model_for(self, slot: ModelSlot) -> str:
+        model = self.groq_model_reasoning if slot == "reasoning" else self.groq_model_fast
+        if not model:
+            raise ValueError(f"GROQ_MODEL_{slot.upper()} is not set")
+        return model
 
 
 @lru_cache

@@ -1,0 +1,312 @@
+"""Groq structured-output client with caching, pacing and token accounting.
+
+One entry point, `GroqClient.structured(...)`, returns a validated Pydantic object.
+It is used by ingestion now and by the agent's own nodes later (the agent's tool
+loops use langchain-groq; see DECISIONS D-019).
+
+Why talk to Groq's OpenAI-compatible HTTP API directly here (not langchain-groq):
+the free tier forces us to pace on Groq's `x-ratelimit-*` headers, distinguish a
+per-minute 429 (wait) from a per-day 429 (stop, resume tomorrow), and record exact
+`usage` per call. Those details are awkward to reach through the LangChain wrapper.
+"""
+
+import asyncio
+import hashlib
+import json
+import logging
+import re
+import time
+from dataclasses import dataclass, field
+from typing import Any, Protocol
+
+import httpx
+from pydantic import BaseModel, ValidationError
+
+from core.config import ModelSlot, Settings
+
+logger = logging.getLogger(__name__)
+
+MAX_VALIDATION_RETRIES = 2
+MAX_RATE_LIMIT_RETRIES = 8
+
+
+class DailyLimitError(RuntimeError):
+    """The model's per-day budget (ours or Groq's) is exhausted; resume after the reset."""
+
+
+class LLMError(RuntimeError):
+    """Non-retryable failure (bad request, auth, validation still failing after retries)."""
+
+
+@dataclass(frozen=True)
+class CallRecord:
+    model: str
+    stage: str
+    cik: int | None
+    prompt_tokens: int
+    completion_tokens: int
+    reasoning_tokens: int | None
+    latency_ms: int
+    cache_hit: bool
+    ok: bool
+    error: str | None = None
+
+
+class LLMStore(Protocol):
+    """Persistence for the response cache and the call ledger (Postgres in prod)."""
+
+    async def cache_get(self, key: str) -> dict[str, Any] | None: ...
+    async def cache_put(self, key: str, model: str, response: dict[str, Any]) -> None: ...
+    async def record(self, call: CallRecord) -> None: ...
+    async def tokens_last_24h(self, model: str) -> int: ...
+
+
+@dataclass
+class InMemoryLLMStore:
+    """Test/dev store. Same contract as the Postgres store."""
+
+    cache: dict[str, dict[str, Any]] = field(default_factory=dict)
+    calls: list[CallRecord] = field(default_factory=list)
+
+    async def cache_get(self, key: str) -> dict[str, Any] | None:
+        return self.cache.get(key)
+
+    async def cache_put(self, key: str, model: str, response: dict[str, Any]) -> None:
+        self.cache[key] = response
+
+    async def record(self, call: CallRecord) -> None:
+        self.calls.append(call)
+
+    async def tokens_last_24h(self, model: str) -> int:
+        return sum(
+            c.prompt_tokens + c.completion_tokens
+            for c in self.calls
+            if c.model == model and not c.cache_hit
+        )
+
+
+def strict_json_schema(model: type[BaseModel]) -> dict[str, Any]:
+    """Pydantic JSON schema rewritten for Groq/OpenAI strict mode.
+
+    Strict mode requires every object to list all properties as required and set
+    `additionalProperties: false`, and we inline `$defs` so no `$ref` resolution is needed.
+    """
+    schema = model.model_json_schema()
+    defs = schema.pop("$defs", {})
+
+    def fix(node: Any) -> Any:
+        if isinstance(node, dict):
+            if "$ref" in node:
+                return fix(defs[node["$ref"].split("/")[-1]])
+            out = {k: fix(v) for k, v in node.items() if k not in ("title", "default")}
+            if out.get("type") == "object" and "properties" in out:
+                out["required"] = list(out["properties"])
+                out["additionalProperties"] = False
+            return out
+        if isinstance(node, list):
+            return [fix(v) for v in node]
+        return node
+
+    result: dict[str, Any] = fix(schema)
+    return result
+
+
+def _parse_duration_s(value: str | None) -> float | None:
+    """Groq reset headers look like '7.66s', '1m26.4s', '120ms'."""
+    if not value:
+        return None
+    total, matched = 0.0, False
+    for num, unit in re.findall(r"([\d.]+)(ms|h|m|s)", value):
+        matched = True
+        total += float(num) * {"ms": 0.001, "s": 1, "m": 60, "h": 3600}[unit]
+    return total if matched else None
+
+
+def estimate_tokens(text: str) -> int:
+    # ~4 chars/token for English prose; only used to decide whether to wait.
+    return len(text) // 4 + 1
+
+
+class GroqClient:
+    def __init__(
+        self,
+        settings: Settings,
+        store: LLMStore,
+        http: httpx.AsyncClient | None = None,
+        sleep: Any = asyncio.sleep,
+    ) -> None:
+        if settings.groq_api_key is None:
+            raise LLMError("GROQ_API_KEY is not set")
+        self._settings = settings
+        self._store = store
+        self._http = http or httpx.AsyncClient(timeout=settings.groq_timeout_s)
+        self._sleep = sleep
+        # One in-flight request per model: with an 8K TPM budget, parallel calls would
+        # only race each other into 429s.
+        self._locks: dict[str, asyncio.Lock] = {}
+        # Pacing state from the last response's headers, per model.
+        self._remaining_tokens: dict[str, int] = {}
+        self._tokens_reset_at: dict[str, float] = {}
+        self._last_request_at: dict[str, float] = {}
+
+    async def aclose(self) -> None:
+        await self._http.aclose()
+
+    async def structured[T: BaseModel](
+        self,
+        slot: ModelSlot,
+        schema: type[T],
+        messages: list[dict[str, str]],
+        *,
+        stage: str,
+        cik: int | None = None,
+        reasoning_effort: str = "low",
+        max_completion_tokens: int = 4096,
+    ) -> T:
+        model = self._settings.model_for(slot)
+        json_schema = strict_json_schema(schema)
+        key = hashlib.sha256(
+            json.dumps(
+                [model, schema.__name__, json_schema, messages, reasoning_effort],
+                sort_keys=True,
+            ).encode()
+        ).hexdigest()
+
+        cached = await self._store.cache_get(key)
+        if cached is not None:
+            await self._store.record(CallRecord(model, stage, cik, 0, 0, None, 0, True, True))
+            return schema.model_validate(cached)
+
+        body: dict[str, Any] = {
+            "model": model,
+            "messages": list(messages),
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {"name": schema.__name__, "strict": True, "schema": json_schema},
+            },
+            "reasoning_effort": reasoning_effort,
+            "max_completion_tokens": max_completion_tokens,
+        }
+        lock = self._locks.setdefault(model, asyncio.Lock())
+        async with lock:
+            for attempt in range(MAX_VALIDATION_RETRIES + 1):
+                content = await self._complete(model, body, stage=stage, cik=cik)
+                try:
+                    parsed = schema.model_validate_json(content)
+                except ValidationError as exc:
+                    if attempt == MAX_VALIDATION_RETRIES:
+                        raise LLMError(f"output failed validation: {exc}") from exc
+                    # Show the model its own output and the error, then retry.
+                    body["messages"] = [
+                        *messages,
+                        {"role": "assistant", "content": content},
+                        {
+                            "role": "user",
+                            "content": f"That output was invalid: {exc}. Return corrected JSON.",
+                        },
+                    ]
+                    continue
+                await self._store.cache_put(key, model, parsed.model_dump(mode="json"))
+                return parsed
+        raise AssertionError("unreachable")
+
+    async def _complete(
+        self, model: str, body: dict[str, Any], *, stage: str, cik: int | None
+    ) -> str:
+        prompt_text = "".join(m["content"] for m in body["messages"])
+        estimate = estimate_tokens(prompt_text) + body["max_completion_tokens"] // 4
+        await self._check_daily_budget(model, estimate)
+
+        for _ in range(MAX_RATE_LIMIT_RETRIES):
+            await self._pace(model, estimate)
+            started = time.monotonic()
+            self._last_request_at[model] = started
+            resp = await self._http.post(
+                f"{self._settings.groq_base_url}/chat/completions",
+                json=body,
+                headers={
+                    "Authorization": f"Bearer {self._settings.groq_api_key.get_secret_value()}"  # type: ignore[union-attr]
+                },
+            )
+            latency_ms = int((time.monotonic() - started) * 1000)
+            self._update_limits(model, resp.headers)
+
+            if resp.status_code == 429:
+                message = resp.text
+                if "per day" in message.lower() or "(tpd)" in message.lower():
+                    await self._store.record(
+                        CallRecord(model, stage, cik, 0, 0, None, latency_ms, False, False, "TPD")
+                    )
+                    raise DailyLimitError(f"{model}: Groq daily limit reached")
+                wait = float(resp.headers.get("retry-after", "0") or 0) or 5.0
+                logger.info("groq 429, waiting", extra={"model": model, "wait_s": wait})
+                await self._sleep(wait)
+                continue
+            if resp.status_code >= 500:
+                await self._sleep(5.0)
+                continue
+            if resp.status_code != 200:
+                await self._store.record(
+                    CallRecord(
+                        model,
+                        stage,
+                        cik,
+                        0,
+                        0,
+                        None,
+                        latency_ms,
+                        False,
+                        False,
+                        f"HTTP {resp.status_code}",
+                    )
+                )
+                raise LLMError(f"Groq HTTP {resp.status_code}: {resp.text[:500]}")
+
+            data = resp.json()
+            usage = data.get("usage", {})
+            details = usage.get("completion_tokens_details") or {}
+            await self._store.record(
+                CallRecord(
+                    model,
+                    stage,
+                    cik,
+                    int(usage.get("prompt_tokens", 0)),
+                    int(usage.get("completion_tokens", 0)),
+                    details.get("reasoning_tokens"),
+                    latency_ms,
+                    False,
+                    True,
+                )
+            )
+            content: str = data["choices"][0]["message"]["content"] or ""
+            return content
+        raise LLMError(f"{model}: still rate limited after {MAX_RATE_LIMIT_RETRIES} retries")
+
+    async def _check_daily_budget(self, model: str, estimate: int) -> None:
+        used = await self._store.tokens_last_24h(model)
+        if used + estimate > self._settings.groq_tokens_per_day:
+            raise DailyLimitError(
+                f"{model}: {used} tokens used in the last 24h; budget is "
+                f"{self._settings.groq_tokens_per_day}"
+            )
+
+    async def _pace(self, model: str, estimate: int) -> None:
+        now = time.monotonic()
+        # Requests per minute: keep a minimum gap between requests.
+        gap = 60.0 / self._settings.groq_requests_per_minute
+        last = self._last_request_at.get(model)
+        if last is not None and now - last < gap:
+            await self._sleep(gap - (now - last))
+        # Tokens per minute: if the last response said we don't have room, wait for reset.
+        remaining = self._remaining_tokens.get(model)
+        reset_at = self._tokens_reset_at.get(model, 0.0)
+        if remaining is not None and remaining < estimate and reset_at > time.monotonic():
+            await self._sleep(reset_at - time.monotonic())
+
+    def _update_limits(self, model: str, headers: httpx.Headers) -> None:
+        remaining = headers.get("x-ratelimit-remaining-tokens")
+        if remaining is not None and remaining.isdigit():
+            self._remaining_tokens[model] = int(remaining)
+        reset = _parse_duration_s(headers.get("x-ratelimit-reset-tokens"))
+        if reset is not None:
+            self._tokens_reset_at[model] = time.monotonic() + reset
