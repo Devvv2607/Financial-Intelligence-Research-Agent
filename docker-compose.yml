@@ -1,7 +1,7 @@
 # One command brings up the whole stack:  docker compose up -d --build
-# Host ports (override in .env): web 3000, api 8000, postgres 5433, weaviate 8090 (HTTP) + 50051 (gRPC).
-# Postgres/Weaviate default off 5432/8080 so they don't collide with a locally installed
-# Postgres or web server (and so host-run code can't silently hit the wrong database).
+# Host ports (override in .env): web 3000, api 8000, postgres 5442, weaviate 8095 (HTTP) + 50055 (gRPC).
+# Postgres/Weaviate use uncommon host ports so they don't collide with native Postgres
+# installs or other projects' Weaviate (and host-run code can't hit the wrong database).
 
 name: fira
 
@@ -12,7 +12,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-fira}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fira}
       POSTGRES_DB: ${POSTGRES_DB:-fira}
-    ports: ["${POSTGRES_HOST_PORT:-5433}:5432"]
+    ports: ["${POSTGRES_HOST_PORT:-5442}:5432"]
     volumes:
       # Postgres 18 images keep data under /var/lib/postgresql/<major>/ — mount the
       # parent, not the old /var/lib/postgresql/data path.
@@ -27,14 +27,18 @@ services:
     image: cr.weaviate.io/semitechnologies/weaviate:1.40.3
     command: ["--host", "0.0.0.0", "--port", "8080", "--scheme", "http"]
     environment:
-      # We bring our own vectors (fastembed), so no vectorizer module is enabled.
-      DEFAULT_VECTORIZER_MODULE: none
+      # We bring our own vectors (fastembed): no vectorizer modules. Collections declare
+      # `vectorizer: none` themselves (DEFAULT_VECTORIZER_MODULE is ignored since v1.40).
       ENABLE_MODULES: ""
       AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: "true"
       PERSISTENCE_DATA_PATH: /var/lib/weaviate
+      LOG_LEVEL: info
       CLUSTER_HOSTNAME: node1
+      # Single node: advertise loopback explicitly. Auto-detection fails under Docker
+      # Desktop/WSL2 ("no private IP address found") and Weaviate exits on startup.
+      CLUSTER_ADVERTISE_ADDR: 127.0.0.1
       QUERY_DEFAULTS_LIMIT: 25
-    ports: ["${WEAVIATE_HOST_HTTP_PORT:-8090}:8080", "${WEAVIATE_HOST_GRPC_PORT:-50051}:50051"]
+    ports: ["${WEAVIATE_HOST_HTTP_PORT:-8095}:8080", "${WEAVIATE_HOST_GRPC_PORT:-50055}:50051"]
     volumes:
       - weaviatedata:/var/lib/weaviate
     healthcheck:

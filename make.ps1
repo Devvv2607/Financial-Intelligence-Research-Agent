@@ -17,6 +17,9 @@ function Invoke-Step {
     # Resolve to the real executable (npm -> npm.cmd, not the npm.ps1 shim, which
     # would misread splatted "--flags" as PowerShell parameters).
     $path = (Get-Command $Exe -CommandType Application | Select-Object -First 1).Source
+    # Judge native tools by exit code only. Under "Stop", Windows PowerShell 5.1 turns any
+    # redirected stderr line (e.g. docker's progress output) into a terminating error.
+    $ErrorActionPreference = "Continue"
     & $path @Arguments
     if ($LASTEXITCODE -ne 0) { throw "'$Exe $($Arguments -join ' ')' failed with exit code $LASTEXITCODE" }
 }

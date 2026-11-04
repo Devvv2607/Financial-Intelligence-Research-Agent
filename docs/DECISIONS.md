@@ -189,12 +189,25 @@ live fallback is controlled by `NEWS_LIVE_FALLBACK`, which `Settings` forces off
 and says so.
 
 ## D-011 · Groq model ids live only in `.env`
-**Status:** Implemented (Phase 0 config) · models chosen in Phase 1/3
+**Status:** Implemented (Phase 0) · models verified 2026-11-04
 
 Groq's catalogue changes often (models are added and deprecated). Two slots,
 `GROQ_MODEL_REASONING` and `GROQ_MODEL_FAST`, are set from the live
 `GET /openai/v1/models` list after checking structured-output support. Code never names a
 model. A per-model price table (also config) drives cost accounting in `runs`.
+
+**Verified 2026-11-04** against the live API with the project key:
+`GROQ_MODEL_REASONING=openai/gpt-oss-120b` and `GROQ_MODEL_FAST=openai/gpt-oss-20b` are
+both listed as active (131,072-token context). Both returned valid output for a
+`response_format: json_schema` request with `strict: true` (enum constrained) and for a
+forced function call (`tool_choice` naming the function). Two findings feed Phase 1:
+- **Hidden reasoning tokens.** gpt-oss is a reasoning model, so a one-line classification
+  billed 139 completion tokens at the default effort and 52 with `reasoning_effort: "low"`
+  (same prompt, 120b). Extraction and tagging calls set low effort explicitly.
+- **Rate-limit headers** on this account: `x-ratelimit-limit-tokens: 8000` (per-minute
+  token budget) and `x-ratelimit-limit-requests: 1000`. The per-minute token budget, not
+  the request count, is the binding constraint for batch tagging. The tagger paces itself
+  from `x-ratelimit-remaining-tokens` / `x-ratelimit-reset-tokens`.
 
 ## D-012 · XBRL revenue concept mapping
 **Status:** Accepted · implemented in Phase 1
@@ -216,26 +229,6 @@ misreads splatted `--flags`, so the script always invokes the real executable
 (`npm.cmd`). `.gitattributes` forces LF line endings (CRLF only for `.ps1`) so shell
 scripts and Dockerfiles behave the same when built from a Windows checkout.
 
-## D-016 · Windows host runs use a selector event loop (`core.aio`)
-**Status:** Implemented (Phase 0)
-
-Running the API on the Windows host, `/ready` reported Postgres as down with
-`InterfaceError: Psycopg cannot use the 'ProactorEventLoop' to run in async mode`.
-Windows' default asyncio loop is the Proactor loop, which psycopg 3's async mode doesn't
-support. `core.aio.selector_loop` returns a `SelectorEventLoop` on Windows (and a normal
-loop elsewhere). `make dev-api` passes it to uvicorn (`--loop core.aio:selector_loop`), and
-every CLI entrypoint must use `core.aio.run()` instead of `asyncio.run()`. Inside the
-Linux containers nothing changes, and uvicorn keeps uvloop.
-
-## D-017 · Collision-free default host ports (Postgres 5433, Weaviate 8090)
-**Status:** Implemented (Phase 0)
-
-The dev machine already had a native Postgres on 5432 and Apache (`httpd`) on 8080. With
-the usual port mappings, compose would fail to bind, and worse, host-run Python would
-connect to the *wrong* Postgres or get Apache 404s from "Weaviate" (both observed via
-`/ready`). Host ports are now configurable (`POSTGRES_HOST_PORT`, `WEAVIATE_HOST_*`) with
-defaults 5433 and 8090. Containers still talk to each other on the standard internal ports.
-
 ## D-014 · Bank 10-K extraction failures are accepted and reported *(flag F)*
 **Status:** Accepted · Phase 1
 
@@ -250,6 +243,29 @@ added only if successes drop below 190.
 "Last fiscal year" means different calendar periods for different companies (Apple's
 fiscal year ends in September, NVIDIA's in January). Cross-company answers state each
 company's fiscal-year end next to the numbers.
+
+## D-016 · Windows host runs use a selector event loop (`core.aio`)
+**Status:** Implemented (Phase 0)
+
+Running the API on the Windows host, `/ready` reported Postgres as down with
+`InterfaceError: Psycopg cannot use the 'ProactorEventLoop' to run in async mode`.
+Windows' default asyncio loop is the Proactor loop, which psycopg 3's async mode doesn't
+support. `core.aio.selector_loop` returns a `SelectorEventLoop` on Windows (and a normal
+loop elsewhere). `make dev-api` passes it to uvicorn (`--loop core.aio:selector_loop`), and
+every CLI entrypoint must use `core.aio.run()` instead of `asyncio.run()`. Inside the
+Linux containers nothing changes, and uvicorn keeps uvloop.
+
+## D-017 · Collision-free host ports (Postgres 5442, Weaviate 8095/50055)
+**Status:** Implemented (Phase 0)
+
+The dev machine runs two native Postgres servers (5432 and 5433), and another project's
+Weaviate stack publishes 8080, 8090, 50051 and 50052. Standard mappings first produced
+Apache 404s from "Weaviate", then a `port is already allocated` error once that stack
+started. Worse, Docker *did* bind 5433 alongside the native server, so `localhost:5433`
+from Windows could reach either database. Host ports are configurable
+(`POSTGRES_HOST_PORT`, `WEAVIATE_HOST_HTTP_PORT`, `WEAVIATE_HOST_GRPC_PORT`) and default to
+5442 / 8095 / 50055, all verified free. Containers still use standard ports internally.
+A host-side check confirmed `select version()` returns the container's PostgreSQL 18.6.
 
 ---
 
@@ -266,6 +282,20 @@ company's fiscal-year end next to the numbers.
 - **Ruff 0.17 formats Markdown code blocks (Phase 0).** `ruff format --check` flagged the
   Python sketch inside `BUILD_SPEC.md`. Markdown is excluded from ruff so specs and docs
   aren't rewritten.
+- **Weaviate 1.40 single-node startup under Docker Desktop/WSL2 (Phase 0).** The container
+  exited with `could not init cluster state: create memberlist: failed to get final
+  advertise address: no private IP address found`, even though eth0 had 172.21.0.2. Its
+  interface carried an `M-DOWN` flag, which probably defeats auto-detection (not
+  confirmed). Setting `CLUSTER_ADVERTISE_ADDR=127.0.0.1` (documented, and correct for one
+  node) fixes it.
+- **`DEFAULT_VECTORIZER_MODULE` deprecated in Weaviate 1.40 (Phase 0).** It is ignored and
+  logs a warning. Removed from compose; our collections will declare `vectorizer: none`
+  explicitly, which is what we want with bring-your-own vectors anyway.
+- **`make.ps1` and native stderr (Phase 0).** In Windows PowerShell 5.1, a redirected
+  stderr line from a native tool becomes an error record. With
+  `$ErrorActionPreference = "Stop"`, docker's progress output aborted `make.ps1 up`.
+  `Invoke-Step` now runs native tools under `Continue` and judges them only by
+  `$LASTEXITCODE`.
 - **authlib deprecation warning (Phase 0).** `weaviate-client` imports authlib, which emits
   a `DeprecationWarning` and forces it visible with its own `simplefilter("always")`, so
   pytest's filters can't silence it. It is harmless and outside our code, so we leave it.
