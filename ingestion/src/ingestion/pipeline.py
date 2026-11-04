@@ -32,6 +32,7 @@ from core.db.schema import (
 )
 from core.embeddings import Embedder
 from core.llm import DailyLimitError, GroqClient
+from core.newsapi import NewsApiClient, NewsApiError, build_query, parse_articles
 from core.vectorstore import FILING_CHUNK, NEWS_ARTICLE, RISK_FACTOR, ensure_collections
 from ingestion import prompts
 from ingestion.edgar.client import EdgarClient, EdgarError
@@ -58,7 +59,6 @@ from ingestion.extract.sections import (
 from ingestion.load import postgres as pg
 from ingestion.load.chunker import chunk_text, embedding_input, make_header, truncate_tokens
 from ingestion.load.weaviate import PendingObjects, replace_company_objects
-from ingestion.news.client import NewsApiClient, NewsApiError, build_query, parse_articles
 
 logger = logging.getLogger(__name__)
 

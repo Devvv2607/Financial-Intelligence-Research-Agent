@@ -25,11 +25,11 @@ from core.db.schema import (
     risk_factors,
     risk_tag_experiments,
 )
+from core.newsapi import Article
 from ingestion.edgar.submissions import CompanyMeta, FilingRef
 from ingestion.edgar.xbrl import FactRow
 from ingestion.enrich.risk_tagger import TagResult
 from ingestion.extract.risk_splitter import RiskFactor
-from ingestion.news.client import Article
 
 
 def risk_factor_id(cik: int, fiscal_year: int, heading: str, body: str) -> str:

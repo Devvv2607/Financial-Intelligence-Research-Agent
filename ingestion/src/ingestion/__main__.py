@@ -29,11 +29,11 @@ from core.db.schema import companies
 from core.embeddings import Embedder
 from core.llm import GroqClient
 from core.logging import configure_logging
+from core.newsapi import NewsApiClient
 from core.vectorstore import create_client, ensure_ready
 from ingestion import experiments, prompts, review
 from ingestion import report as rpt
 from ingestion.edgar.client import EdgarClient
-from ingestion.news.client import NewsApiClient
 from ingestion.pipeline import SAMPLE_TICKERS, STAGES, Pipeline, Stage, UniverseRow, read_universe
 
 console = Console()
