@@ -18,7 +18,9 @@ source of truth**; approved deviations are logged in `docs/DECISIONS.md`.
 - `backend/src/core` — settings, logging, DB engine, Weaviate client (shared by everything)
 - `backend/src/api` — FastAPI app (`api.main:app`)
 - `backend/src/agent/tools` — the 8 agent tools (Phase 2); `python -m agent.tools list|call|demo`
-- `backend/src/agent` — LangGraph graph (Phase 3)
+- `backend/src/agent` — LangGraph graph (Phase 3); `uv run python -m agent ask "..."`
+  (also `resume --thread T "answer"`, `history`, `replay`). Prints plan, step modes,
+  tokens per node. Live: spends the 120b budget (dev cache makes unchanged reruns free).
 - `ingestion/` — EDGAR/NewsAPI pipeline (Phase 1) · `evals/` — eval harness (Phase 6)
 - `frontend/` — Next.js 16 App Router, TypeScript, Tailwind v4
 - Python is a **uv workspace** (root `pyproject.toml`); one `.venv` at the repo root.
