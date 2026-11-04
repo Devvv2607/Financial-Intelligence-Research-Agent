@@ -285,6 +285,69 @@ is not a pipeline output. The stored sector fields come only from the SIC mappin
 LLM classifier (§3.4). The bucket is kept as an independent reference for sanity-checking
 those two signals, and for reporting coverage by sector.
 
+## D-019 · One Groq client for structured output, talking to the HTTP API directly
+**Status:** Implemented (Phase 1, `core/llm.py`)
+
+Every structured LLM call (risk tags, sector, section boundaries; later the planner and
+critic) goes through `GroqClient.structured()`, which returns a validated Pydantic object.
+It uses Groq's OpenAI-compatible endpoint directly instead of `langchain-groq`, because the
+free tier forces three things the wrapper hides: pacing from the `x-ratelimit-*` response
+headers, telling a per-minute 429 (wait and retry) from a per-day 429 (stop, resume
+tomorrow), and recording exact `usage` per call (including gpt-oss's hidden reasoning
+tokens) into `llm_calls`. Requests use strict `json_schema` (schemas are rewritten for strict
+mode: `$defs` inlined, every property required, `additionalProperties: false`), retry up to
+2 times on validation failure with the error fed back, run one at a time per model (with an
+8K TPM budget, parallel calls only race each other into 429s), and default to
+`reasoning_effort: "low"`. Responses are cached by a hash of model, schema, messages and
+effort; prompts are versioned `.md` files, so editing a prompt invalidates its cache. The
+agent's tool-calling loops (Phase 3) will use `langchain-groq` for LangGraph integration,
+and token accounting there will write to the same ledger.
+
+## D-020 · Successor registrants: merge the predecessor CIK's history
+**Status:** Implemented (Phase 1, `pipeline.PREDECESSOR_CIKS`)
+
+SEC's ticker map points XOM at CIK 2115436, "ExxonMobil Holdings Corp", a new registrant
+created on 2026-07-01 (its first filing is an `8-K12B`, successor issuer). It has no 10-K
+yet; both 10-Ks and the XBRL history are under Exxon Mobil Corp (CIK 34088). We keep a
+small, explicit successor -> predecessor map and merge the predecessor's filings and
+companyfacts. A company with no 10-K and no mapping fails with a reason that names this
+case, rather than silently ingesting nothing. An explicit map was chosen over automatic
+detection because guessing a predecessor (e.g. by name search) could attach the wrong
+company's history; each mapping is checked by hand.
+
+## D-021 · Risk-factor splitting from styling, validated on the sample 10-Ks
+**Status:** Implemented (Phase 1, `extract/risk_splitter.py`, `extract/html_clean.py`)
+
+10-Ks mark risk-factor headings with *styling*, and filers do it differently, so the HTML
+is first flattened into blocks that remember emphasis (bold/italic/underline from tags or
+inline CSS), the leading emphasized run, and font size. A heading is a block that is
+mostly emphasized, or set clearly larger than the section's body text (Intel: 12pt
+non-bold headings over 9pt body). Paragraphs that open with an emphasized sentence are
+"inline" headings (ExxonMobil's "Economic conditions. ..."), except on bullets, which are
+points inside a risk (Intel, AMD). Short unpunctuated headings followed by another heading
+are subsection labels. The "summary of risk factors" bullet list that many filers put first
+is skipped, but only before the first real risk factor, since later risks can have bulleted
+bodies. Page furniture is removed only when it is a repeated line with a page number or plain
+small text ("Table of Contents"): Intel repeats its 18pt "Risk Factors" title as a running
+header, and dropping all repeated lines also dropped the real heading. Each rule came from a
+concrete failure on a sample filing, and each has a test, either on the real fixtures (Apple,
+ExxonMobil, JPMorgan, Intel) or on synthetic blocks.
+
+## D-022 · `--sample N` means the agreed sample, not the first N rows
+**Status:** Implemented (Phase 1)
+
+The spec's `--sample 10` doesn't say *which* 10. Taking the first rows of `universe.csv`
+would give ten IT companies. `--sample N` takes the first N of the agreed list
+(AAPL, NVDA, AMD, INTC, BA, TSLA, JNJ, UNH, XOM, JPM): demo-query companies, five sectors,
+four 10-K layouts, and one bank. `--tickers A,B` selects any subset.
+
+## D-023 · Sector stored on vector objects: LLM sector, falling back to SIC
+**Status:** Implemented (Phase 1)
+
+Weaviate objects carry one `sector` filter field. We use the LLM classification when present
+(it reflects GICS-style reasoning about the business), falling back to the SIC rule. Both
+signals and the conflict flag stay in Postgres for the screener and the reports.
+
 ---
 
 ## Adaptations: where libraries or tools differed from the spec's assumptions
@@ -320,6 +383,27 @@ those two signals, and for reporting coverage by sector.
   find name 'LayoutProps'`: Next 16 generates route types such as `LayoutProps` into
   `.next/types`, which a clean checkout lacks. `typecheck` now runs `next typegen` first.
   Reproduced locally by deleting `.next/` before applying the fix.
+- **bge tokenizer truncation, verified (Phase 1).** The tokenizer fastembed loads for
+  bge-small is configured `truncation: {max_length: 512, strategy: longest_first}`, which
+  confirms D-001 against the real artifact: longer inputs would be cut silently. fastembed
+  serves a quantized ONNX build (`Qdrant/bge-small-en-v1.5-onnx-Q`, 65 MB). Embeddings are
+  close to, but not bit-identical with, the FP32 model; all our vectors come from this one
+  build, so they are consistent.
+- **Inline XBRL encoding (Phase 1).** lxml mis-guessed the encoding of some filings when
+  given bytes. Filings are now decoded explicitly (UTF-8, falling back to cp1252), and the
+  `<?xml ... encoding=...?>` declaration is stripped, because lxml rejects `str` input that
+  still carries one.
+- **Workspace member installed empty (Phase 1).** `uv sync` ran before
+  `ingestion/src/ingestion/` had files, so the editable install had nothing in it, and
+  `python -m ingestion` resolved the repo's top-level `ingestion/` folder as a namespace
+  package ("No module named ingestion.__main__"). `uv sync --reinstall-package
+  fira-ingestion` fixed it. Fresh clones are unaffected.
+- **lxml has no type information (Phase 1).** mypy is told to ignore missing imports for
+  `lxml.*` only; lxml use is confined to `extract/html_clean.py`.
+- **Alembic autogenerate made `companies.cik` SERIAL (Phase 1).** An integer primary key
+  defaults to autoincrement in SQLAlchemy, which is wrong for a natural key like the CIK.
+  The column is `autoincrement=False`, and the initial migration was regenerated before
+  anything depended on it.
 - **authlib deprecation warning (Phase 0).** `weaviate-client` imports authlib, which emits
   a `DeprecationWarning` and forces it visible with its own `simplefilter("always")`, so
   pytest's filters can't silence it. It is harmless and outside our code, so we leave it.
