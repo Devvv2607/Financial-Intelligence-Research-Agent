@@ -22,11 +22,11 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
 
     # Postgres (psycopg 3 driver for both SQLAlchemy and the LangGraph checkpointer).
-    database_url: str = "postgresql+psycopg://fira:fira@localhost:5432/fira"
+    database_url: str = "postgresql+psycopg://fira:fira@localhost:5433/fira"
 
     # Weaviate (HTTP + gRPC; the v4 client needs both).
     weaviate_http_host: str = "localhost"
-    weaviate_http_port: int = 8080
+    weaviate_http_port: int = 8090
     weaviate_grpc_host: str = "localhost"
     weaviate_grpc_port: int = 50051
     weaviate_api_key: SecretStr | None = None

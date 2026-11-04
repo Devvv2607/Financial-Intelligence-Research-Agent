@@ -216,6 +216,26 @@ misreads splatted `--flags`, so the script always invokes the real executable
 (`npm.cmd`). `.gitattributes` forces LF line endings (CRLF only for `.ps1`) so shell
 scripts and Dockerfiles behave the same when built from a Windows checkout.
 
+## D-016 · Windows host runs use a selector event loop (`core.aio`)
+**Status:** Implemented (Phase 0)
+
+Running the API on the Windows host, `/ready` reported Postgres as down with
+`InterfaceError: Psycopg cannot use the 'ProactorEventLoop' to run in async mode`.
+Windows' default asyncio loop is the Proactor loop, which psycopg 3's async mode doesn't
+support. `core.aio.selector_loop` returns a `SelectorEventLoop` on Windows (and a normal
+loop elsewhere). `make dev-api` passes it to uvicorn (`--loop core.aio:selector_loop`), and
+every CLI entrypoint must use `core.aio.run()` instead of `asyncio.run()`. Inside the
+Linux containers nothing changes, and uvicorn keeps uvloop.
+
+## D-017 · Collision-free default host ports (Postgres 5433, Weaviate 8090)
+**Status:** Implemented (Phase 0)
+
+The dev machine already had a native Postgres on 5432 and Apache (`httpd`) on 8080. With
+the usual port mappings, compose would fail to bind, and worse, host-run Python would
+connect to the *wrong* Postgres or get Apache 404s from "Weaviate" (both observed via
+`/ready`). Host ports are now configurable (`POSTGRES_HOST_PORT`, `WEAVIATE_HOST_*`) with
+defaults 5433 and 8090. Containers still talk to each other on the standard internal ports.
+
 ## D-014 · Bank 10-K extraction failures are accepted and reported *(flag F)*
 **Status:** Accepted · Phase 1
 

@@ -1,5 +1,7 @@
 # One command brings up the whole stack:  docker compose up -d --build
-# Host ports: web 3000, api 8000, postgres 5432, weaviate 8080 (HTTP) + 50051 (gRPC).
+# Host ports (override in .env): web 3000, api 8000, postgres 5433, weaviate 8090 (HTTP) + 50051 (gRPC).
+# Postgres/Weaviate default off 5432/8080 so they don't collide with a locally installed
+# Postgres or web server (and so host-run code can't silently hit the wrong database).
 
 name: fira
 
@@ -10,7 +12,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-fira}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fira}
       POSTGRES_DB: ${POSTGRES_DB:-fira}
-    ports: ["5432:5432"]
+    ports: ["${POSTGRES_HOST_PORT:-5433}:5432"]
     volumes:
       # Postgres 18 images keep data under /var/lib/postgresql/<major>/ — mount the
       # parent, not the old /var/lib/postgresql/data path.
@@ -32,7 +34,7 @@ services:
       PERSISTENCE_DATA_PATH: /var/lib/weaviate
       CLUSTER_HOSTNAME: node1
       QUERY_DEFAULTS_LIMIT: 25
-    ports: ["8080:8080", "50051:50051"]
+    ports: ["${WEAVIATE_HOST_HTTP_PORT:-8090}:8080", "${WEAVIATE_HOST_GRPC_PORT:-50051}:50051"]
     volumes:
       - weaviatedata:/var/lib/weaviate
     healthcheck:
@@ -52,7 +54,9 @@ services:
       # Container-network addresses override the localhost defaults in .env.
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-fira}:${POSTGRES_PASSWORD:-fira}@postgres:5432/${POSTGRES_DB:-fira}
       WEAVIATE_HTTP_HOST: weaviate
+      WEAVIATE_HTTP_PORT: 8080
       WEAVIATE_GRPC_HOST: weaviate
+      WEAVIATE_GRPC_PORT: 50051
     ports: ["8000:8000"]
     depends_on:
       postgres: { condition: service_healthy }

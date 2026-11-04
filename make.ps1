@@ -45,7 +45,7 @@ $targets = [ordered]@{
             # curl.exe, not the PowerShell `curl` alias; a 503 is a valid answer here.
             & curl.exe -s -w "`nHTTP %{http_code}`n" http://localhost:8000/ready } }
     "dev-api"   = @{ Help = "Run the API on the host with reload"; Run = {
-            Invoke-Step uv @("run", "uvicorn", "api.main:app", "--reload", "--port", "8000") } }
+            Invoke-Step uv @("run", "uvicorn", "api.main:app", "--reload", "--port", "8000", "--loop", "core.aio:selector_loop") } }
     "dev-web"   = @{ Help = "Run the frontend dev server"; Run = { Invoke-Step npm @("--prefix", "frontend", "run", "dev") } }
     "clean"     = @{ Help = "Remove caches and build output"; Run = {
             foreach ($p in ".mypy_cache", ".ruff_cache", ".pytest_cache", "frontend/.next") {

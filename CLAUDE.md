@@ -51,4 +51,6 @@ run with `uv run pytest -m live`.
 ## Environment gotchas
 - `.env` is read from the repo root; `docker-compose` overrides DB/Weaviate hosts for the api container.
 - `CORS_ORIGINS` must be a JSON list in `.env`.
+- Host ports: compose Postgres is on **5433**, Weaviate HTTP on **8090** (5432/8080 are taken on the dev machine).
+- Windows + async psycopg: use `core.aio.run()` in CLIs and `--loop core.aio:selector_loop` for uvicorn (never bare `asyncio.run`).
 - Line endings are LF (`.gitattributes`); `.ps1` files are CRLF.

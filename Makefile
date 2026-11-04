@@ -45,7 +45,7 @@ ready: ## Query the API readiness probe
 	curl -s -w "\nHTTP %{http_code}\n" http://localhost:8000/ready
 
 dev-api: ## Run the API on the host with reload
-	uv run uvicorn api.main:app --reload --port 8000
+	uv run uvicorn api.main:app --reload --port 8000 --loop core.aio:selector_loop
 
 dev-web: ## Run the frontend dev server
 	npm --prefix frontend run dev
