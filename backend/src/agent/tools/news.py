@@ -9,21 +9,24 @@ daily request cap. Any NewsAPI failure degrades to store results plus a warning.
 import re
 from datetime import UTC, date, datetime, timedelta
 
+import numpy as np
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 from weaviate.classes.data import DataObject
-from weaviate.classes.query import Filter, MetadataQuery
+from weaviate.classes.query import Filter
 from weaviate.util import generate_uuid5
 
 from agent.tools.base import Evidence, Output, ToolContext, ToolFailure, snippet, tool
 from agent.tools.common import Company, missing_warning, resolve_tickers
+from agent.tools.news_relevance import relevance
 from core.db.schema import news_articles
 from core.newsapi import Article, NewsApiError, build_query, parse_articles
 from core.vectorstore import NEWS_ARTICLE
 
 STALE_AFTER = timedelta(days=3)
 MAX_LIVE_FETCHES = 3  # per call: protects the shared 100/day NewsAPI quota
+CANDIDATES = 50  # hybrid-search candidates to gate and re-score
 
 
 class SearchNewsInput(BaseModel):
@@ -41,7 +44,9 @@ class NewsHit(BaseModel):
     source_name: str | None
     published_at: datetime
     url: str
-    score: float | None
+    score: float | None = Field(description="(0.75*semantic + 0.25*keyword) * source_weight")
+    score_parts: dict[str, float] = Field(default_factory=dict)
+    matched_on: str | None = Field(None, description="where the company was named, e.g. title:name")
 
 
 class SearchNewsOutput(BaseModel):
@@ -181,11 +186,14 @@ async def search_news(ctx: ToolContext, inp: SearchNewsInput) -> Output:
 
     vector = (await ctx.embedder.embed([inp.query]))[0]
     col = ctx.weaviate.collections.get(NEWS_ARTICLE)
+    # Hybrid search only *collects candidates*; ranking uses our absolute score
+    # (news_relevance), because hybrid fusion scores are relative to each result list.
     res = await col.query.hybrid(
         query=inp.query,
         vector=vector.tolist(),
         alpha=0.5,
-        limit=inp.limit * 2,  # extra headroom for syndicated duplicates
+        limit=CANDIDATES,
+        include_vector=True,
         filters=Filter.all_of(
             [
                 Filter.by_property("ticker").contains_any([c.ticker for c in known]),
@@ -194,28 +202,52 @@ async def search_news(ctx: ToolContext, inp: SearchNewsInput) -> Output:
                 ),
             ]
         ),
-        return_metadata=MetadataQuery(score=True),
     )
-    hits: list[NewsHit] = []
-    seen_titles: set[str] = set()
+    by_ticker = {c.ticker: c for c in known}
+    scored: list[NewsHit] = []
+    gated_out = 0
     for o in res.objects:
         p = o.properties
-        key = re.sub(r"\W+", " ", str(p["title"]).lower()).strip()
-        if key in seen_titles:
+        company = by_ticker[str(p["ticker"])]
+        article_vec = np.asarray(o.vector["default"], dtype=np.float32)
+        rel = relevance(
+            inp.query,
+            str(p["title"]),
+            str(p.get("description") or ""),
+            str(p.get("source_name") or ""),
+            float(vector @ article_vec),
+            company.name,
+            company.ticker,
+        )
+        if rel is None:
+            gated_out += 1
             continue
-        seen_titles.add(key)
-        hits.append(
+        scored.append(
             NewsHit(
                 source_id=f"news:{p['article_id']}",
-                ticker=str(p["ticker"]),
+                ticker=company.ticker,
                 title=str(p["title"]),
                 description=str(p.get("description") or "") or None,
                 source_name=str(p.get("source_name") or "") or None,
                 published_at=p["published_at"],
                 url=str(p["source_url"]),
-                score=o.metadata.score,
+                score=rel.score,
+                score_parts={
+                    "semantic": rel.semantic,
+                    "keyword": rel.keyword,
+                    "source_weight": rel.source_weight,
+                },
+                matched_on=rel.matched_on,
             )
         )
+    hits: list[NewsHit] = []
+    seen_titles: set[str] = set()
+    for h in sorted(scored, key=lambda h: -(h.score or 0)):
+        key = re.sub(r"\W+", " ", h.title.lower()).strip()
+        if key in seen_titles:  # syndicated copies of the same story
+            continue
+        seen_titles.add(key)
+        hits.append(h)
         if len(hits) == inp.limit:
             break
     evidence = [
@@ -231,5 +263,10 @@ async def search_news(ctx: ToolContext, inp: SearchNewsInput) -> Output:
         )
         for h in hits
     ]
-    warnings = missing_warning(missing) + warnings + ([] if hits else ["no matching news"])
+    if gated_out:
+        warnings.append(
+            f"{gated_out} candidate articles dropped (company not named, not a news source, "
+            "or below the relevance floor)"
+        )
+    warnings = missing_warning(missing) + warnings + ([] if hits else ["no relevant news found"])
     return Output(SearchNewsOutput(hits=hits, live_fetched=fetched), evidence, warnings)

@@ -55,6 +55,11 @@ packages = ["core", "api", "agent", "ingestion"]
 module = ["lxml", "lxml.*"]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+# Imported only to scope one warning filter (core/__init__.py); authlib ships no types.
+module = ["authlib", "authlib.*"]
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["backend/tests", "ingestion/tests"]
 asyncio_mode = "auto"
@@ -64,3 +69,5 @@ markers = [
     "integration: needs the local stack (Postgres + Weaviate); skips itself when it is down",
 ]
 addopts = "-m 'not live'"
+# pytest re-enables DeprecationWarnings per test; re-apply the one filter from core/__init__.py.
+filterwarnings = ["ignore:The httpx module is deprecated:DeprecationWarning"]

@@ -1,6 +1,8 @@
 """filings_agent tools: hybrid search over filings, risk factors, YoY risk diff, 8-K events."""
 
+import difflib
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any, Literal
 
@@ -18,11 +20,18 @@ from core.vectorstore import FILING_CHUNK
 
 Section = Literal["item_1", "item_1a", "business_overview", "8k_body"]
 
-# Calibrated on AAPL FY2025 vs FY2026 (bge-small cosine, heading + first 150 words):
-# a genuinely new risk scored 0.84 against its closest old one, reworded risks 0.94-0.97,
-# untouched ones >= 0.99. Also matches the 0.90 ingestion uses to reuse a tag (D-003).
+# Two signals, two jobs (DECISIONS D-031):
+# 1. Identity: bge cosine (heading + first 150 words) >= MATCH_SIMILARITY means "the same
+#    risk". On AAPL FY2025 vs FY2026 a genuinely new risk (AI) scored 0.84 against its
+#    closest old one; reworded ones 0.94-0.97. Matches the tag-reuse threshold (D-003).
+# 2. Change: word-level diff ratio of heading + full body >= UNCHANGED_TEXT means "no
+#    material rewording". Examples: AAPL "carriers and other resellers" 0.992 (+2/-1 words)
+#    and JNJ "counterfeit versions" 0.987 (-5) are unchanged; JNJ "tax laws" 0.931 (-35)
+#    and AAPL "third-party developers" 0.664 (+261 words of new App Store language, though
+#    the heading is identical and cosine is 0.976) are changed. Cosine alone can't make
+#    this call: a long addition barely moves an embedding of the opening words.
 MATCH_SIMILARITY = 0.90
-UNCHANGED_SIMILARITY = 0.985
+UNCHANGED_TEXT = 0.95
 COMPARE_BODY_WORDS = 150
 
 
@@ -247,20 +256,54 @@ class RiskRef(BaseModel):
 class ChangedRisk(BaseModel):
     before: RiskRef
     after: RiskRef
-    similarity: float
-    category_changed: bool
+    kind: Literal["reworded", "recategorized", "reworded_and_recategorized"]
+    similarity: float = Field(description="embedding cosine: same risk if >= 0.90")
+    text_similarity: float = Field(description="word-level diff ratio of heading + body")
+    words_added: int
+    words_removed: int
+    added_excerpt: str = Field(description="start of the largest added passage, if any")
+
+
+class UnchangedRisk(BaseModel):
+    risk: RiskRef
+    text_similarity: float
 
 
 class CompareRiskFactorsOutput(BaseModel):
     ticker: str
     year_a: int
     year_b: int
+    counts: dict[str, int] = Field(description="new / removed / changed / unchanged")
     new: list[RiskRef]
     removed: list[RiskRef]
     changed: list[ChangedRisk]
-    unchanged_count: int
+    unchanged: list[UnchangedRisk]
     category_counts_a: dict[str, int]
     category_counts_b: dict[str, int]
+
+
+@dataclass(frozen=True)
+class WordDiff:
+    ratio: float
+    added: int
+    removed: int
+    added_excerpt: str
+
+
+def word_diff(before: str, after: str, excerpt_chars: int = 300) -> WordDiff:
+    """Word-level diff: similarity ratio, words added/removed, largest added passage."""
+    a, b = before.split(), after.split()
+    sm = difflib.SequenceMatcher(None, a, b, autojunk=False)
+    added = removed = 0
+    largest: list[str] = []
+    for op, i1, i2, j1, j2 in sm.get_opcodes():
+        if op in ("insert", "replace"):
+            added += j2 - j1
+            if j2 - j1 > len(largest):
+                largest = b[j1:j2]
+        if op in ("delete", "replace"):
+            removed += i2 - i1
+    return WordDiff(round(sm.ratio(), 3), added, removed, snippet(" ".join(largest), excerpt_chars))
 
 
 def match_risks(
@@ -296,6 +339,10 @@ def _compare_text(r: Mapping[str, Any]) -> str:
     return f"{r['heading']}\n{' '.join(str(r['body']).split()[:COMPARE_BODY_WORDS])}"
 
 
+def _full_text(r: Mapping[str, Any]) -> str:
+    return f"{r['heading']} {r['body']}"
+
+
 def _ref(r: Mapping[str, Any]) -> RiskRef:
     return RiskRef(id=r["id"], heading=r["heading"], category=r["category"])
 
@@ -311,8 +358,9 @@ def _category_counts(rows: Sequence[Mapping[str, Any]]) -> dict[str, int]:
 @tool("compare_risk_factors", CompareRiskFactorsInput, timeout_s=45)
 async def compare_risk_factors(ctx: ToolContext, inp: CompareRiskFactorsInput) -> Output:
     """Compare a company's risk factors between two 10-Ks: which risks are new, removed,
-    or changed (reworded, or moved to another category). Uses embedding similarity, so
-    reworded risks are recognised as the same risk."""
+    materially changed (reworded, or moved to another category; with words added/removed
+    and the main added passage), or unchanged. Risks are matched by meaning, so a reworded
+    risk is recognised as the same risk."""
     if ctx.embedder is None:
         raise ToolFailure("internal", "embedder is not configured")
     (company,), _ = await resolve_tickers(ctx, [inp.ticker])
@@ -339,16 +387,35 @@ async def compare_risk_factors(ctx: ToolContext, inp: CompareRiskFactorsInput) -
     pairs = match_risks(vecs[: len(a)], vecs[len(a) :])
     matched_a = {i for i, _, _ in pairs}
     matched_b = {j for _, j, _ in pairs}
-    changed = [
-        ChangedRisk(
-            before=_ref(a[i]),
-            after=_ref(b[j]),
-            similarity=round(s, 3),
-            category_changed=a[i]["category"] != b[j]["category"],
+    changed: list[ChangedRisk] = []
+    unchanged: list[UnchangedRisk] = []
+    for i, j, sim in pairs:
+        diff = word_diff(_full_text(a[i]), _full_text(b[j]))
+        reworded = diff.ratio < UNCHANGED_TEXT
+        recategorized = a[i]["category"] != b[j]["category"]
+        if not (reworded or recategorized):
+            unchanged.append(UnchangedRisk(risk=_ref(b[j]), text_similarity=diff.ratio))
+            continue
+        kind = (
+            "reworded_and_recategorized"
+            if reworded and recategorized
+            else "reworded"
+            if reworded
+            else "recategorized"
         )
-        for i, j, s in pairs
-        if s < UNCHANGED_SIMILARITY or a[i]["category"] != b[j]["category"]
-    ]
+        changed.append(
+            ChangedRisk(
+                before=_ref(a[i]),
+                after=_ref(b[j]),
+                kind=kind,
+                similarity=round(sim, 3),
+                text_similarity=diff.ratio,
+                words_added=diff.added,
+                words_removed=diff.removed,
+                added_excerpt=diff.added_excerpt,
+            )
+        )
+    changed.sort(key=lambda c: c.text_similarity)  # most rewritten first
     new = [b[j] for j in range(len(b)) if j not in matched_b]
     removed = [a[i] for i in range(len(a)) if i not in matched_a]
 
@@ -356,10 +423,16 @@ async def compare_risk_factors(ctx: ToolContext, inp: CompareRiskFactorsInput) -
         ticker=company.ticker,
         year_a=year_a,
         year_b=year_b,
+        counts={
+            "new": len(new),
+            "removed": len(removed),
+            "changed": len(changed),
+            "unchanged": len(unchanged),
+        },
         new=[_ref(r) for r in new],
         removed=[_ref(r) for r in removed],
         changed=changed,
-        unchanged_count=len(pairs) - len(changed),
+        unchanged=unchanged,
         category_counts_a=_category_counts(a),
         category_counts_b=_category_counts(b),
     )

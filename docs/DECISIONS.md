@@ -466,15 +466,60 @@ returns store results plus a warning, so news being unavailable never fails the
 question. The NewsAPI client and the prompt loader moved from `ingestion` to `core`, so
 the agent doesn't import the ingestion package.
 
-## D-031 · compare_risk_factors thresholds, calibrated on real filings
-**Status:** Implemented (Phase 2)
+## D-031 · compare_risk_factors: embeddings decide identity, a word diff decides change
+**Status:** Implemented (Phase 2; revised after owner review)
 
-Risks are matched across two 10-Ks by bge cosine similarity (heading + first 150 words),
-one-to-one, greedily by descending similarity. On Apple FY2025 vs FY2026, a genuinely new
-risk (AI) scored 0.84 against its nearest old risk, reworded or extended risks scored
-0.94-0.97, and untouched ones scored at least 0.99. So: below 0.90 is new/removed,
-0.90-0.985 is changed, at or above 0.985 is unchanged (a category change also counts as
-changed). The 0.90 boundary matches the threshold ingestion uses to reuse a prior-year tag.
+*Identity.* Risks are matched across two 10-Ks one-to-one, greedily by descending bge cosine
+(heading + first 150 words); at least 0.90 means the same risk. On Apple FY2025 vs FY2026 a
+genuinely new risk (AI) scored 0.84 against its nearest old risk, and reworded ones scored
+0.94-0.97. That matches the 0.90 ingestion uses to reuse a tag.
+
+*Change.* The first version also used cosine for "changed vs unchanged" (below 0.985 =
+changed). The owner flagged Apple's "third-party developers" risk as wrongly "changed":
+identical heading, cosine 0.976. A word-level diff of heading + full body shows it **did**
+change materially: +261 words of new App Store commission and alternative-distribution
+language (diff ratio 0.664). The embedding of the opening words can't see a long addition.
+So change is now decided by the word diff (`difflib`, ratio of matching words): at least
+**0.95** with the same category is *unchanged*; anything else is *changed*, labelled
+`reworded`, `recategorized` or both. Calibration pairs: Apple "carriers and other resellers"
+0.992 (+2/-1 words) and J&J "counterfeit versions" 0.987 (-5) are unchanged; J&J "tax laws"
+0.931 (+6/-35) and Apple "third-party developers" 0.664 (+261) are changed. Changed items
+report words added/removed and the largest added passage, so the agent can say *what*
+changed. Counts are returned for new / removed / changed / unchanged (Apple: 1/0/20/7, a
+heavily revised 10-K; J&J: 3/0/2/18, the 3 new risks being the planned Orthopaedics
+separation).
+
+## D-032 · News relevance: entity gate, absolute score, semantic floor
+**Status:** Implemented (Phase 2, `agent/tools/news_relevance.py`; revised after owner review)
+
+The first `search_news` ranked by Weaviate's hybrid score and returned off-topic hits for
+TSLA (a Rivian article, a tax opinion piece, an MG car review), two of them scoring exactly
+0.5. That's not a default value: Weaviate's relative-score fusion min-max normalises the
+BM25 and vector scores within each query's result list and averages them, so an article
+that is top on one signal and absent from the other scores exactly 0.5. Those scores are
+relative and can't be thresholded. The stored news is also noisy (43% Biztoc re-posts,
+plus package-index and deal-site entries). Now, hybrid search only collects 50 candidates,
+and then:
+
+1. **Entity gate:** the company's name, a distinctive first word ("Ford", "Jpmorgan"; not
+   "General", "Advanced", "Home"), or its ticker (3+ letters) must appear in the title, or
+   for non-aggregator outlets in the description. Biztoc descriptions list trending
+   tickers, so only its titles count.
+2. **Sources:** package indexes and deal sites are excluded; Biztoc is down-weighted (x0.8).
+3. **Score** = (0.75 x semantic cosine + 0.25 x keyword coverage) x source weight. It's
+   absolute and returned per hit with its parts.
+4. **Floor on semantic similarity, 0.58.** On stored NVDA/TSLA articles relevant hits scored
+   0.61-0.63 and irrelevant ones 0.44-0.56, while the combined score separated them less
+   cleanly (0.435 relevant vs 0.427 irrelevant). So the floor uses semantic similarity
+   and the combined score only ranks.
+
+Before -> after: TSLA "earnings guidance" went from 5 off-topic hits to none; the store
+holds no Tesla earnings coverage, so "no relevant news" is the correct answer. NVDA "export
+restrictions China" now returns only the three China-business stories. Known limit: a
+borderline hit can still pass (an India EV-sales story mentioning Tesla scored 0.583 vs
+the 0.58 floor). The floor was calibrated on a small set and will be re-checked on full-run
+data. NewsAPI requests now ask for 100 results (the free-plan maximum, same cost) instead
+of 50, because 50 covered only a few days for heavily covered companies.
 
 ---
 
@@ -557,6 +602,12 @@ changed). The 0.90 boundary matches the threshold ingestion uses to reuse a prio
   1.4; the repo `conftest.py` implements the `pytest_asyncio_loop_factories` hook with
   `core.aio.selector_loop`. Integration tests therefore run on the Windows dev machine and
   skip themselves where no stack is running (CI).
-- **authlib deprecation warning (Phase 0).** `weaviate-client` imports authlib, which emits
-  a `DeprecationWarning` and forces it visible with its own `simplefilter("always")`, so
-  pytest's filters can't silence it. It is harmless and outside our code, so we leave it.
+- **authlib deprecation warning (Phase 0, resolved in Phase 2).** weaviate-client imports
+  authlib, and authlib >= 1.8.0 (released 2026-08-30; 1.7.x is silent, measured) warns on
+  import that its httpx integration moves to `httpx2`. It forces the warning visible with
+  `simplefilter("always")` in `authlib.deprecate`, which is why a plain pytest filter
+  didn't work. `core/__init__.py` imports `authlib.deprecate` first and then ignores
+  exactly that message, which puts our filter in front; `agent`, `ingestion` and `api` import
+  `core` first. pytest re-enables DeprecationWarnings per test, so the same single message
+  is also listed in its `filterwarnings`. Pinning authlib < 1.8 would have silenced it too,
+  but holds back an auth library's releases just to hide a notice.

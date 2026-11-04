@@ -132,7 +132,7 @@ class NewsApiClient:
             "from": (today - timedelta(days=window_days)).isoformat(),
             "language": "en",
             "sortBy": "publishedAt",
-            "pageSize": 50,
+            "pageSize": 100,  # free-plan maximum; one request either way
         }
         self.network_requests += 1
         resp = await self._http.get(

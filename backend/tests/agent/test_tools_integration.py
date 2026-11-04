@@ -62,8 +62,11 @@ async def test_compare_risk_factors_partitions_every_risk(live_ctx: ToolContext)
     assert r.ok, r.error
     d = r.data
     n_a, n_b = sum(d["category_counts_a"].values()), sum(d["category_counts_b"].values())
-    matched = len(d["changed"]) + d["unchanged_count"]
-    assert matched + len(d["removed"]) == n_a and matched + len(d["new"]) == n_b
+    c = d["counts"]
+    matched = c["changed"] + c["unchanged"]
+    assert matched + c["removed"] == n_a and matched + c["new"] == n_b
+    assert c["changed"] == len(d["changed"]) and c["unchanged"] == len(d["unchanged"])
+    assert all(x["text_similarity"] >= 0.95 for x in d["unchanged"])
 
 
 async def test_financial_metrics_and_8k_events(live_ctx: ToolContext) -> None:

@@ -34,7 +34,10 @@ DEMO: list[tuple[str, dict[str, Any]]] = [
         "calculate",
         {
             "expression": "pct_change(rev_new, rev_old)",
-            "variables": {"rev_new": 130497000000, "rev_old": 60922000000},
+            "variables": {
+                "rev_new": 215938000000,
+                "rev_old": 130497000000,
+            },  # NVDA FY2026 vs FY2025
         },
     ),
     ("search_news", {"query": "earnings guidance", "tickers": ["TSLA"], "limit": 3}),

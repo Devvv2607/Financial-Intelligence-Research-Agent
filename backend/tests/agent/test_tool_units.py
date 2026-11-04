@@ -284,3 +284,45 @@ async def test_text_to_sql_invalid_model_output_is_upstream_error() -> None:
     with pytest.raises(ToolFailure) as info:
         await text_to_sql(_ctx(Broken()), "q", execute)
     assert info.value.code == "upstream"
+
+
+# ---------------------------------------------------------------- news relevance
+def test_entity_gate_and_source_rules() -> None:
+    from agent.tools.news_relevance import mentions_company, relevance
+
+    assert mentions_company("Tesla raises guidance", "Tesla, Inc.", "TSLA") == "name"
+    assert mentions_company("TSLA slides 4%", "Tesla, Inc.", "TSLA") == "ticker"
+    assert mentions_company("Ford beats estimates", "FORD MOTOR CO", "F") == "name"
+    assert mentions_company("F is for fail", "FORD MOTOR CO", "F") is None  # 1-letter ticker
+    assert mentions_company("Teslas everywhere", "Tesla, Inc.", "TSLA") is None  # whole words
+    assert mentions_company("JPMorgan hires", "JPMORGAN CHASE & CO", "JPM") == "name"
+    assert mentions_company("General strike", "GENERAL MOTORS CO", "GM") is None
+    assert mentions_company("Coca-Cola raises prices", "COCA COLA CO", "KO") == "name"
+    assert mentions_company("Advanced chips ship", "ADVANCED MICRO DEVICES INC", "AMD") is None
+
+    def rel(title: str, desc: str, source: str, semantic: float = 0.7) -> Any:
+        return relevance("earnings guidance", title, desc, source, semantic, "Tesla, Inc.", "TSLA")
+
+    # Aggregators list trending tickers in descriptions: only their titles count.
+    assert rel("5 earnings charts", "Mentions Tesla among others", "Biztoc.com") is None
+    assert rel("Tesla earnings guidance", "", "Biztoc.com").source_weight == 0.8
+    assert rel("Earnings guidance cut", "Tesla lowered its outlook", "Reuters").matched_on == (
+        "description:name"
+    )
+    assert rel("Tesla 1.2.0 released", "", "Pypi.org") is None  # not a news source
+    assert rel("Tesla earnings guidance", "", "Reuters", semantic=0.5) is None  # below floor
+    r = rel("Tesla earnings guidance raised", "", "Reuters", semantic=0.7)
+    assert r.keyword == 1.0 and r.score == pytest.approx(0.75 * 0.7 + 0.25 * 1.0, abs=1e-3)
+
+
+# ---------------------------------------------------------------- compare: word diff
+def test_word_diff_measures_material_rewording() -> None:
+    from agent.tools.filings import UNCHANGED_TEXT, word_diff
+
+    base = " ".join(f"w{i}" for i in range(200))
+    tweak = base.replace("w10 ", "x10 ")  # one word swapped
+    assert word_diff(base, tweak).ratio >= UNCHANGED_TEXT
+    added = base + " " + " ".join(f"new{i}" for i in range(120))
+    d = word_diff(base, added)
+    assert d.ratio < UNCHANGED_TEXT and d.added == 120 and d.removed == 0
+    assert d.added_excerpt.startswith("new0 new1")
