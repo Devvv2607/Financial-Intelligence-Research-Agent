@@ -1,0 +1,206 @@
+ticker,name,universe_sector
+AAPL,Apple Inc.,Information Technology
+MSFT,MICROSOFT CORP,Information Technology
+NVDA,NVIDIA CORP,Information Technology
+AVGO,Broadcom Inc.,Information Technology
+ORCL,ORACLE CORP,Information Technology
+CRM,"Salesforce, Inc.",Information Technology
+ADBE,ADOBE INC.,Information Technology
+AMD,ADVANCED MICRO DEVICES INC,Information Technology
+CSCO,"CISCO SYSTEMS, INC.",Information Technology
+ACN,Accenture plc,Information Technology
+IBM,INTERNATIONAL BUSINESS MACHINES CORP,Information Technology
+INTC,INTEL CORP,Information Technology
+QCOM,QUALCOMM INC/DE,Information Technology
+TXN,TEXAS INSTRUMENTS INC,Information Technology
+AMAT,APPLIED MATERIALS INC /DE,Information Technology
+MU,MICRON TECHNOLOGY INC,Information Technology
+LRCX,LAM RESEARCH CORP,Information Technology
+KLAC,KLA CORP,Information Technology
+ADI,ANALOG DEVICES INC,Information Technology
+NOW,"ServiceNow, Inc.",Information Technology
+INTU,INTUIT INC.,Information Technology
+PANW,Palo Alto Networks Inc,Information Technology
+SNPS,SYNOPSYS INC,Information Technology
+CDNS,CADENCE DESIGN SYSTEMS INC,Information Technology
+MRVL,"Marvell Technology, Inc.",Information Technology
+ANET,"Arista Networks, Inc.",Information Technology
+FTNT,"Fortinet, Inc.",Information Technology
+GOOGL,Alphabet Inc.,Communication Services
+META,"Meta Platforms, Inc.",Communication Services
+NFLX,NETFLIX INC,Communication Services
+DIS,Walt Disney Co,Communication Services
+CMCSA,COMCAST CORP,Communication Services
+T,AT&T INC.,Communication Services
+VZ,VERIZON COMMUNICATIONS INC,Communication Services
+TMUS,"T-Mobile US, Inc.",Communication Services
+CHTR,"CHARTER COMMUNICATIONS, INC. /MO/",Communication Services
+TTWO,TAKE TWO INTERACTIVE SOFTWARE INC,Communication Services
+OMC,OMNICOM GROUP INC.,Communication Services
+LYV,"Live Nation Entertainment, Inc.",Communication Services
+FOXA,Fox Corp,Communication Services
+RDDT,"Reddit, Inc.",Communication Services
+AMZN,AMAZON COM INC,Consumer Discretionary
+TSLA,"Tesla, Inc.",Consumer Discretionary
+HD,"HOME DEPOT, INC.",Consumer Discretionary
+MCD,MCDONALDS CORP,Consumer Discretionary
+NKE,"NIKE, Inc.",Consumer Discretionary
+LOW,LOWES COMPANIES INC,Consumer Discretionary
+SBUX,STARBUCKS CORP,Consumer Discretionary
+TJX,TJX COMPANIES INC /DE/,Consumer Discretionary
+BKNG,Booking Holdings Inc.,Consumer Discretionary
+CMG,CHIPOTLE MEXICAN GRILL INC,Consumer Discretionary
+ORLY,O REILLY AUTOMOTIVE INC,Consumer Discretionary
+AZO,AUTOZONE INC,Consumer Discretionary
+MAR,MARRIOTT INTERNATIONAL INC /MD/,Consumer Discretionary
+HLT,Hilton Worldwide Holdings Inc.,Consumer Discretionary
+GM,General Motors Co,Consumer Discretionary
+F,FORD MOTOR CO,Consumer Discretionary
+ROST,"ROSS STORES, INC.",Consumer Discretionary
+YUM,YUM BRANDS INC,Consumer Discretionary
+LULU,lululemon athletica inc.,Consumer Discretionary
+EBAY,EBAY INC,Consumer Discretionary
+DHI,HORTON D R INC /DE/,Consumer Discretionary
+LEN,LENNAR CORP /NEW/,Consumer Discretionary
+PG,PROCTER & GAMBLE Co,Consumer Staples
+KO,COCA COLA CO,Consumer Staples
+PEP,PEPSICO INC,Consumer Staples
+COST,COSTCO WHOLESALE CORP /NEW,Consumer Staples
+WMT,Walmart Inc.,Consumer Staples
+PM,Philip Morris International Inc.,Consumer Staples
+MO,"ALTRIA GROUP, INC.",Consumer Staples
+MDLZ,"Mondelez International, Inc.",Consumer Staples
+CL,COLGATE PALMOLIVE CO,Consumer Staples
+KMB,KIMBERLY CLARK CORP,Consumer Staples
+GIS,GENERAL MILLS INC,Consumer Staples
+KHC,Kraft Heinz Co,Consumer Staples
+HSY,HERSHEY CO,Consumer Staples
+STZ,"CONSTELLATION BRANDS, INC.",Consumer Staples
+KR,KROGER CO,Consumer Staples
+SYY,SYSCO CORP,Consumer Staples
+XOM,ExxonMobil Holdings Corp,Energy
+CVX,CHEVRON CORP,Energy
+COP,CONOCOPHILLIPS,Energy
+EOG,EOG RESOURCES INC,Energy
+SLB,SLB LIMITED/NV,Energy
+OXY,OCCIDENTAL PETROLEUM CORP /DE/,Energy
+PSX,Phillips 66,Energy
+MPC,Marathon Petroleum Corp,Energy
+VLO,VALERO ENERGY CORP/TX,Energy
+WMB,"WILLIAMS COMPANIES, INC.",Energy
+KMI,"KINDER MORGAN, INC.",Energy
+HAL,HALLIBURTON CO,Energy
+DVN,DEVON ENERGY CORP/DE,Energy
+BKR,Baker Hughes Co,Energy
+JPM,JPMORGAN CHASE & CO,Financials
+BAC,BANK OF AMERICA CORP /DE/,Financials
+WFC,WELLS FARGO & COMPANY/MN,Financials
+C,CITIGROUP INC,Financials
+GS,GOLDMAN SACHS GROUP INC,Financials
+MS,MORGAN STANLEY,Financials
+BLK,"BlackRock, Inc.",Financials
+SCHW,SCHWAB CHARLES CORP,Financials
+AXP,AMERICAN EXPRESS CO,Financials
+SPGI,S&P Global Inc.,Financials
+CB,Chubb Ltd,Financials
+PGR,PROGRESSIVE CORP/OH/,Financials
+MRSH,"MARSH & MCLENNAN COMPANIES, INC.",Financials
+ICE,"Intercontinental Exchange, Inc.",Financials
+CME,CME GROUP INC.,Financials
+USB,US BANCORP DE,Financials
+PNC,"PNC FINANCIAL SERVICES GROUP, INC.",Financials
+TFC,TRUIST FINANCIAL CORP,Financials
+COF,CAPITAL ONE FINANCIAL CORP,Financials
+MET,METLIFE INC,Financials
+AIG,"AMERICAN INTERNATIONAL GROUP, INC.",Financials
+V,VISA INC.,Financials
+MA,Mastercard Inc,Financials
+PYPL,"PayPal Holdings, Inc.",Financials
+BRK-B,BERKSHIRE HATHAWAY INC,Financials
+UNH,UNITEDHEALTH GROUP INC,Health Care
+JNJ,JOHNSON & JOHNSON,Health Care
+LLY,ELI LILLY & Co,Health Care
+ABBV,AbbVie Inc.,Health Care
+MRK,"Merck & Co., Inc.",Health Care
+PFE,PFIZER INC,Health Care
+TMO,THERMO FISHER SCIENTIFIC INC.,Health Care
+ABT,ABBOTT LABORATORIES,Health Care
+DHR,DANAHER CORP /DE/,Health Care
+BMY,BRISTOL MYERS SQUIBB CO,Health Care
+AMGN,AMGEN INC,Health Care
+GILD,"GILEAD SCIENCES, INC.",Health Care
+ISRG,INTUITIVE SURGICAL INC,Health Care
+MDT,Medtronic plc,Health Care
+CVS,CVS HEALTH Corp,Health Care
+CI,Cigna Group,Health Care
+ELV,"Elevance Health, Inc.",Health Care
+VRTX,VERTEX PHARMACEUTICALS INC / MA,Health Care
+REGN,"REGENERON PHARMACEUTICALS, INC.",Health Care
+ZTS,Zoetis Inc.,Health Care
+BSX,BOSTON SCIENTIFIC CORP,Health Care
+SYK,STRYKER CORP,Health Care
+HCA,"HCA Healthcare, Inc.",Health Care
+MCK,MCKESSON CORP,Health Care
+BA,BOEING CO,Industrials
+CAT,CATERPILLAR INC,Industrials
+GE,GENERAL ELECTRIC CO,Industrials
+HON,HONEYWELL INTERNATIONAL INC,Industrials
+UPS,UNITED PARCEL SERVICE INC,Industrials
+RTX,RTX Corp,Industrials
+LMT,LOCKHEED MARTIN CORP,Industrials
+DE,DEERE & CO,Industrials
+UNP,UNION PACIFIC CORP,Industrials
+ADP,AUTOMATIC DATA PROCESSING INC,Industrials
+ETN,Eaton Corp plc,Industrials
+MMM,3M CO,Industrials
+GD,GENERAL DYNAMICS CORP,Industrials
+NOC,NORTHROP GRUMMAN CORP /DE/,Industrials
+FDX,FEDEX CORP,Industrials
+CSX,CSX CORP,Industrials
+NSC,NORFOLK SOUTHERN CORP,Industrials
+WM,WASTE MANAGEMENT INC,Industrials
+EMR,EMERSON ELECTRIC CO,Industrials
+ITW,ILLINOIS TOOL WORKS INC,Industrials
+PH,Parker-Hannifin Corp,Industrials
+JCI,Johnson Controls International plc,Industrials
+LHX,"L3HARRIS TECHNOLOGIES, INC. /DE/",Industrials
+CMI,CUMMINS INC,Industrials
+LIN,LINDE PLC,Materials
+SHW,SHERWIN WILLIAMS CO,Materials
+APD,"Air Products & Chemicals, Inc.",Materials
+ECL,ECOLAB INC.,Materials
+FCX,FREEPORT-MCMORAN INC,Materials
+NEM,NEWMONT Corp /DE/,Materials
+DOW,DOW INC.,Materials
+DD,"DuPont de Nemours, Inc.",Materials
+NUE,NUCOR CORP,Materials
+PPG,PPG INDUSTRIES INC,Materials
+VMC,Vulcan Materials CO,Materials
+MLM,MARTIN MARIETTA MATERIALS INC,Materials
+ALB,ALBEMARLE CORP,Materials
+PLD,"Prologis, Inc.",Real Estate
+AMT,AMERICAN TOWER CORP /MA/,Real Estate
+EQIX,EQUINIX INC,Real Estate
+CCI,CROWN CASTLE INC.,Real Estate
+PSA,Public Storage,Real Estate
+O,REALTY INCOME CORP,Real Estate
+SPG,SIMON PROPERTY GROUP INC.,Real Estate
+WELL,WELLTOWER INC.,Real Estate
+DLR,"DIGITAL REALTY TRUST, INC.",Real Estate
+VICI,VICI PROPERTIES INC.,Real Estate
+SBAC,SBA COMMUNICATIONS CORP,Real Estate
+IRM,IRON MOUNTAIN INC,Real Estate
+EXR,Extra Space Storage Inc.,Real Estate
+NEE,NEXTERA ENERGY INC,Utilities
+DUK,Duke Energy CORP,Utilities
+SO,SOUTHERN CO,Utilities
+D,"DOMINION ENERGY, INC",Utilities
+AEP,AMERICAN ELECTRIC POWER CO INC,Utilities
+SRE,SEMPRA,Utilities
+EXC,EXELON CORP,Utilities
+XEL,XCEL ENERGY INC,Utilities
+PEG,PUBLIC SERVICE ENTERPRISE GROUP INC,Utilities
+ED,CONSOLIDATED EDISON INC,Utilities
+WEC,"WEC ENERGY GROUP, INC.",Utilities
+EIX,EDISON INTERNATIONAL,Utilities
+PCG,PG&E Corp,Utilities

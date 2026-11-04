@@ -47,6 +47,25 @@ $targets = [ordered]@{
     "ready"     = @{ Help = "Query the API readiness probe"; Run = {
             # curl.exe, not the PowerShell `curl` alias; a 503 is a valid answer here.
             & curl.exe -s -w "`nHTTP %{http_code}`n" http://localhost:8000/ready } }
+    "migrate"   = @{ Help = "Apply database migrations"; Run = {
+            Invoke-Step uv @("run", "alembic", "-c", "backend/alembic.ini", "upgrade", "head") } }
+    "ingest-sample" = @{ Help = "Ingest the 10 agreed sample companies (+ headings-only experiment on 3)"; Run = {
+            & $targets["migrate"].Run
+            Invoke-Step uv @("run", "python", "-m", "ingestion", "run", "--sample", "10", "--experiment-tickers", "AAPL,INTC,XOM") } }
+    "ingest-full" = @{ Help = "Ingest the whole universe (resumable)"; Run = {
+            & $targets["migrate"].Run
+            Invoke-Step uv @("run", "python", "-m", "ingestion", "run") } }
+    "ingest-daily" = @{ Help = "Resume the full run; stops cleanly at the daily token/news budgets"; Run = {
+            & $targets["migrate"].Run
+            Invoke-Step uv @("run", "python", "-m", "ingestion", "run", "--daily") } }
+    "ingest-progress" = @{ Help = "One line: companies done/remaining, tokens used today"; Run = {
+            Invoke-Step uv @("run", "python", "-m", "ingestion", "progress") } }
+    "review-export" = @{ Help = "Write the 30-row risk-tag review sheet (data/review/)"; Run = {
+            Invoke-Step uv @("run", "python", "-m", "ingestion", "review", "export") } }
+    "review-score" = @{ Help = "Score the model against your labels in the review sheet"; Run = {
+            Invoke-Step uv @("run", "python", "-m", "ingestion", "review", "score") } }
+    "ingest-report" = @{ Help = "Write the ingestion report for the sample"; Run = {
+            Invoke-Step uv @("run", "python", "-m", "ingestion", "report", "--sample", "10") } }
     "dev-api"   = @{ Help = "Run the API on the host with reload"; Run = {
             Invoke-Step uv @("run", "uvicorn", "api.main:app", "--reload", "--port", "8000", "--loop", "core.aio:selector_loop") } }
     "dev-web"   = @{ Help = "Run the frontend dev server"; Run = { Invoke-Step npm @("--prefix", "frontend", "run", "dev") } }

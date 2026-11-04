@@ -33,6 +33,11 @@ Windows PowerShell uses `.\make.ps1 <target>`; Bash/CI uses `make <target>`. Sam
 | `up` / `down` / `logs` | docker compose stack |
 | `ready` | GET `http://localhost:8000/ready` |
 | `dev-api` / `dev-web` | run API / frontend on the host with reload |
+| `migrate` | apply Alembic migrations |
+| `ingest-sample` | ingest the 10 agreed sample companies |
+| `ingest-daily` | resume the full run; stops at the daily token/NewsAPI budgets |
+| `ingest-progress` / `ingest-report` | one-line progress / full ingestion report |
+| `review-export` / `review-score` | 30-row risk-tag review sheet for the owner / score it |
 
 Single test: `uv run pytest backend/tests/unit/test_health.py -k ready`.
 Live tests (real Groq/SEC/NewsAPI) are marked `@pytest.mark.live` and excluded by default;
@@ -54,3 +59,6 @@ run with `uv run pytest -m live`.
 - Host ports: compose Postgres **5442**, Weaviate HTTP **8095** / gRPC **50055**. 5432/5433 are native Postgres installs and 8080/8090/50051 belong to another project's Weaviate on the dev machine.
 - Windows + async psycopg: use `core.aio.run()` in CLIs and `--loop core.aio:selector_loop` for uvicorn (never bare `asyncio.run`).
 - Line endings are LF (`.gitattributes`); `.ps1` files are CRLF.
+- Groq quotas are per model: ingestion uses `GROQ_MODEL_*` (gpt-oss-20b); the agent and dev
+  testing use `AGENT_MODEL_*` (gpt-oss-120b) via `GroqClient(agent=True)`. Never test against
+  the ingestion model while the daily full run is in progress.

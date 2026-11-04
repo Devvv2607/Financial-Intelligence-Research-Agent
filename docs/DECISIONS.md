@@ -86,6 +86,18 @@ limits far below that, so a naive tagger would stall for days or fail mid-run.
 that we project full-run tokens, time on the free tier, and cost on the paid tier, and
 report them **before** the full run. The owner then decides whether to upgrade.
 
+**Retry cap and unresolved tags (owner decision, Phase 1).** Groq enforces strict-mode
+schemas on its side and rejects a generation that breaks them (HTTP 400
+`json_validate_failed`) without reporting token usage. Every structured call therefore gets
+at most **2 attempts** (first try + one retry with the error fed back). If a risk-tag batch
+still fails, the valid tags in the last output are kept; any risk without a valid category
+is stored as `other` with `needs_review = true`, and the report counts these and the schema
+rejections. Retries can't quietly burn the daily quota, and nothing is silently mislabelled.
+
+**Headings-only comparison scope (owner decision).** The headings-only mode runs on three
+companies with different 10-K layouts (AAPL, INTC, XOM), not the whole sample: running
+both modes everywhere would roughly double tagging tokens for little extra signal.
+
 **Why.** Cost-aware LLM pipelines are a real engineering concern. Similarity-based tag
 inheritance is also more *consistent*: an unchanged risk keeps the same category across
 years, so year-over-year comparisons aren't polluted by LLM label noise.
@@ -267,6 +279,147 @@ from Windows could reach either database. Host ports are configurable
 5442 / 8095 / 50055, all verified free. Containers still use standard ports internally.
 A host-side check confirmed `select version()` returns the container's PostgreSQL 18.6.
 
+## D-018 · Company universe: 205 large caps, validated against SEC tickers
+**Status:** Implemented (Phase 1, `data/universe.csv`)
+
+205 US large caps across all 11 GICS sectors (12–27 per sector), picked by hand to cover
+every sector, every demo-query company, and a range of 10-K formats. The sample includes
+banks, which may fail extraction (D-014). Every ticker was checked against SEC's
+`company_tickers.json` on 2026-11-04, and the `name` column is SEC's registered title,
+not a hand-typed name. That check found that MMC now trades as **MRSH** (same CIK 62709),
+and that EA, WBD, AVB and EQR had no entry in the SEC ticker file. Those four were
+replaced with same-sector large caps (FOXA, RDDT, IRM, EXR). We did not investigate why
+they were absent; without a ticker → CIK mapping the pipeline can't resolve them.
+
+Beyond the spec's `ticker,name`, the file has a `universe_sector` column. This is the
+**coverage bucket used to pick the universe**, labelled from general GICS knowledge. It
+is not a pipeline output. The stored sector fields come only from the SIC mapping and the
+LLM classifier (§3.4). The bucket is kept as an independent reference for sanity-checking
+those two signals, and for reporting coverage by sector.
+
+## D-019 · One Groq client for structured output, talking to the HTTP API directly
+**Status:** Implemented (Phase 1, `core/llm.py`)
+
+Every structured LLM call (risk tags, sector, section boundaries; later the planner and
+critic) goes through `GroqClient.structured()`, which returns a validated Pydantic object.
+It uses Groq's OpenAI-compatible endpoint directly instead of `langchain-groq`, because the
+free tier forces three things the wrapper hides: pacing from the `x-ratelimit-*` response
+headers, telling a per-minute 429 (wait and retry) from a per-day 429 (stop, resume
+tomorrow), and recording exact `usage` per call (including gpt-oss's hidden reasoning
+tokens) into `llm_calls`. Requests use strict `json_schema` (schemas are rewritten for strict
+mode: `$defs` inlined, every property required, `additionalProperties: false`), retry up to
+2 times on validation failure with the error fed back, run one at a time per model (with an
+8K TPM budget, parallel calls only race each other into 429s), and default to
+`reasoning_effort: "low"`. Responses are cached by a hash of model, schema, messages and
+effort; prompts are versioned `.md` files, so editing a prompt invalidates its cache. The
+agent's tool-calling loops (Phase 3) will use `langchain-groq` for LangGraph integration,
+and token accounting there will write to the same ledger.
+
+## D-020 · Successor registrants: merge the predecessor CIK's history
+**Status:** Implemented (Phase 1, `pipeline.PREDECESSOR_CIKS`)
+
+SEC's ticker map points XOM at CIK 2115436, "ExxonMobil Holdings Corp", a new registrant
+created on 2026-07-01 (its first filing is an `8-K12B`, successor issuer). It has no 10-K
+yet; both 10-Ks and the XBRL history are under Exxon Mobil Corp (CIK 34088). We keep a
+small, explicit successor -> predecessor map and merge the predecessor's filings and
+companyfacts. A company with no 10-K and no mapping fails with a reason that names this
+case, rather than silently ingesting nothing. An explicit map was chosen over automatic
+detection because guessing a predecessor (e.g. by name search) could attach the wrong
+company's history; each mapping is checked by hand.
+
+## D-021 · Risk-factor splitting from styling, validated on the sample 10-Ks
+**Status:** Implemented (Phase 1, `extract/risk_splitter.py`, `extract/html_clean.py`)
+
+10-Ks mark risk-factor headings with *styling*, and filers do it differently, so the HTML
+is first flattened into blocks that remember emphasis (bold/italic/underline from tags or
+inline CSS), the leading emphasized run, and font size. A heading is a block that is
+mostly emphasized, or set clearly larger than the section's body text (Intel: 12pt
+non-bold headings over 9pt body). Paragraphs that open with an emphasized sentence are
+"inline" headings (ExxonMobil's "Economic conditions. ..."), except on bullets, which are
+points inside a risk (Intel, AMD). Short unpunctuated headings followed by another heading
+are subsection labels. The "summary of risk factors" bullet list that many filers put first
+is skipped, but only before the first real risk factor, since later risks can have bulleted
+bodies. Page furniture is removed only when it is a repeated line with a page number or plain
+small text ("Table of Contents"): Intel repeats its 18pt "Risk Factors" title as a running
+header, and dropping all repeated lines also dropped the real heading. Each rule came from a
+concrete failure on a sample filing, and each has a test, either on the real fixtures (Apple,
+ExxonMobil, JPMorgan, Intel) or on synthetic blocks.
+
+## D-022 · `--sample N` means the agreed sample, not the first N rows
+**Status:** Implemented (Phase 1)
+
+The spec's `--sample 10` doesn't say *which* 10. Taking the first rows of `universe.csv`
+would give ten IT companies. `--sample N` takes the first N of the agreed list
+(AAPL, NVDA, AMD, INTC, BA, TSLA, JNJ, UNH, XOM, JPM): demo-query companies, five sectors,
+four 10-K layouts, and one bank. `--tickers A,B` selects any subset.
+
+## D-023 · Sector stored on vector objects: LLM sector, falling back to SIC
+**Status:** Implemented (Phase 1)
+
+Weaviate objects carry one `sector` filter field. We use the LLM classification when present
+(it reflects GICS-style reasoning about the business), falling back to the SIC rule. Both
+signals and the conflict flag stay in Postgres for the screener and the reports.
+
+## D-024 · Groq prompt caching: measured, hit-and-miss, not something to plan around
+**Status:** Measured on gpt-oss-120b (2026-11-04); gpt-oss-20b measurement pending its quota
+
+Groq's docs say prompt caching is supported for gpt-oss-20b/120b, works on exact prefix
+matches, and that "cached tokens do not count towards your rate limits", which would make
+a long static prompt nearly free. Tagging requests already put the static part first (system
+prompt with instructions + taxonomy, then the schema) and the variable risk factors last.
+Probing on 120b with the real tagging prompt (~1.1-1.3K static tokens):
+
+- Hits arrive in **1,024-token blocks** (`usage.prompt_tokens_details.cached_tokens`), and
+  only on some calls, even for byte-identical consecutive requests.
+- `json_schema` (strict): 1 hit in ~11 calls. `json_object`: 3 hits in ~10 calls. Plain: 1
+  in ~5. A first small probe suggested strict mode never caches; a later run got a hit, so
+  that conclusion was withdrawn.
+- On real batches (XOM, 22 risks) cached tokens were 0-21% of prompt tokens.
+
+So caching is a bonus, not a basis for the projection. The ledger records
+`cached_tokens`, and the daily budget counts only *counted* tokens (prompt - cached +
+completion), matching how Groq applies its limits. The response mode is selectable
+(`json_object` validates locally and avoids server-side schema rejections) and is chosen
+from the 20b batch-size/mode experiment. Groq limits are per organization and model, so
+extra API keys don't add capacity.
+
+## D-025 · Taxonomy prompt v2 and versioned tags
+**Status:** Implemented (Phase 1)
+
+The 14 categories are fixed by the spec; v2 sharpens their *boundaries*, aimed at the
+confusions the sample exposed: an overloaded `financial_liquidity` (tax rates, stock price,
+M&A), trade policy split between regulatory and geopolitical, demand pressure split between
+macroeconomic and competition, and M&A with no home. Each category now has include/exclude
+notes, there are explicit tie-break rules (classify by the *source* of harm, not the
+consequence), and there are eight one-line examples. All of it is static, so it belongs to
+the cacheable prefix. Every tag stores `tag_version` = prompt version + model (for example
+`risk_tagging:v2@openai/gpt-oss-20b`). Tagging redoes only missing or stale tags, so moving
+to a new prompt (or a dev run on another model) never needs a destructive wipe, and an
+interrupted re-tag resumes. Accuracy is measured against the owner's labels on a 30-row
+stratified review sheet (`make review-export` / `review-score`), not against another model run.
+
+## D-026 · Run-level token accounting and the daily full-run mode
+**Status:** Implemented (Phase 1)
+
+Every LLM call and every job carries a `run_id`. A response-cache hit records the counted
+tokens the original call cost (`saved_tokens`). The report prices "one complete pass" per
+company from the runs that completed its stages, so retries, killed runs and re-extractions
+no longer inflate per-company cost (the problem hand-corrected in the first sample report).
+The full run is a daily, resumable job: `make ingest-daily` runs the whole universe, stops
+cleanly at `GROQ_DAILY_TOKEN_BUDGET` (default 170K counted tokens per model per rolling 24h,
+below Groq's 200K, for headroom) and at `NEWSAPI_REQUESTS_PER_DAY` (90 of 100). It also
+prints a progress line before and after: companies done/remaining, tokens used in the last
+24h, NewsAPI requests today. Paused stages resume on the next day's run. The rolling 24h
+window is our own conservative choice: Groq's docs don't say whether the daily limit is
+rolling or reset at a fixed time.
+
+## D-027 · Agent and dev testing use a different model than ingestion
+**Status:** Implemented (config); used from Phase 2
+
+Groq's daily limits are per model, so the agent and dev testing use `AGENT_MODEL_*`
+(set to gpt-oss-120b) while ingestion uses gpt-oss-20b. They never compete for the same
+daily quota during the multi-day full run. `GroqClient(agent=True)` resolves the agent models.
+
 ---
 
 ## Adaptations: where libraries or tools differed from the spec's assumptions
@@ -302,6 +455,43 @@ A host-side check confirmed `select version()` returns the container's PostgreSQ
   find name 'LayoutProps'`: Next 16 generates route types such as `LayoutProps` into
   `.next/types`, which a clean checkout lacks. `typecheck` now runs `next typegen` first.
   Reproduced locally by deleting `.next/` before applying the fix.
+- **bge tokenizer truncation, verified (Phase 1).** The tokenizer fastembed loads for
+  bge-small is configured `truncation: {max_length: 512, strategy: longest_first}`, which
+  confirms D-001 against the real artifact: longer inputs would be cut silently. fastembed
+  serves a quantized ONNX build (`Qdrant/bge-small-en-v1.5-onnx-Q`, 65 MB). Embeddings are
+  close to, but not bit-identical with, the FP32 model; all our vectors come from this one
+  build, so they are consistent.
+- **Inline XBRL encoding (Phase 1).** lxml mis-guessed the encoding of some filings when
+  given bytes. Filings are now decoded explicitly (UTF-8, falling back to cp1252), and the
+  `<?xml ... encoding=...?>` declaration is stripped, because lxml rejects `str` input that
+  still carries one.
+- **Workspace member installed empty (Phase 1).** `uv sync` ran before
+  `ingestion/src/ingestion/` had files, so the editable install had nothing in it, and
+  `python -m ingestion` resolved the repo's top-level `ingestion/` folder as a namespace
+  package ("No module named ingestion.__main__"). `uv sync --reinstall-package
+  fira-ingestion` fixed it. Fresh clones are unaffected.
+- **lxml has no type information (Phase 1).** mypy is told to ignore missing imports for
+  `lxml.*` only; lxml use is confined to `extract/html_clean.py`.
+- **Alembic autogenerate made `companies.cik` SERIAL (Phase 1).** An integer primary key
+  defaults to autoincrement in SQLAlchemy, which is wrong for a natural key like the CIK.
+  The column is `autoincrement=False`, and the initial migration was regenerated before
+  anything depended on it.
+- **Column lengths caught by a dev smoke test (Phase 1).** Before spending gpt-oss-20b
+  quota, the new path was run end-to-end on 120b. It hit two `VARCHAR` overflows:
+  `filing_sections.section` (16) vs `business_overview` (17), and `run_id` (36) vs experiment
+  run ids (44). The second happened *after* the Groq call returned, so that call's ~4K
+  tokens (120b) were never written to the ledger; on the ingestion model this would have
+  undercounted the daily budget. Both columns were widened, and every text column was
+  checked against its longest real value.
+- **"Table of Contents" links split risk factors (Phase 1, found in Phase 2).** Running
+  the new `get_risk_factors` tool on real data showed NVIDIA risk factors whose heading was
+  "Table of Contents": 111 such rows across 6 of the 10 sample companies. Those filers
+  underline the navigation link repeated at every page break; the furniture filter kept
+  emphasized repeated lines (to protect Intel's large-font section title), so the splitter
+  read each link as a heading and cut risk factors in two at page breaks. Navigation links
+  are now dropped regardless of styling. Per-filing risk counts fell accordingly (e.g.
+  NVIDIA 38 -> 23, AMD 53 -> 44) and none of these headings remain; a regression test covers
+  it. The stored sample is re-extracted (no LLM cost) before the 20b re-tag.
 - **authlib deprecation warning (Phase 0).** `weaviate-client` imports authlib, which emits
   a `DeprecationWarning` and forces it visible with its own `simplefilter("always")`, so
   pytest's filters can't silence it. It is harmless and outside our code, so we leave it.

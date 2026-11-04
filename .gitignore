@@ -17,6 +17,9 @@ build/
 # Data (raw SEC/NewsAPI cache and eval outputs are regenerated, not committed)
 data/raw/
 data/cache/
+data/reports/
+# The review sheet holds the owner's labels: committed once labelled, not before.
+data/review/
 evals/results/*.json
 
 # Editors / OS

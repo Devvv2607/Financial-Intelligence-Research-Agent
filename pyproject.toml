@@ -5,16 +5,17 @@ name = "fira"
 version = "0.1.0"
 description = "Financial Intelligence Research Agent (workspace root)"
 requires-python = ">=3.12,<3.13"
-dependencies = ["fira-backend"]
+dependencies = ["fira-backend", "fira-ingestion"]
 
 [tool.uv]
 package = false
 
 [tool.uv.workspace]
-members = ["backend"]
+members = ["backend", "ingestion"]
 
 [tool.uv.sources]
 fira-backend = { workspace = true }
+fira-ingestion = { workspace = true }
 
 [dependency-groups]
 dev = [
@@ -44,11 +45,16 @@ known-first-party = ["core", "api", "agent", "ingestion", "evals"]
 python_version = "3.12"
 strict = true
 plugins = ["pydantic.mypy"]
-mypy_path = "backend/src"
-packages = ["core", "api"]
+mypy_path = "backend/src:ingestion/src"
+packages = ["core", "api", "ingestion"]
+
+[[tool.mypy.overrides]]
+# lxml ships no type information; its calls are confined to extract/html_clean.py.
+module = ["lxml", "lxml.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-testpaths = ["backend/tests"]
+testpaths = ["backend/tests", "ingestion/tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 markers = ["live: hits real external services (Groq, SEC, NewsAPI); skipped unless keys are set"]
