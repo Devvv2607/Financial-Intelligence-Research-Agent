@@ -66,6 +66,9 @@ STAGES: tuple[Stage, ...] = ("edgar", "tagging", "news", "index")
 # The 10 companies agreed for `ingest-sample`: demo-query companies, several sectors and
 # 10-K layouts, and one bank (expected-failure path).
 SAMPLE_TICKERS = ("AAPL", "NVDA", "AMD", "INTC", "BA", "TSLA", "JNJ", "UNH", "XOM", "JPM")
+# Headings-only tagging is measured on three different 10-K layouts only: running both
+# modes everywhere would double tagging tokens for no extra signal (owner's call).
+EXPERIMENT_TICKERS = ("AAPL", "INTC", "XOM")
 
 # Successor registrant -> predecessor CIK whose history (10-Ks, XBRL) still belongs to the
 # company. ExxonMobil reorganized under a new holding-company registrant on 2026-07-01
@@ -121,7 +124,7 @@ class Pipeline:
         news: NewsApiClient | None,
         *,
         concurrency: int = 2,
-        experiment_headings_only: bool = False,
+        experiment_tickers: frozenset[str] = frozenset(),
         on_progress: Callable[[str, str], None] | None = None,
     ) -> None:
         self.s = settings
@@ -132,7 +135,7 @@ class Pipeline:
         self.wv = weaviate_client
         self.news = news
         self._sem = asyncio.Semaphore(concurrency)
-        self._experiment = experiment_headings_only
+        self._experiment_tickers = experiment_tickers
         self._on_progress = on_progress or (lambda ticker, msg: None)
         self._ticker_map: dict[str, int] = {}
         self._llm_paused = False
@@ -206,7 +209,7 @@ class Pipeline:
         if stage == "edgar":
             return await self.stage_edgar(row, cik, refresh)
         if stage == "tagging":
-            return await self.stage_tagging(cik)
+            return await self.stage_tagging(cik, row.ticker)
         if stage == "news":
             return await self.stage_news(row, cik)
         return await self.stage_index(cik)
@@ -324,7 +327,7 @@ class Pipeline:
             by_year.setdefault(r["fiscal_year"], []).append(dict(r))
         return by_year
 
-    async def stage_tagging(self, cik: int) -> dict[str, Any]:
+    async def stage_tagging(self, cik: int, ticker: str) -> dict[str, Any]:
         by_year = await self._risks(cik)
         if not by_year:
             raise StageError("no risk factors to tag")
@@ -386,7 +389,7 @@ class Pipeline:
                 details["prior_llm_tagged"] = len(prior_tags)
 
         await self._sector_llm(cik, details)
-        if self._experiment:
+        if ticker in self._experiment_tickers:
             details["experiment_headings_only"] = await self._headings_experiment(cik, years[0])
         return details
 

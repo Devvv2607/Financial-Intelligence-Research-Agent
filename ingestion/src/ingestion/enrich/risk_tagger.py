@@ -9,15 +9,16 @@
 - `headings_only=True` is the cheaper mode measured against full tagging on the sample.
 """
 
+import json
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal, get_args
 
 import numpy as np
 from numpy.typing import NDArray
 from pydantic import BaseModel
 
-from core.llm import GroqClient
+from core.llm import GroqClient, InvalidOutputError
 from ingestion import prompts
 
 RiskCategory = Literal[
@@ -63,6 +64,33 @@ class TagResult:
     source: Literal["llm", "inherited"]
     inherited_from: str | None = None
     similarity: float | None = None
+    # The model never produced a valid category for this risk (after the capped retries);
+    # it is tagged "other" so the run can continue, and flagged for a human to check.
+    needs_review: bool = False
+
+
+VALID_CATEGORIES: frozenset[str] = frozenset(get_args(RiskCategory))
+
+
+def salvage_tags(raw: str) -> dict[int, tuple[str, str]]:
+    """Best-effort read of an invalid batch output: id -> (category, summary).
+
+    Categories outside the taxonomy come back as "" so the caller can flag them.
+    """
+    try:
+        data: Any = json.loads(raw)
+    except (ValueError, TypeError):
+        return {}
+    out: dict[int, tuple[str, str]] = {}
+    for item in data.get("tags", []) if isinstance(data, dict) else []:
+        if not isinstance(item, dict) or not isinstance(item.get("id"), int):
+            continue
+        category = item.get("category")
+        out[item["id"]] = (
+            category if category in VALID_CATEGORIES else "",
+            str(item.get("summary") or "").strip(),
+        )
+    return out
 
 
 def _excerpt(r: RiskInput, body_words: int, headings_only: bool) -> str:
@@ -97,16 +125,30 @@ async def tag_with_llm(
             listing = "\n\n".join(
                 f"[{i}] {_excerpt(r, body_words, headings_only)}" for i, r in pending.items()
             )
-            out = await llm.structured(
-                "fast",
-                RiskTagBatch,
-                [
-                    {"role": "system", "content": prompts.load("risk_tagging")},
-                    {"role": "user", "content": listing},
-                ],
-                stage=stage,
-                cik=cik,
-            )
+            try:
+                out = await llm.structured(
+                    "fast",
+                    RiskTagBatch,
+                    [
+                        {"role": "system", "content": prompts.load("risk_tagging")},
+                        {"role": "user", "content": listing},
+                    ],
+                    stage=stage,
+                    cik=cik,
+                )
+            except InvalidOutputError as exc:
+                # Retries are spent. Keep what was valid; everything else becomes
+                # "other" + needs_review. No further calls for this batch.
+                salvaged = salvage_tags(exc.last_output)
+                for i, r in pending.items():
+                    category, summary = salvaged.get(i, ("", ""))
+                    results.append(
+                        TagResult(
+                            r.key, category or "other", summary, "llm", needs_review=not category
+                        )
+                    )
+                pending = {}
+                break
             for tag in out.tags:
                 if tag.id in pending:
                     r = pending.pop(tag.id)

@@ -111,6 +111,8 @@ risk_factors = Table(
     Column("tag_source", String(16)),  # llm | inherited
     Column("inherited_from", String(32)),
     Column("similarity", Float),
+    # Tagged "other" because the model never returned a valid category (D-003).
+    Column("needs_review", Boolean, nullable=False, server_default="false"),
     _updated_at(),
     Index("ix_risk_factors_cik_year", "cik", "fiscal_year"),
 )
@@ -184,6 +186,7 @@ risk_tag_experiments = Table(
     Column("mode", String(32), nullable=False),
     Column("category", String(32), nullable=False),
     Column("summary", Text),
+    Column("needs_review", Boolean, nullable=False, server_default="false"),
     _updated_at(),
     PrimaryKeyConstraint("risk_factor_id", "mode"),
 )

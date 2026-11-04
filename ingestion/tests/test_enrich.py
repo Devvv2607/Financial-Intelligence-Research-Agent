@@ -5,6 +5,7 @@ from typing import Any
 import numpy as np
 import pytest
 
+from core.llm import InvalidOutputError
 from ingestion.enrich.risk_tagger import (
     RiskInput,
     TagResult,
@@ -126,3 +127,39 @@ def test_inherit_with_nothing_tagged_sends_everything_to_llm() -> None:
         prior, [], np.zeros((1, 3), np.float32), np.zeros((0, 3), np.float32), 0.9
     )
     assert inherited == [] and remaining == prior
+
+
+class AlwaysInvalid:
+    """Retries already spent inside the client: it raises with the last raw output."""
+
+    def __init__(self, last_output: str) -> None:
+        self.last_output = last_output
+        self.calls = 0
+
+    async def structured(self, *a: Any, **kw: Any) -> Any:
+        self.calls += 1
+        raise InvalidOutputError("output failed validation", self.last_output)
+
+
+async def test_invalid_batch_salvages_valid_tags_and_flags_the_rest() -> None:
+    raw = (
+        '{"tags": [{"id": 0, "category": "talent", "summary": "key people"},'
+        ' {"id": 1, "category": "pandemic", "summary": "made-up category"}]}'
+    )
+    llm = AlwaysInvalid(raw)
+    out = await tag_with_llm(llm, RISKS[:3], cik=1, stage="x", batch_size=5, body_words=10)  # type: ignore[arg-type]
+    got = {t.key: (t.category, t.needs_review) for t in out}
+    assert got == {"k0": ("talent", False), "k1": ("other", True), "k2": ("other", True)}
+    assert llm.calls == 1  # no extra re-ask after the capped retries
+
+
+async def test_unparseable_output_flags_whole_batch() -> None:
+    out = await tag_with_llm(
+        AlwaysInvalid("not json"),
+        RISKS[:2],
+        cik=1,
+        stage="x",  # type: ignore[arg-type]
+        batch_size=5,
+        body_words=10,
+    )
+    assert all(t.category == "other" and t.needs_review for t in out)

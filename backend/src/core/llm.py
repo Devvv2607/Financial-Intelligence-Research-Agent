@@ -26,7 +26,9 @@ from core.config import ModelSlot, Settings
 
 logger = logging.getLogger(__name__)
 
-MAX_VALIDATION_RETRIES = 2
+# Total attempts per structured call when the output breaks the schema (first try +
+# one retry). Kept low on purpose: each retry spends daily quota.
+MAX_VALIDATION_ATTEMPTS = 2
 MAX_RATE_LIMIT_RETRIES = 8
 
 
@@ -45,6 +47,15 @@ class SchemaRejectedError(RuntimeError):
 
 class LLMError(RuntimeError):
     """Non-retryable failure (bad request, auth, validation still failing after retries)."""
+
+
+class InvalidOutputError(LLMError):
+    """Output still broke the schema after MAX_VALIDATION_ATTEMPTS. Carries the last
+    raw output so callers can salvage the valid parts instead of retrying again."""
+
+    def __init__(self, message: str, last_output: str) -> None:
+        super().__init__(message)
+        self.last_output = last_output
 
 
 @dataclass(frozen=True)
@@ -206,15 +217,17 @@ class GroqClient:
         }
         lock = self._locks.setdefault(model, asyncio.Lock())
         async with lock:
-            for attempt in range(MAX_VALIDATION_RETRIES + 1):
+            for attempt in range(MAX_VALIDATION_ATTEMPTS):
                 try:
                     content = await self._complete(model, body, stage=stage, cik=cik)
                     parsed = schema.model_validate_json(content)
                 except (ValidationError, SchemaRejectedError) as exc:
-                    if attempt == MAX_VALIDATION_RETRIES:
-                        raise LLMError(f"output failed validation: {exc}") from exc
                     if isinstance(exc, SchemaRejectedError):
                         content = exc.failed_generation
+                    if attempt == MAX_VALIDATION_ATTEMPTS - 1:
+                        raise InvalidOutputError(
+                            f"output failed validation: {exc}", content
+                        ) from exc
                     # Show the model its own output and the error, then retry.
                     body["messages"] = [
                         *messages,

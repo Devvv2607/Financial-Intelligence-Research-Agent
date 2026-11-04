@@ -89,7 +89,9 @@ async def _run(args: argparse.Namespace, s: Settings) -> int:
             wv,
             news,
             concurrency=args.concurrency,
-            experiment_headings_only=args.experiment_headings_only,
+            experiment_tickers=frozenset(
+                t.strip().upper() for t in (args.experiment_tickers or "").split(",") if t.strip()
+            ),
             on_progress=on_progress,
         )
         outcomes = await pipeline.run(rows, stages, force=args.force, refresh=args.refresh)
@@ -161,9 +163,8 @@ def main() -> None:
     run.add_argument("--force", action="store_true", help="re-run stages already done")
     run.add_argument("--refresh", action="store_true", help="re-download SEC submissions")
     run.add_argument(
-        "--experiment-headings-only",
-        action="store_true",
-        help="also tag latest-year risks from headings only (for comparison)",
+        "--experiment-tickers",
+        help="comma-separated tickers to also tag from headings only (for comparison)",
     )
     sub.choices["report"].add_argument("--section", choices=["all", "sectors"], default="all")
     args = parser.parse_args()

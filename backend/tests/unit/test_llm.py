@@ -13,6 +13,7 @@ from core.llm import (
     DailyLimitError,
     GroqClient,
     InMemoryLLMStore,
+    InvalidOutputError,
     LLMError,
     _parse_duration_s,
     strict_json_schema,
@@ -118,10 +119,12 @@ async def test_validation_error_is_retried_with_feedback() -> None:
 
 
 @respx.mock
-async def test_validation_gives_up_after_two_retries() -> None:
-    respx.post(URL).mock(return_value=_ok({"tags": [{"id": 0, "category": "zzz"}]}))
-    with pytest.raises(LLMError, match="validation"):
+async def test_validation_stops_after_two_attempts_and_returns_last_output() -> None:
+    route = respx.post(URL).mock(return_value=_ok({"tags": [{"id": 0, "category": "zzz"}]}))
+    with pytest.raises(InvalidOutputError, match="validation") as info:
         await _client(InMemoryLLMStore(), Sleeps()).structured("fast", Batch, MSG, stage="t")
+    assert route.call_count == 2  # capped: first try + one retry, never more
+    assert json.loads(info.value.last_output) == {"tags": [{"id": 0, "category": "zzz"}]}
 
 
 @respx.mock

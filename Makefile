@@ -47,8 +47,8 @@ ready: ## Query the API readiness probe
 migrate: ## Apply database migrations
 	uv run alembic -c backend/alembic.ini upgrade head
 
-ingest-sample: migrate ## Ingest the 10 agreed sample companies (+ headings-only experiment)
-	uv run python -m ingestion run --sample 10 --experiment-headings-only
+ingest-sample: migrate ## Ingest the 10 agreed sample companies (+ headings-only experiment on 3)
+	uv run python -m ingestion run --sample 10 --experiment-tickers AAPL,INTC,XOM
 
 ingest-full: migrate ## Ingest the whole universe (resumable)
 	uv run python -m ingestion run

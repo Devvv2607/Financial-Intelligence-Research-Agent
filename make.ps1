@@ -49,9 +49,9 @@ $targets = [ordered]@{
             & curl.exe -s -w "`nHTTP %{http_code}`n" http://localhost:8000/ready } }
     "migrate"   = @{ Help = "Apply database migrations"; Run = {
             Invoke-Step uv @("run", "alembic", "-c", "backend/alembic.ini", "upgrade", "head") } }
-    "ingest-sample" = @{ Help = "Ingest the 10 agreed sample companies (+ headings-only experiment)"; Run = {
+    "ingest-sample" = @{ Help = "Ingest the 10 agreed sample companies (+ headings-only experiment on 3)"; Run = {
             & $targets["migrate"].Run
-            Invoke-Step uv @("run", "python", "-m", "ingestion", "run", "--sample", "10", "--experiment-headings-only") } }
+            Invoke-Step uv @("run", "python", "-m", "ingestion", "run", "--sample", "10", "--experiment-tickers", "AAPL,INTC,XOM") } }
     "ingest-full" = @{ Help = "Ingest the whole universe (resumable)"; Run = {
             & $targets["migrate"].Run
             Invoke-Step uv @("run", "python", "-m", "ingestion", "run") } }

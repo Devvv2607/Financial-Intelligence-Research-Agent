@@ -251,6 +251,7 @@ async def save_tags(engine: AsyncEngine, tags: list[TagResult]) -> None:
                     tag_source=t.source,
                     inherited_from=t.inherited_from,
                     similarity=t.similarity,
+                    needs_review=t.needs_review,
                 )
             )
 
@@ -260,7 +261,13 @@ async def save_experiment_tags(engine: AsyncEngine, mode: str, tags: list[TagRes
         engine,
         risk_tag_experiments,
         [
-            {"risk_factor_id": t.key, "mode": mode, "category": t.category, "summary": t.summary}
+            {
+                "risk_factor_id": t.key,
+                "mode": mode,
+                "category": t.category,
+                "summary": t.summary,
+                "needs_review": t.needs_review,
+            }
             for t in tags
         ],
         ["risk_factor_id", "mode"],

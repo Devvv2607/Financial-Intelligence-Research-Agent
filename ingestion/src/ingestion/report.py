@@ -26,6 +26,7 @@ from core.db.schema import (
     risk_factors,
     risk_tag_experiments,
 )
+from ingestion.pipeline import EXPERIMENT_TICKERS
 
 PRODUCTION_STAGES = ("risk_tagging", "risk_tagging_prior", "sector_llm", "extract_fallback")
 EXPERIMENT_STAGE = "experiment_headings_only"
@@ -177,6 +178,14 @@ async def token_section(engine: AsyncEngine, ciks: list[int]) -> tuple[str, dict
         .group_by(risk_factors.c.tag_source),
     )
     reuse_map = {r["tag_source"]: r["count_1"] for r in reuse}
+    needs_review_rows = await _rows(
+        engine,
+        select(func.count())
+        .select_from(risk_factors)
+        .where(risk_factors.c.cik.in_(ciks), risk_factors.c.needs_review.is_(True)),
+    )
+    needs_review = needs_review_rows[0]["count_1"] if needs_review_rows else 0
+    rejected = sum(1 for c in calls if c["error"] == "schema_rejected")
     text = (
         "## 2. Groq token usage\n\n"
         + _table(
@@ -196,7 +205,11 @@ async def token_section(engine: AsyncEngine, ciks: list[int]) -> tuple[str, dict
         f"{tot['in']:,} input + {tot['out']:,} output tokens "
         f"({tot['reasoning']:,} of the output were hidden reasoning tokens).\n\n"
         f"Risk-factor tag sources: LLM {reuse_map.get('llm', 0)}, inherited via similarity "
-        f"{reuse_map.get('inherited', 0)}, untagged {reuse_map.get(None, 0)}."
+        f"{reuse_map.get('inherited', 0)}, untagged {reuse_map.get(None, 0)}.\n\n"
+        f"Quality flags: **{needs_review} risk factors tagged `other` + needs_review** (no "
+        f"valid category after the capped retries); {rejected} Groq schema rejections "
+        "(HTTP 400 `json_validate_failed`, retried once; Groq returns no token usage for "
+        "these, so their tokens are not in the totals above)."
     )
     return text, {"per": per, "tickers": tickers}
 
@@ -260,7 +273,7 @@ async def projection_section(
     ]
 
     # Headings-only experiment: same risk factors, tags from heading text only.
-    exp_ciks = [c for c in done if per.get((c, EXPERIMENT_STAGE), Counter())["calls"]]
+    exp_ciks = [c for c in done if token_data["tickers"].get(c) in EXPERIMENT_TICKERS]
     full_tok = sum(
         per.get((c, "risk_tagging"), Counter())["in"]
         + per.get((c, "risk_tagging"), Counter())["out"]
@@ -276,9 +289,11 @@ async def projection_section(
         select(risk_factors.c.category.label("full"), risk_tag_experiments.c.category.label("head"))
         .join(risk_tag_experiments, risk_tag_experiments.c.risk_factor_id == risk_factors.c.id)
         .where(
-            risk_factors.c.cik.in_(ciks),
+            risk_factors.c.cik.in_(exp_ciks),
             risk_tag_experiments.c.mode == "headings_only",
             risk_factors.c.tag_source == "llm",
+            risk_factors.c.needs_review.is_(False),
+            risk_tag_experiments.c.needs_review.is_(False),
         ),
     )
     agree = sum(p["full"] == p["head"] for p in pairs)
