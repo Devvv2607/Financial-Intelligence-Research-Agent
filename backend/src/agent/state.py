@@ -127,11 +127,11 @@ def merge_keyed(left: dict[str, Any] | None, right: dict[str, Any] | str) -> dic
 
 
 def evidence_reducer(left: list[Evidence] | None, right: list[Evidence] | str) -> list[Evidence]:
-    if right == RESET:
+    if isinstance(right, str):  # RESET
         return []
     seen = {e.source_id for e in left or []}
     out = list(left or [])
-    for e in right:  # type: ignore[union-attr]
+    for e in right:
         if e.source_id not in seen:
             seen.add(e.source_id)
             out.append(e)
@@ -143,7 +143,8 @@ class ResearchState(TypedDict, total=False):
     turn: int
     today: str  # ISO date, injected into analyzer/planner/synthesizer prompts
     query: str
-    route: Literal["research", "advice", "uncovered", "clarification_limit"] | None
+    route: Literal["research", "advice", "uncovered", "error"] | None
+    run_id: str  # one id per question, kept across a clarification interrupt/resume
     resolved_entities: list[Entity]
     uncovered: list[Uncovered]
     clarification: Clarification | None

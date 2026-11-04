@@ -17,6 +17,7 @@ needs for token streaming; the wrapper adds the cache/budget/ledger around it.
 import hashlib
 import json
 import time
+from collections.abc import Sequence
 from typing import Any, Literal, Protocol
 
 from langchain_core.messages import AIMessage, AIMessageChunk, BaseMessage
@@ -55,7 +56,7 @@ class AgentLLM(Protocol):
     async def chat(
         self,
         node: str,
-        messages: list[BaseMessage],
+        messages: Sequence[BaseMessage],
         *,
         tools: list[dict[str, Any]] | None = None,
         run_id: str | None = None,
@@ -68,7 +69,7 @@ def _effort(node: str) -> Effort:
     return NODE_EFFORT.get(node, NODE_EFFORT["specialist"] if node.endswith("_agent") else "low")
 
 
-def _serialize(messages: list[BaseMessage]) -> list[dict[str, Any]]:
+def _serialize(messages: Sequence[BaseMessage]) -> list[dict[str, Any]]:
     return [
         {
             "type": m.type,
@@ -106,8 +107,8 @@ class GroqAgentLLM:
         name = self._s.model_for(slot, agent=True)
         if (name, effort) not in self._chat_models:
             self._chat_models[(name, effort)] = ChatGroq(
-                model=name,
-                api_key=self._s.groq_api_key,  # type: ignore[arg-type]
+                model_name=name,
+                api_key=self._s.groq_api_key,
                 reasoning_effort=effort,
                 max_retries=6,  # 429s from the 8K TPM limit are retried with backoff
                 timeout=self._s.groq_timeout_s,
@@ -117,7 +118,7 @@ class GroqAgentLLM:
     async def chat(
         self,
         node: str,
-        messages: list[BaseMessage],
+        messages: Sequence[BaseMessage],
         *,
         tools: list[dict[str, Any]] | None = None,
         run_id: str | None = None,
@@ -128,17 +129,29 @@ class GroqAgentLLM:
         effort = _effort(node)
         model_name = self._s.model_for(slot, agent=True)
         key = hashlib.sha256(
-            json.dumps([model_name, effort, _serialize(messages), tools], sort_keys=True,
-                       default=str).encode()
+            json.dumps(
+                [model_name, effort, _serialize(messages), tools], sort_keys=True, default=str
+            ).encode()
         ).hexdigest()
 
         if self._s.agent_dev_cache:
             cached = await self._store.cache_get(key)
             if cached is not None:
-                await self._store.record(CallRecord(
-                    model_name, node, None, 0, 0, None, 0, True, True,
-                    saved_tokens=cached.counted_tokens, run_id=run_id,
-                ))
+                await self._store.record(
+                    CallRecord(
+                        model_name,
+                        node,
+                        None,
+                        0,
+                        0,
+                        None,
+                        0,
+                        True,
+                        True,
+                        saved_tokens=cached.counted_tokens,
+                        run_id=run_id,
+                    )
+                )
                 return AIMessage(
                     content=cached.response["content"],
                     tool_calls=cached.response.get("tool_calls") or [],
@@ -165,7 +178,7 @@ class GroqAgentLLM:
                 response_metadata=msg.response_metadata if msg else {},
             )
         else:
-            result = await runnable.ainvoke(messages, config=config)  # type: ignore[assignment]
+            result = await runnable.ainvoke(messages, config=config)
         latency_ms = int((time.monotonic() - started) * 1000)
 
         usage: dict[str, Any] = dict(result.usage_metadata or {})
@@ -176,15 +189,23 @@ class GroqAgentLLM:
             or 0
         )
         record = CallRecord(
-            model_name, node, None,
-            int(usage.get("input_tokens", 0)), int(usage.get("output_tokens", 0)),
+            model_name,
+            node,
+            None,
+            int(usage.get("input_tokens", 0)),
+            int(usage.get("output_tokens", 0)),
             (usage.get("output_token_details") or {}).get("reasoning"),
-            latency_ms, False, True, cached_tokens=cached_tokens, run_id=run_id,
+            latency_ms,
+            False,
+            True,
+            cached_tokens=cached_tokens,
+            run_id=run_id,
         )
         await self._store.record(record)
         if self._s.agent_dev_cache:
             await self._store.cache_put(
-                key, model_name,
+                key,
+                model_name,
                 {"content": result.content, "tool_calls": result.tool_calls},
                 record.counted_tokens,
             )

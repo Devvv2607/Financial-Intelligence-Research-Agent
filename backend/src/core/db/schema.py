@@ -236,8 +236,11 @@ runs = Table(
     Column("id", UUID(as_uuid=True), primary_key=True),
     Column("thread_id", Text, nullable=False),
     Column("query", Text, nullable=False),
+    Column("route", String(16)),
+    Column("answer", Text),
     Column("plan", JSONB),
     Column("steps", JSONB),
+    Column("node_usage", JSONB),  # tokens/calls/cache hits per graph node, from llm_calls
     Column("prompt_tokens", Integer),
     Column("completion_tokens", Integer),
     Column("latency_ms", Integer),
