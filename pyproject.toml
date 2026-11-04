@@ -1,0 +1,55 @@
+# uv workspace root. One lockfile + one venv for every Python package in the repo.
+# Members are added phase by phase (ingestion in Phase 1, evals in Phase 6).
+[project]
+name = "fira"
+version = "0.1.0"
+description = "Financial Intelligence Research Agent (workspace root)"
+requires-python = ">=3.12,<3.13"
+dependencies = ["fira-backend"]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["backend"]
+
+[tool.uv.sources]
+fira-backend = { workspace = true }
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.3",
+    "mypy>=2.4.1",
+    "pytest>=9.2.0",
+    "pytest-asyncio>=1.4.1",
+    "respx>=0.23.1",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["frontend"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "ASYNC", "RUF", "N", "S"]
+ignore = ["S101"]  # assert is fine in tests
+
+[tool.ruff.lint.isort]
+known-first-party = ["core", "api", "agent", "ingestion", "evals"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+mypy_path = "backend/src"
+packages = ["core", "api"]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = ["live: hits real external services (Groq, SEC, NewsAPI); skipped unless keys are set"]
+addopts = "-m 'not live'"
