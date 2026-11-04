@@ -16,7 +16,14 @@ from langgraph.types import Command
 
 from agent.checkpoint import memory_saver
 from agent.graph import RECURSION_LIMIT, build_graph
-from agent.nodes.answer import FOOTER, FOOTER_NO_SOURCES, resolve_citations
+from agent.nodes.answer import (
+    FOOTER,
+    FOOTER_NO_SOURCES,
+    MAX_SOURCES,
+    numbered_sources,
+    resolve_citations,
+)
+from agent.state import PlanStep, StepResult
 
 from .fakes import (
     OK_CRITIQUE,
@@ -398,3 +405,19 @@ def test_native_citations_are_normalised() -> None:
     text, cites = resolve_citations("Risk X【2†source】. Y【r1s1】 [7].", state)
     assert text == "Risk X[2]. Y ."
     assert [c.n for c in cites] == [2]
+
+
+def test_sources_are_shared_across_steps() -> None:
+    """One step with many sources must not crowd the others out of the [n] numbering."""
+    big = [ev(f"amd{i}", "AMD") for i in range(50)]
+    small = [ev("nvda0"), ev("news0")]
+    plan = [PlanStep.model_validate(step(i, "filings")) for i in ("r1s1", "r1s2", "r1s3")]
+    ids = [[e.source_id for e in big], ["nvda0"], ["news0"]]
+    results = {
+        p.id: StepResult(step_id=p.id, status="done", mode="direct", evidence_ids=i)
+        for p, i in zip(plan, ids, strict=True)
+    }
+    state: Any = {"plan": plan, "step_results": results, "evidence": big + small}
+    order = [e.source_id for e in numbered_sources(state)]
+    assert len(order) == MAX_SOURCES
+    assert order[:4] == ["amd0", "nvda0", "news0", "amd1"]

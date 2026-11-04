@@ -66,9 +66,9 @@ def _print_event(e: dict[str, Any]) -> None:
             print(f"  {i}. {o}")
 
 
-async def _stream(graph: Any, payload: Any, config: RunnableConfig) -> bool:
-    """Run until the end or an interrupt; returns True if the answer streamed live."""
-    streamed = False
+async def _stream(graph: Any, payload: Any, config: RunnableConfig) -> str:
+    """Run until the end or an interrupt; returns the answer text that streamed live."""
+    streamed = ""
     async for _ns, mode, chunk in graph.astream(
         payload, config, stream_mode=["updates", "custom", "messages"], subgraphs=True
     ):
@@ -76,24 +76,28 @@ async def _stream(graph: Any, payload: Any, config: RunnableConfig) -> bool:
             _print_event(chunk)
         elif mode == "messages":
             msg, meta = chunk
-            if meta.get("langgraph_node") == "synthesizer" and isinstance(msg, AIMessageChunk):
+            node = meta.get("langgraph_node")
+            if node == "synthesizer" and isinstance(msg, AIMessageChunk) and msg.content:
                 if not streamed:
                     print("\n== ANSWER\n")
-                    streamed = True
+                streamed += str(msg.content)
                 print(msg.content, end="", flush=True)
     return streamed
 
 
 async def _report(
-    graph: Any, config: RunnableConfig, settings: Settings, engine: Any, streamed: bool
+    graph: Any, config: RunnableConfig, settings: Settings, engine: Any, streamed: str
 ) -> None:
     state = await graph.aget_state(config)
     values = state.values
     if state.interrupts:
         return
     answer = values.get("answer") or ""
-    if streamed:
-        print(answer[answer.rfind("\n\n---") :] if "\n\n---" in answer else "")
+    body, _, footer = answer.rpartition("\n\n---")
+    if streamed and body.strip() == streamed.strip():
+        print("\n\n---" + footer)
+    elif streamed:  # finalize changed it (citations normalised/removed): show the checked text
+        print("\n\n== ANSWER (citations checked)\n\n" + answer)
     else:
         print("\n== ANSWER\n\n" + answer)
     results = values.get("step_results", {})

@@ -52,14 +52,21 @@ def _step_details(state: ResearchState) -> str:
 
 
 def numbered_sources(state: ResearchState) -> list[Evidence]:
-    """Evidence in step order (then any extra), deduped, capped: the [n] numbering."""
+    """The [n] numbering: evidence taken round-robin across steps, deduped, capped.
+
+    Round-robin so one large step (53 AMD risk factors) can't use up the cap and leave
+    other companies or the news without citable sources; each step's own order is kept
+    (tools return the most relevant items first)."""
     by_id = {e.source_id: e for e in state.get("evidence", [])}
-    order: list[str] = []
+    queues = []
     for s in state.get("plan", []):
         r = state.get("step_results", {}).get(s.id)
-        for sid in r.evidence_ids if r else []:
-            if sid in by_id and sid not in order:
-                order.append(sid)
+        queues.append([sid for sid in (r.evidence_ids if r else []) if sid in by_id])
+    order: list[str] = []
+    for rank in range(max((len(q) for q in queues), default=0)):
+        for q in queues:
+            if rank < len(q) and q[rank] not in order:
+                order.append(q[rank])
     order += [sid for sid in by_id if sid not in order]
     return [by_id[sid] for sid in order[:MAX_SOURCES]]
 
