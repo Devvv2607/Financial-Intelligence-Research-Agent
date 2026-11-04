@@ -16,19 +16,19 @@ from tokenizers import Tokenizer
 from tokenizers.models import WordLevel
 from tokenizers.pre_tokenizers import WhitespaceSplit
 
+from core.newsapi import (
+    NewsApiClient,
+    NewsApiError,
+    build_query,
+    parse_articles,
+    short_company_name,
+)
 from ingestion.load.chunker import (
     HEADER_MAX_TOKENS,
     chunk_text,
     embedding_input,
     make_header,
     truncate_tokens,
-)
-from ingestion.news.client import (
-    NewsApiClient,
-    NewsApiError,
-    build_query,
-    parse_articles,
-    short_company_name,
 )
 
 

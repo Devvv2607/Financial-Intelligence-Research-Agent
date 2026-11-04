@@ -237,3 +237,12 @@ def test_underlined_navigation_link_does_not_split_a_risk_factor() -> None:
     rfs = split_risk_factors(html_to_blocks(html))
     assert [r.heading for r in rfs] == ["We depend on third-party foundries."]
     assert "Second half" in rfs[0].body and "Table of Contents" not in rfs[0].body
+
+
+def test_whitespace_between_inline_elements_is_kept() -> None:
+    # Guards against glued words ("toensure", "financialresults") from span boundaries.
+    html = (
+        "<p><span>We seek to</span> <span>ensure</span>&#160;<span>accurate</span>"
+        "<span> financial</span> <b>results</b>.</p>"
+    )
+    assert html_to_blocks(html)[0].text == "We seek to ensure accurate financial results."

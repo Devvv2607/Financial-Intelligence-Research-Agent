@@ -40,22 +40,34 @@ known-first-party = ["core", "api", "agent", "ingestion", "evals"]
 
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**" = ["S"]
+# Migrations build DDL from module constants (role and table names), never from input.
+"backend/alembic/versions/*" = ["S608"]
 
 [tool.mypy]
 python_version = "3.12"
 strict = true
 plugins = ["pydantic.mypy"]
 mypy_path = "backend/src:ingestion/src"
-packages = ["core", "api", "ingestion"]
+packages = ["core", "api", "agent", "ingestion"]
 
 [[tool.mypy.overrides]]
 # lxml ships no type information; its calls are confined to extract/html_clean.py.
 module = ["lxml", "lxml.*"]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+# Imported only to scope one warning filter (core/__init__.py); authlib ships no types.
+module = ["authlib", "authlib.*"]
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["backend/tests", "ingestion/tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
-markers = ["live: hits real external services (Groq, SEC, NewsAPI); skipped unless keys are set"]
+markers = [
+    "live: hits real external services (Groq, SEC, NewsAPI); skipped unless keys are set",
+    "integration: needs the local stack (Postgres + Weaviate); skips itself when it is down",
+]
 addopts = "-m 'not live'"
+# pytest re-enables DeprecationWarnings per test; re-apply the one filter from core/__init__.py.
+filterwarnings = ["ignore:The httpx module is deprecated:DeprecationWarning"]

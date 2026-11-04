@@ -3,7 +3,7 @@
 # Keep the two in sync — every target here has a twin in make.ps1.
 
 .DEFAULT_GOAL := help
-.PHONY: help install lint format typecheck test check up down logs ready dev-api dev-web web-check clean migrate ingest-sample ingest-full ingest-daily ingest-progress ingest-report review-export review-score
+.PHONY: help install lint format typecheck test check up down logs ready dev-api dev-web web-check clean migrate ingest-sample ingest-full ingest-daily ingest-progress ingest-report review-export review-score tools-demo
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-12s %s\n", $$1, $$2}'
@@ -67,6 +67,9 @@ review-score: ## Score the model against your labels in the review sheet
 
 ingest-report: ## Write the ingestion report for the sample (REPORT_ARGS= for others)
 	uv run python -m ingestion report $(or $(REPORT_ARGS),--sample 10)
+
+tools-demo: ## Call every agent tool once against the local stores (agent model only)
+	uv run python -m agent.tools demo
 
 dev-api: ## Run the API on the host with reload
 	uv run uvicorn api.main:app --reload --port 8000 --loop core.aio:selector_loop

@@ -66,6 +66,8 @@ $targets = [ordered]@{
             Invoke-Step uv @("run", "python", "-m", "ingestion", "review", "score") } }
     "ingest-report" = @{ Help = "Write the ingestion report for the sample"; Run = {
             Invoke-Step uv @("run", "python", "-m", "ingestion", "report", "--sample", "10") } }
+    "tools-demo" = @{ Help = "Call every agent tool once against the local stores (agent model only)"; Run = {
+            Invoke-Step uv @("run", "python", "-m", "agent.tools", "demo") } }
     "dev-api"   = @{ Help = "Run the API on the host with reload"; Run = {
             Invoke-Step uv @("run", "uvicorn", "api.main:app", "--reload", "--port", "8000", "--loop", "core.aio:selector_loop") } }
     "dev-web"   = @{ Help = "Run the frontend dev server"; Run = { Invoke-Step npm @("--prefix", "frontend", "run", "dev") } }
