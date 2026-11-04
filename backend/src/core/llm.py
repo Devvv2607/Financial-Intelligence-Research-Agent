@@ -34,6 +34,15 @@ class DailyLimitError(RuntimeError):
     """The model's per-day budget (ours or Groq's) is exhausted; resume after the reset."""
 
 
+class SchemaRejectedError(RuntimeError):
+    """Groq's server-side strict-mode check rejected the generation (HTTP 400,
+    `json_validate_failed`). Retryable like a local validation error."""
+
+    def __init__(self, message: str, failed_generation: str) -> None:
+        super().__init__(message)
+        self.failed_generation = failed_generation
+
+
 class LLMError(RuntimeError):
     """Non-retryable failure (bad request, auth, validation still failing after retries)."""
 
@@ -122,6 +131,14 @@ def _parse_duration_s(value: str | None) -> float | None:
     return total if matched else None
 
 
+def _error_body(resp: httpx.Response) -> dict[str, Any]:
+    try:
+        err = resp.json().get("error", {})
+    except ValueError:
+        return {}
+    return err if isinstance(err, dict) else {}
+
+
 def estimate_tokens(text: str) -> int:
     # ~4 chars/token for English prose; only used to decide whether to wait.
     return len(text) // 4 + 1
@@ -190,12 +207,14 @@ class GroqClient:
         lock = self._locks.setdefault(model, asyncio.Lock())
         async with lock:
             for attempt in range(MAX_VALIDATION_RETRIES + 1):
-                content = await self._complete(model, body, stage=stage, cik=cik)
                 try:
+                    content = await self._complete(model, body, stage=stage, cik=cik)
                     parsed = schema.model_validate_json(content)
-                except ValidationError as exc:
+                except (ValidationError, SchemaRejectedError) as exc:
                     if attempt == MAX_VALIDATION_RETRIES:
                         raise LLMError(f"output failed validation: {exc}") from exc
+                    if isinstance(exc, SchemaRejectedError):
+                        content = exc.failed_generation
                     # Show the model its own output and the error, then retry.
                     body["messages"] = [
                         *messages,
@@ -245,6 +264,18 @@ class GroqClient:
             if resp.status_code >= 500:
                 await self._sleep(5.0)
                 continue
+            error = _error_body(resp)
+            if resp.status_code == 400 and error.get("code") == "json_validate_failed":
+                # No `usage` comes back on a 400, so these tokens can't be measured; the
+                # ledger flags them so reports can count them instead of hiding them.
+                await self._store.record(
+                    CallRecord(
+                        model, stage, cik, 0, 0, None, latency_ms, False, False, "schema_rejected"
+                    )
+                )
+                raise SchemaRejectedError(
+                    str(error.get("message", ""))[:500], str(error.get("failed_generation", ""))
+                )
             if resp.status_code != 200:
                 await self._store.record(
                     CallRecord(

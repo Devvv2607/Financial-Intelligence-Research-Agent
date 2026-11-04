@@ -187,3 +187,42 @@ def test_parse_duration() -> None:
     assert _parse_duration_s("1m26.4s") == pytest.approx(86.4)
     assert _parse_duration_s("120ms") == pytest.approx(0.12)
     assert _parse_duration_s(None) is None
+
+
+@respx.mock
+async def test_server_side_schema_rejection_is_retried_with_feedback() -> None:
+    rejected = httpx.Response(
+        400,
+        json={
+            "error": {
+                "message": "Generated JSON does not match the expected schema.",
+                "type": "invalid_request_error",
+                "code": "json_validate_failed",
+                "failed_generation": '{"tags": [{"id": 0, "category": "zzz"}]}',
+            }
+        },
+    )
+    route = respx.post(URL).mock(
+        side_effect=[rejected, _ok({"tags": [{"id": 0, "category": "a"}]})]
+    )
+    store = InMemoryLLMStore()
+    out = await _client(store, Sleeps()).structured("fast", Batch, MSG, stage="t")
+    assert out.tags[0].category == "a"
+    feedback = json.loads(route.calls[1].request.content)["messages"]
+    assert feedback[-2] == {
+        "role": "assistant",
+        "content": '{"tags": [{"id": 0, "category": "zzz"}]}',
+    }
+    assert [c.error for c in store.calls] == ["schema_rejected", None]
+
+
+@respx.mock
+async def test_other_400s_are_not_retried() -> None:
+    route = respx.post(URL).mock(
+        return_value=httpx.Response(
+            400, json={"error": {"message": "bad model", "code": "model_not_found"}}
+        )
+    )
+    with pytest.raises(LLMError, match="400"):
+        await _client(InMemoryLLMStore(), Sleeps()).structured("fast", Batch, MSG, stage="t")
+    assert route.call_count == 1

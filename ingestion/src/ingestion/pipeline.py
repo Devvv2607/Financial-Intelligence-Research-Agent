@@ -120,7 +120,7 @@ class Pipeline:
         weaviate_client: weaviate.WeaviateAsyncClient,
         news: NewsApiClient | None,
         *,
-        concurrency: int = 4,
+        concurrency: int = 2,
         experiment_headings_only: bool = False,
         on_progress: Callable[[str, str], None] | None = None,
     ) -> None:

@@ -88,6 +88,7 @@ async def _run(args: argparse.Namespace, s: Settings) -> int:
             embedder,
             wv,
             news,
+            concurrency=args.concurrency,
             experiment_headings_only=args.experiment_headings_only,
             on_progress=on_progress,
         )
@@ -151,6 +152,12 @@ def main() -> None:
         p.add_argument("--tickers", help="comma-separated tickers")
     run = sub.choices["run"]
     run.add_argument("--only", choices=STAGES)
+    run.add_argument(
+        "--concurrency",
+        type=int,
+        default=2,
+        help="companies processed at once (each holds a parsed 10-K in memory)",
+    )
     run.add_argument("--force", action="store_true", help="re-run stages already done")
     run.add_argument("--refresh", action="store_true", help="re-download SEC submissions")
     run.add_argument(
