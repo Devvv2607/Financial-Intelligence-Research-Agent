@@ -369,6 +369,10 @@ async def compare_risk_factors(ctx: ToolContext, inp: CompareRiskFactorsInput) -
         raise ToolFailure("not_found", f"{company.ticker} has risk factors for only {years}")
     year_b = inp.year_b or years[0]
     year_a = inp.year_a or next((y for y in years if y < year_b), None)
+    if year_a is not None and year_a > year_b:
+        # Callers (models) sometimes pass the years newest-first. "New" must always mean
+        # "in the later filing", so normalise the order instead of trusting it.
+        year_a, year_b = year_b, year_a
     if year_a is None or year_a not in years or year_b not in years:
         raise ToolFailure("not_found", f"{company.ticker} has risk factors for {years}")
     rows = await fetch_dicts(
@@ -442,7 +446,23 @@ async def compare_risk_factors(ctx: ToolContext, inp: CompareRiskFactorsInput) -
         + [c.after.id for c in changed]
         + [c.before.id for c in changed]
     )
-    evidence = [_risk_evidence(company.ticker, by_id[i]) for i in dict.fromkeys(cited)]
+    summary_url = next((str(r["url"]) for r in b), None)
+    summary = Evidence(
+        source_id=f"compare:{company.ticker}:{year_a}:{year_b}",
+        source_type="risk_factor",
+        ticker=company.ticker,
+        title=f"{company.ticker} risk factors, FY{year_a} vs FY{year_b} 10-K (comparison)",
+        snippet=(
+            f"Comparing {company.ticker}'s FY{year_a} 10-K ({len(a)} risk factors) with its "
+            f"FY{year_b} 10-K ({len(b)} risk factors): {len(new)} new, {len(removed)} "
+            f"removed, {len(changed)} materially changed, {len(unchanged)} unchanged."
+        ),
+        url=summary_url,
+        form_type="10-K",
+        fiscal_year=year_b,
+        section="item_1a",
+    )
+    evidence = [summary] + [_risk_evidence(company.ticker, by_id[i]) for i in dict.fromkeys(cited)]
     return Output(out, evidence)
 
 

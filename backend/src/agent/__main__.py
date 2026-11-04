@@ -27,7 +27,7 @@ from agent.graph import RECURSION_LIMIT, build_graph
 from agent.llm import GroqAgentLLM
 from agent.runlog import make_run_recorder, node_usage
 from agent.tools import build_context, call_tool, close_context
-from agent.tools.common import Company, resolve_tickers
+from agent.tools.common import Company, fiscal_periods, resolve_tickers
 from core import aio
 from core.config import Settings, get_settings
 from core.db.llm_store import PostgresLLMStore
@@ -138,6 +138,7 @@ async def main(args: argparse.Namespace) -> int:
         call_tool=partial(call_tool, ctx),
         list_companies=companies,
         record_run=make_run_recorder(ctx.engine, settings),
+        fiscal_periods=partial(fiscal_periods, ctx),
     )
     try:
         async with postgres_saver(settings.database_url) as saver:

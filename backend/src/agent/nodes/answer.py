@@ -22,14 +22,18 @@ from agent.tools.base import Evidence
 from core.llm import DailyLimitError, LLMError
 
 MAX_REPLANS = 2
-MAX_SOURCES = 40
-SOURCE_SNIPPET = 450
+MAX_SOURCES = 30
+SOURCE_SNIPPET = 300
 DIGEST_FOR_REVIEW = 1_200
 FOOTER = (
     "\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and "
     "NewsAPI headlines, as cited above.*"
 )
+FOOTER_NO_SOURCES = "\n\n---\n*Not investment advice.*"
 _CITE_RE = re.compile(r"\[(\d{1,3})\]")
+# gpt-oss often cites in its native style: 【3】 or 【3†source】. Normalise to [3].
+_NATIVE_CITE_RE = re.compile(r"\u3010\s*(\d{1,3})(?:[^\u3011]*)\u3011")
+_NATIVE_OTHER_RE = re.compile(r"\u3010[^\u3011]*\u3011")
 
 
 def _step_details(state: ResearchState) -> str:
@@ -115,10 +119,13 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
         companies = {c.ticker: c for c in await deps.companies()}
         analysis = state.get("analysis")
         critique = state.get("critique")
+        tickers = [e.ticker for e in state.get("resolved_entities", []) if e.ticker in companies]
+        periods = await deps.fiscal_periods(tickers) if deps.fiscal_periods and tickers else {}
         fy = [
-            f"{e.ticker}: fiscal year ends {companies[e.ticker].fiscal_year_end} (MMDD)"
-            for e in state.get("resolved_entities", [])
-            if e.ticker in companies
+            f"{t}: " + "; ".join(f"FY{y} ended {d.isoformat()}" for y, d in periods[t])
+            if periods.get(t)
+            else f"{t}: fiscal year ends {companies[t].fiscal_year_end} (MMDD)"
+            for t in tickers
         ]
         source_lines = [
             f"[{i}] {e.title}"
@@ -137,7 +144,7 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
             [
                 f"Today's date: {state['today']}",
                 f"Question: {analysis.standalone_query if analysis else state['query']}",
-                "Fiscal years:\n" + ("\n".join(fy) or "n/a"),
+                "Fiscal periods:\n" + ("\n".join(fy) or "n/a"),
                 f"Step results:\n{_step_details(state)}",
                 "Known limits:\n" + ("\n".join(limits) or "none"),
                 "Sources:\n" + ("\n\n".join(source_lines) or "(no sources were retrieved)"),
@@ -166,7 +173,7 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
     async def finalize(state: ResearchState, config: RunnableConfig) -> dict[str, Any]:
         answer = state.get("answer") or "I couldn't produce an answer."
         answer, citations = resolve_citations(answer, state)
-        answer = answer.rstrip() + FOOTER
+        answer = answer.rstrip() + (FOOTER if citations else FOOTER_NO_SOURCES)
         cfg = config.get("configurable") or {}
         if deps.record_run is not None:
             await deps.record_run(
@@ -193,6 +200,8 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
 
 def resolve_citations(answer: str, state: ResearchState) -> tuple[str, list[Citation]]:
     """Map [n] to sources; remove references to numbers that don't exist."""
+    answer = _NATIVE_CITE_RE.sub(lambda m: f"[{m.group(1)}]", answer)
+    answer = _NATIVE_OTHER_RE.sub("", answer)  # e.g. 【r1s1】: not a source number
     order = state.get("evidence_order", [])
     by_id = {e.source_id: e for e in state.get("evidence", [])}
     used: dict[int, Citation] = {}

@@ -67,6 +67,15 @@ async def test_compare_risk_factors_partitions_every_risk(live_ctx: ToolContext)
     assert matched + c["removed"] == n_a and matched + c["new"] == n_b
     assert c["changed"] == len(d["changed"]) and c["unchanged"] == len(d["unchanged"])
     assert all(x["text_similarity"] >= 0.95 for x in d["unchanged"])
+    assert r.evidence[0].source_id == f"compare:{row}:{d['year_a']}:{d['year_b']}"
+    # Years passed newest-first must not flip "new" and "removed" (demo 2 regression).
+    flipped = await call_tool(
+        live_ctx,
+        "compare_risk_factors",
+        {"ticker": row, "year_a": d["year_b"], "year_b": d["year_a"]},
+    )
+    assert flipped.ok and flipped.data["counts"] == c
+    assert (flipped.data["year_a"], flipped.data["year_b"]) == (d["year_a"], d["year_b"])
 
 
 async def test_financial_metrics_and_8k_events(live_ctx: ToolContext) -> None:

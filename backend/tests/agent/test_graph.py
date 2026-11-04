@@ -16,7 +16,7 @@ from langgraph.types import Command
 
 from agent.checkpoint import memory_saver
 from agent.graph import RECURSION_LIMIT, build_graph
-from agent.nodes.answer import FOOTER
+from agent.nodes.answer import FOOTER, FOOTER_NO_SOURCES, resolve_citations
 
 from .fakes import (
     OK_CRITIQUE,
@@ -52,8 +52,8 @@ async def test_advice_rule_refuses_without_any_llm_call() -> None:
     graph = build_graph(make_deps(llm, FakeTools({})), memory_saver())
     out = await ask(graph, "Should I buy Tesla stock now?")
     assert out["route"] == "advice"
-    assert "can't give investment advice" in out["answer"] and "Tesla" in out["answer"]
-    assert out["answer"].endswith(FOOTER) and llm.calls == []
+    assert "can't give investment advice" in out["answer"] and "Inc.." not in out["answer"]
+    assert out["answer"].endswith(FOOTER_NO_SOURCES) and llm.calls == []
 
 
 async def test_analyzer_catches_advice_the_rule_misses() -> None:
@@ -162,7 +162,7 @@ async def test_failed_dependency_skips_dependents_and_answer_still_comes() -> No
     assert r["r1s3"].status == "skipped" and "r1s2" in (r["r1s3"].skip_reason or "")
     synth_prompt = next(m for n, m in llm.calls if n == "synthesizer")[1].content
     assert "Not available: depends on r1s1" in synth_prompt  # the gap reaches the answer
-    assert out["answer"].endswith(FOOTER)
+    assert out["answer"].endswith(FOOTER_NO_SOURCES)  # nothing cited
 
 
 async def test_empty_direct_call_falls_back_to_agentic_loop() -> None:
@@ -390,3 +390,11 @@ def test_no_request_can_reach_groq() -> None:
     """The autouse guard turns any call to api.groq.com into a failure."""
     with pytest.raises(AssertionError, match="Groq"):
         httpx.get("https://api.groq.com/openai/v1/models")
+
+
+def test_native_citations_are_normalised() -> None:
+    """gpt-oss sometimes cites 【2†source】 or a step id; only real source numbers survive."""
+    state: Any = {"evidence_order": ["a", "b"], "evidence": [ev("a"), ev("b")]}
+    text, cites = resolve_citations("Risk X【2†source】. Y【r1s1】 [7].", state)
+    assert text == "Risk X[2]. Y ."
+    assert [c.n for c in cites] == [2]

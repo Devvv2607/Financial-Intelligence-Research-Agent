@@ -332,7 +332,7 @@ def _analyzer_input(state: ResearchState, companies: list[Company]) -> str:
 
 # ---------------------------------------------------------------- fixed answers
 def advice_answer(entities: list[Entity]) -> str:
-    names = ", ".join(e.name for e in entities) or "a company"
+    names = ", ".join(e.name.rstrip(".") for e in entities) or "a company"
     example = entities[0].ticker if entities else "NVDA"
     return (
         f"I can't give investment advice, so I won't say whether to buy, sell or hold "

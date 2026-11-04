@@ -16,6 +16,8 @@ from agent.tools.common import Company
 
 ToolExecutor = Callable[[str, dict[str, Any]], Awaitable[ToolResult]]
 RunRecorder = Callable[[dict[str, Any]], Awaitable[None]]
+# ticker -> [(fiscal_year, period end date)] of its stored 10-Ks, newest first.
+FiscalPeriods = Callable[[list[str]], Awaitable[dict[str, list[tuple[int, date]]]]]
 
 
 @dataclass
@@ -25,6 +27,7 @@ class AgentDeps:
     list_companies: Callable[[], Awaitable[list[Company]]]
     today: Callable[[], date] = date.today
     record_run: RunRecorder | None = None
+    fiscal_periods: FiscalPeriods | None = None
     _companies: list[Company] | None = field(default=None, repr=False)
 
     async def companies(self) -> list[Company]:
