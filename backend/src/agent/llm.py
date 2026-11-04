@@ -20,6 +20,7 @@ import time
 from collections.abc import Sequence
 from typing import Any, Literal, Protocol
 
+import httpx
 from langchain_core.messages import AIMessage, AIMessageChunk, BaseMessage
 from langchain_core.runnables import RunnableConfig
 from langchain_groq import ChatGroq
@@ -87,9 +88,12 @@ class GroqAgentLLM:
         self._store = store
         self._structured = GroqClient(settings, store, agent=True)
         self._chat_models: dict[tuple[str, str], ChatGroq] = {}
+        # One shared client we own, so aclose() can close it (ChatGroq's own was left open).
+        self._chat_http = httpx.AsyncClient(timeout=settings.groq_timeout_s)
 
     async def aclose(self) -> None:
         await self._structured.aclose()
+        await self._chat_http.aclose()
 
     async def structured[T: BaseModel](
         self, node: str, schema: type[T], messages: list[dict[str, str]], *, run_id: str | None
@@ -112,6 +116,7 @@ class GroqAgentLLM:
                 reasoning_effort=effort,
                 max_retries=6,  # 429s from the 8K TPM limit are retried with backoff
                 timeout=self._s.groq_timeout_s,
+                http_async_client=self._chat_http,
             )
         return self._chat_models[(name, effort)]
 

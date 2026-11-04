@@ -47,7 +47,12 @@ def _step_details(state: ResearchState) -> str:
         if r.status != "done":
             blocks.append(f"{head}\nNot available: {r.error or r.skip_reason}")
         else:
-            blocks.append(f"{head}\n{r.summary}\n{r.data_digest[:DIGEST_FOR_REVIEW]}")
+            digest = r.data_digest[:DIGEST_FOR_REVIEW]
+            if len(r.data_digest) > DIGEST_FOR_REVIEW:
+                # Without this the critic took the cut for missing data and replanned to
+                # re-fetch what the step already had (demo 7: two wasted rounds).
+                digest += "\n[shortened for this view; the step retrieved the full output]"
+            blocks.append(f"{head}\n{r.summary}\n{digest}")
     return "\n\n".join(blocks)
 
 
