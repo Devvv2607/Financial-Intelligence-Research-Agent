@@ -188,7 +188,10 @@ async def main(args: argparse.Namespace) -> int:
                     break
                 answer = args.answer if args.command == "ask" else None
                 if answer is None and sys.stdin.isatty():
-                    answer = (await asyncio.to_thread(input, "\nYour answer: ")).strip()
+                    try:
+                        answer = (await asyncio.to_thread(input, "\nYour answer: ")).strip()
+                    except EOFError:  # Windows reports NUL as a tty: treat as no answer
+                        answer = None
                 if not answer:
                     print(f'\nPaused. Answer with: python -m agent resume --thread {thread} "..."')
                     return 0
