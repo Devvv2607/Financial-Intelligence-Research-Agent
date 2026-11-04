@@ -219,3 +219,21 @@ def test_business_overview_skips_cover_and_reaches_business_text() -> None:
     assert "Indicate by check mark" not in text
     assert "incorporated by reference" not in text.lower()
     assert "semiconductor" in text.lower()
+
+
+def test_underlined_navigation_link_does_not_split_a_risk_factor() -> None:
+    # NVIDIA/AMD/Tesla style: an underlined "Table of Contents" link at every page break.
+    nav = '<div><span style="text-decoration:underline">Table of Contents</span></div>'
+    html = (
+        '<div><span style="font-weight:700">We depend on third-party foundries.</span></div>'
+        "<div>"
+        + "First half of the risk discussion. " * 8
+        + "</div>"
+        + nav
+        + "<div>"
+        + "Second half continues after the page break. " * 8
+        + "</div>"
+    )
+    rfs = split_risk_factors(html_to_blocks(html))
+    assert [r.heading for r in rfs] == ["We depend on third-party foundries."]
+    assert "Second half" in rfs[0].body and "Table of Contents" not in rfs[0].body

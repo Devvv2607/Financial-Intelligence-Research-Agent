@@ -483,6 +483,15 @@ daily quota during the multi-day full run. `GroqClient(agent=True)` resolves the
   tokens (120b) were never written to the ledger; on the ingestion model this would have
   undercounted the daily budget. Both columns were widened, and every text column was
   checked against its longest real value.
+- **"Table of Contents" links split risk factors (Phase 1, found in Phase 2).** Running
+  the new `get_risk_factors` tool on real data showed NVIDIA risk factors whose heading was
+  "Table of Contents": 111 such rows across 6 of the 10 sample companies. Those filers
+  underline the navigation link repeated at every page break; the furniture filter kept
+  emphasized repeated lines (to protect Intel's large-font section title), so the splitter
+  read each link as a heading and cut risk factors in two at page breaks. Navigation links
+  are now dropped regardless of styling. Per-filing risk counts fell accordingly (e.g.
+  NVIDIA 38 -> 23, AMD 53 -> 44) and none of these headings remain; a regression test covers
+  it. The stored sample is re-extracted (no LLM cost) before the 20b re-tag.
 - **authlib deprecation warning (Phase 0).** `weaviate-client` imports authlib, which emits
   a `DeprecationWarning` and forces it visible with its own `simplefilter("always")`, so
   pytest's filters can't silence it. It is harmless and outside our code, so we leave it.

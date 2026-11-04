@@ -146,6 +146,16 @@ def html_to_blocks(content: bytes | str) -> list[Block]:
     return drop_page_furniture(builder.blocks)
 
 
+# Page-navigation links. Dropped regardless of styling: several filers (NVIDIA, AMD,
+# Tesla, Boeing, UnitedHealth, Intel) underline them, which made them look like headings
+# and split risk factors at every page break.
+_NAV_RE = re.compile(
+    r"(table of contents|back to (the )?(table of )?contents|return to (the )?table of contents"
+    r"|go to (the )?table of contents|index to (consolidated )?financial statements)",
+    re.I,
+)
+
+
 def drop_page_furniture(blocks: list[Block]) -> list[Block]:
     """Remove page numbers and repeated page headers/footers.
 
@@ -161,14 +171,15 @@ def drop_page_furniture(blocks: list[Block]) -> list[Block]:
         b
         for b in blocks
         if not re.fullmatch(r"[\divxlc\-\u2013\u2014 .|]+", b.text.lower())  # page numbers, rules
+        and not _NAV_RE.fullmatch(b.text.strip())
         and not (len(b.text) < 100 and counts[key(b)] >= 3 and _is_furniture(b))
     ]
 
 
 def _is_furniture(b: Block) -> bool:
     # A repeated line is page furniture if it carries a page number, or if it is plain
-    # small text ("Table of Contents" links). Emphasized/large repeated lines may be a
-    # real section heading that the filer also uses as a running header.
+    # small text. Emphasized/large repeated lines may be a real section heading that the
+    # filer also uses as a running header (navigation links are handled by _NAV_RE).
     return bool(re.search(r"\d", b.text)) or not (b.emphasized or b.font_pt >= 12)
 
 
