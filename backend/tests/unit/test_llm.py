@@ -1,0 +1,189 @@
+"""GroqClient: strict schema, caching, validation retry, rate limits, daily budget."""
+
+import json
+from typing import Any, Literal
+
+import httpx
+import pytest
+import respx
+from pydantic import BaseModel, SecretStr
+
+from core.config import Settings
+from core.llm import (
+    DailyLimitError,
+    GroqClient,
+    InMemoryLLMStore,
+    LLMError,
+    _parse_duration_s,
+    strict_json_schema,
+)
+
+URL = "https://api.groq.com/openai/v1/chat/completions"
+
+
+class Tag(BaseModel):
+    id: int
+    category: Literal["a", "b"]
+
+
+class Batch(BaseModel):
+    tags: list[Tag]
+
+
+def _settings(**kw: Any) -> Settings:
+    base: dict[str, Any] = {
+        "_env_file": None,
+        "groq_api_key": SecretStr("gsk_test"),
+        "groq_model_fast": "fast-model",
+        "groq_model_reasoning": "big-model",
+    }
+    return Settings(**(base | kw))
+
+
+def _ok(
+    content: Any,
+    prompt: int = 100,
+    completion: int = 20,
+    reasoning: int = 5,
+    headers: dict[str, str] | None = None,
+) -> httpx.Response:
+    return httpx.Response(
+        200,
+        headers=headers or {},
+        json={
+            "choices": [{"message": {"content": json.dumps(content)}}],
+            "usage": {
+                "prompt_tokens": prompt,
+                "completion_tokens": completion,
+                "completion_tokens_details": {"reasoning_tokens": reasoning},
+            },
+        },
+    )
+
+
+class Sleeps:
+    def __init__(self) -> None:
+        self.calls: list[float] = []
+
+    async def __call__(self, s: float) -> None:
+        self.calls.append(s)
+
+
+def _client(store: InMemoryLLMStore, sleeps: Sleeps, **kw: Any) -> GroqClient:
+    return GroqClient(_settings(**kw), store, http=httpx.AsyncClient(), sleep=sleeps)
+
+
+MSG = [{"role": "user", "content": "tag these"}]
+
+
+def test_strict_schema_inlines_refs_and_requires_everything() -> None:
+    schema = strict_json_schema(Batch)
+    assert "$defs" not in json.dumps(schema)
+    item = schema["properties"]["tags"]["items"]
+    assert item["required"] == ["id", "category"]
+    assert item["additionalProperties"] is False
+    assert schema["additionalProperties"] is False
+
+
+@respx.mock
+async def test_structured_call_records_usage_and_caches() -> None:
+    route = respx.post(URL).mock(return_value=_ok({"tags": [{"id": 0, "category": "a"}]}))
+    store, sleeps = InMemoryLLMStore(), Sleeps()
+    llm = _client(store, sleeps)
+    first = await llm.structured("fast", Batch, MSG, stage="risk_tagging", cik=1)
+    second = await llm.structured("fast", Batch, MSG, stage="risk_tagging", cik=1)
+    assert first == second == Batch(tags=[Tag(id=0, category="a")])
+    assert route.call_count == 1
+    body = json.loads(route.calls[0].request.content)
+    assert body["model"] == "fast-model"
+    assert body["response_format"]["json_schema"]["strict"] is True
+    assert body["reasoning_effort"] == "low"
+    live, hit = store.calls
+    assert (live.prompt_tokens, live.completion_tokens, live.reasoning_tokens) == (100, 20, 5)
+    assert hit.cache_hit and hit.prompt_tokens == 0
+
+
+@respx.mock
+async def test_validation_error_is_retried_with_feedback() -> None:
+    route = respx.post(URL).mock(
+        side_effect=[
+            _ok({"tags": [{"id": 0, "category": "zzz"}]}),
+            _ok({"tags": [{"id": 0, "category": "b"}]}),
+        ]
+    )
+    out = await _client(InMemoryLLMStore(), Sleeps()).structured("fast", Batch, MSG, stage="t")
+    assert out.tags[0].category == "b"
+    retry_messages = json.loads(route.calls[1].request.content)["messages"]
+    assert "invalid" in retry_messages[-1]["content"]
+
+
+@respx.mock
+async def test_validation_gives_up_after_two_retries() -> None:
+    respx.post(URL).mock(return_value=_ok({"tags": [{"id": 0, "category": "zzz"}]}))
+    with pytest.raises(LLMError, match="validation"):
+        await _client(InMemoryLLMStore(), Sleeps()).structured("fast", Batch, MSG, stage="t")
+
+
+@respx.mock
+async def test_per_minute_429_waits_retry_after_then_succeeds() -> None:
+    respx.post(URL).mock(
+        side_effect=[
+            httpx.Response(
+                429,
+                headers={"retry-after": "12"},
+                json={"error": {"message": "Rate limit reached for tokens per minute (TPM)"}},
+            ),
+            _ok({"tags": []}),
+        ]
+    )
+    sleeps = Sleeps()
+    await _client(InMemoryLLMStore(), sleeps).structured("fast", Batch, MSG, stage="t")
+    assert 12.0 in sleeps.calls
+
+
+@respx.mock
+async def test_per_day_429_raises_daily_limit() -> None:
+    respx.post(URL).mock(
+        return_value=httpx.Response(
+            429,
+            json={
+                "error": {"message": "Rate limit reached ... on tokens per day (TPD): Limit 200000"}
+            },
+        )
+    )
+    with pytest.raises(DailyLimitError):
+        await _client(InMemoryLLMStore(), Sleeps()).structured("fast", Batch, MSG, stage="t")
+
+
+async def test_own_daily_budget_stops_before_calling() -> None:
+    store = InMemoryLLMStore()
+    from core.llm import CallRecord
+
+    await store.record(CallRecord("fast-model", "t", None, 150_000, 49_990, None, 1, False, True))
+    with respx.mock(assert_all_called=False) as mock:
+        route = mock.post(URL)
+        with pytest.raises(DailyLimitError, match="budget"):
+            await _client(store, Sleeps()).structured("fast", Batch, MSG, stage="t")
+        assert route.call_count == 0
+
+
+@respx.mock
+async def test_paces_on_remaining_token_headers() -> None:
+    respx.post(URL).mock(
+        return_value=_ok(
+            {"tags": []},
+            headers={"x-ratelimit-remaining-tokens": "10", "x-ratelimit-reset-tokens": "7.5s"},
+        )
+    )
+    sleeps = Sleeps()
+    llm = _client(sleeps=sleeps, store=InMemoryLLMStore())
+    await llm.structured("fast", Batch, MSG, stage="t")
+    await llm.structured("fast", Batch, [{"role": "user", "content": "other"}], stage="t")
+    assert any(6.0 < s <= 7.5 for s in sleeps.calls)
+
+
+def test_parse_duration() -> None:
+    assert _parse_duration_s("7.66s") == pytest.approx(7.66)
+    assert _parse_duration_s("1m26.4s") == pytest.approx(86.4)
+    assert _parse_duration_s("120ms") == pytest.approx(0.12)
+    assert _parse_duration_s(None) is None
