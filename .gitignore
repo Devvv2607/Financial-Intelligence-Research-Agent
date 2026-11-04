@@ -24,3 +24,8 @@ evals/results/*.json
 .idea/
 .DS_Store
 Thumbs.db
+
+# Embedding model cache (fastembed/ONNX), downloaded on first run
+data/models/
+fastembed_cache/
+*.onnx
