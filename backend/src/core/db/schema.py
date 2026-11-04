@@ -9,7 +9,6 @@ what makes ingestion idempotent: re-running an upsert with the same key is a no-
 """
 
 from sqlalchemy import (
-    ARRAY,
     BigInteger,
     Boolean,
     Column,
@@ -27,7 +26,9 @@ from sqlalchemy import (
     Text,
     func,
 )
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+
+# Postgres ARRAY (not the generic one): it provides .overlap()/.contains() for filters.
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
 
 metadata = MetaData(
     naming_convention={
