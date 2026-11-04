@@ -267,6 +267,24 @@ from Windows could reach either database. Host ports are configurable
 5442 / 8095 / 50055, all verified free. Containers still use standard ports internally.
 A host-side check confirmed `select version()` returns the container's PostgreSQL 18.6.
 
+## D-018 · Company universe: 205 large caps, validated against SEC tickers
+**Status:** Implemented (Phase 1, `data/universe.csv`)
+
+205 US large caps across all 11 GICS sectors (12–27 per sector), picked by hand to cover
+every sector, every demo-query company, and a range of 10-K formats. The sample includes
+banks, which may fail extraction (D-014). Every ticker was checked against SEC's
+`company_tickers.json` on 2026-11-04, and the `name` column is SEC's registered title,
+not a hand-typed name. That check found that MMC now trades as **MRSH** (same CIK 62709),
+and that EA, WBD, AVB and EQR had no entry in the SEC ticker file. Those four were
+replaced with same-sector large caps (FOXA, RDDT, IRM, EXR). We did not investigate why
+they were absent; without a ticker → CIK mapping the pipeline can't resolve them.
+
+Beyond the spec's `ticker,name`, the file has a `universe_sector` column. This is the
+**coverage bucket used to pick the universe**, labelled from general GICS knowledge. It
+is not a pipeline output. The stored sector fields come only from the SIC mapping and the
+LLM classifier (§3.4). The bucket is kept as an independent reference for sanity-checking
+those two signals, and for reporting coverage by sector.
+
 ---
 
 ## Adaptations: where libraries or tools differed from the spec's assumptions
