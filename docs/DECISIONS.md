@@ -86,6 +86,18 @@ limits far below that, so a naive tagger would stall for days or fail mid-run.
 that we project full-run tokens, time on the free tier, and cost on the paid tier, and
 report them **before** the full run. The owner then decides whether to upgrade.
 
+**Retry cap and unresolved tags (owner decision, Phase 1).** Groq enforces strict-mode
+schemas on its side and rejects a generation that breaks them (HTTP 400
+`json_validate_failed`) without reporting token usage. Every structured call therefore gets
+at most **2 attempts** (first try + one retry with the error fed back). If a risk-tag batch
+still fails, the valid tags in the last output are kept; any risk without a valid category
+is stored as `other` with `needs_review = true`, and the report counts these and the schema
+rejections. Retries can't quietly burn the daily quota, and nothing is silently mislabelled.
+
+**Headings-only comparison scope (owner decision).** The headings-only mode runs on three
+companies with different 10-K layouts (AAPL, INTC, XOM), not the whole sample: running
+both modes everywhere would roughly double tagging tokens for little extra signal.
+
 **Why.** Cost-aware LLM pipelines are a real engineering concern. Similarity-based tag
 inheritance is also more *consistent*: an unchanged risk keeps the same category across
 years, so year-over-year comparisons aren't polluted by LLM label noise.
