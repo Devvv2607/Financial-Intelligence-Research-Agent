@@ -17,7 +17,8 @@ source of truth**; approved deviations are logged in `docs/DECISIONS.md`.
 ## Layout
 - `backend/src/core` — settings, logging, DB engine, Weaviate client (shared by everything)
 - `backend/src/api` — FastAPI app (`api.main:app`)
-- `backend/src/agent` — LangGraph agent (Phase 3)
+- `backend/src/agent/tools` — the 8 agent tools (Phase 2); `python -m agent.tools list|call|demo`
+- `backend/src/agent` — LangGraph graph (Phase 3)
 - `ingestion/` — EDGAR/NewsAPI pipeline (Phase 1) · `evals/` — eval harness (Phase 6)
 - `frontend/` — Next.js 16 App Router, TypeScript, Tailwind v4
 - Python is a **uv workspace** (root `pyproject.toml`); one `.venv` at the repo root.
@@ -38,10 +39,12 @@ Windows PowerShell uses `.\make.ps1 <target>`; Bash/CI uses `make <target>`. Sam
 | `ingest-daily` | resume the full run; stops at the daily token/NewsAPI budgets |
 | `ingest-progress` / `ingest-report` | one-line progress / full ingestion report |
 | `review-export` / `review-score` | 30-row risk-tag review sheet for the owner / score it |
+| `tools-demo` | call every agent tool once against the local stores |
 
 Single test: `uv run pytest backend/tests/unit/test_health.py -k ready`.
 Live tests (real Groq/SEC/NewsAPI) are marked `@pytest.mark.live` and excluded by default;
-run with `uv run pytest -m live`.
+run with `uv run pytest -m live`. Integration tests (`@pytest.mark.integration`) use the local
+stack and whatever companies are ingested; they skip themselves when the stack is down.
 
 ## Code conventions
 - Python 3.12, fully typed, `mypy --strict` clean, ruff (line length 100).
