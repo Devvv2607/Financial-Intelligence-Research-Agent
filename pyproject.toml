@@ -28,7 +28,7 @@ dev = [
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-extend-exclude = ["frontend"]
+extend-exclude = ["frontend", "*.md"]  # ruff formats code blocks in docs; leave docs alone
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "SIM", "ASYNC", "RUF", "N", "S"]
