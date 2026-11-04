@@ -53,6 +53,11 @@ class Settings(BaseSettings):
     # Our own stop line per model per rolling 24h, below Groq's limit to leave headroom
     # (counted tokens only: Groq doesn't count prompt-cache hits toward limits).
     groq_daily_token_budget: int = 170_000
+    # The agent model's own stop line (owner: hard 150K/day on gpt-oss-120b, D-027).
+    agent_daily_token_budget: int = 150_000
+    # Reuse identical agent LLM responses (model + prompt key) during development so
+    # re-running a question costs nothing. Off in production.
+    agent_dev_cache: bool = True
     # USD per 1M tokens: {"model": [input, output]}. Checked against Groq's model pages.
     groq_prices_usd_per_mtok: dict[str, tuple[float, float]] = Field(default_factory=dict)
 

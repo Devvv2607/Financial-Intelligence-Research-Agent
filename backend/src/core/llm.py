@@ -17,6 +17,7 @@ import json
 import logging
 import re
 import time
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from typing import Any, Literal, NamedTuple, Protocol
 
@@ -26,6 +27,10 @@ from pydantic import BaseModel, ValidationError
 from core.config import ModelSlot, Settings
 
 logger = logging.getLogger(__name__)
+
+# Run id for the LLM call in progress (set by `structured(run_id=...)`); a ContextVar so
+# concurrent agent nodes sharing one client each attribute their own calls.
+_call_run_id: ContextVar[str | None] = ContextVar("llm_call_run_id", default=None)
 
 # Total attempts per structured call when the output breaks the schema (first try +
 # one retry). Kept low on purpose: each retry spends daily quota.
@@ -234,9 +239,41 @@ class GroqClient:
             "cache_hit": False,
             "ok": True,
         }
-        return CallRecord(model=model, stage=stage, cik=cik, run_id=self.run_id, **(base | kw))
+        run_id = _call_run_id.get() or self.run_id
+        return CallRecord(model=model, stage=stage, cik=cik, run_id=run_id, **(base | kw))
 
     async def structured[T: BaseModel](
+        self,
+        slot: ModelSlot,
+        schema: type[T],
+        messages: list[dict[str, str]],
+        *,
+        stage: str,
+        cik: int | None = None,
+        reasoning_effort: str = "low",
+        max_completion_tokens: int = 4096,
+        mode: ResponseMode = "json_schema",
+        run_id: str | None = None,
+    ) -> T:
+        """Validated structured output. `run_id` attributes this call in the ledger (agent
+        runs share one client, so the id is per call, not per client)."""
+        token = _call_run_id.set(run_id) if run_id else None
+        try:
+            return await self._structured(
+                slot,
+                schema,
+                messages,
+                stage=stage,
+                cik=cik,
+                reasoning_effort=reasoning_effort,
+                max_completion_tokens=max_completion_tokens,
+                mode=mode,
+            )
+        finally:
+            if token is not None:
+                _call_run_id.reset(token)
+
+    async def _structured[T: BaseModel](
         self,
         slot: ModelSlot,
         schema: type[T],
@@ -393,7 +430,11 @@ class GroqClient:
 
     async def _check_daily_budget(self, model: str, estimate: int) -> None:
         """Stop before our own daily budget (set below Groq's limit to leave headroom)."""
-        budget = self._settings.groq_daily_token_budget
+        budget = (
+            self._settings.agent_daily_token_budget
+            if self._agent
+            else self._settings.groq_daily_token_budget
+        )
         used = await self._store.tokens_last_24h(model)
         if used + estimate > budget:
             raise DailyLimitError(
