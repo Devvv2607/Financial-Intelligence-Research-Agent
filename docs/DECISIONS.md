@@ -523,6 +523,79 @@ of 50, because 50 covered only a few days for heavily covered companies.
 
 ---
 
+## D-033 · Agent LLM layer: one budget, a dev cache, tokens per node
+**Status:** Implemented (Phase 3, `agent/llm.py`, `agent/runlog.py`)
+
+The agent uses gpt-oss-120b only (`AGENT_MODEL_*`), whose daily quota is separate from the
+ingestion model's. Every agent call goes through `GroqAgentLLM`:
+- **Structured output** (analyzer, planner, critic) reuses Phase 1's `GroqClient` (strict
+  `json_schema`, at most 2 attempts). **Tool-calling and streaming** (specialists,
+  synthesizer) go through langchain-groq `ChatGroq` so LangGraph's `messages` stream mode
+  sees the tokens.
+- **Budget guard:** before each call, the 24-hour total for the agent model is checked
+  against `AGENT_DAILY_TOKEN_BUDGET` (150K). Over budget, nodes degrade instead of failing
+  (the critic answers "ok", a failed replan answers from what was collected).
+- **Dev response cache** (`AGENT_DEV_CACHE`), keyed by model, effort, messages and tools:
+  re-running a demo after changing one prompt only pays for the nodes whose input changed
+  (demo 1's re-run cost 6.7K instead of 11.8K).
+- **Ledger:** every call, including cache hits with the tokens they saved, is recorded
+  with the run id, so `node_usage(run_id)` gives tokens per node; the CLI prints it.
+- **Reasoning effort per node:** low for the analyzer and specialist loops, medium for the
+  planner, critic and synthesizer. Measured on the live demos: reasoning tokens were
+  26-114 per specialist step and 47-317 per analyzer turn (low), against 203-864 per
+  planner call (medium). There is no same-query comparison of the two effort levels yet.
+
+## D-034 · Tests make zero Groq calls
+**Status:** Implemented (Phase 3, `tests/agent/fakes.py`, `tests/conftest.py`)
+
+Every node reaches the outside world through `AgentDeps` (LLM, tool executor, company
+list, clock, run recorder, fiscal periods). The tests build the same compiled graph with a
+scripted `FakeLLM` and fake tools, and an autouse respx guard fails any test that tries to
+reach api.groq.com. The checkpoint test runs interrupt/resume against the real Postgres
+saver, over a fresh connection.
+
+## D-035 · Synthesis: shared source cap, exact fiscal periods, checked citations
+**Status:** Implemented (Phase 3, `agent/nodes/answer.py`; fixes from the live demos)
+
+- **Sources are numbered round-robin across steps** (cap 30, 300-character snippets).
+  In step order, AMD's 53 risk factors took every slot in demo 1 and left NVIDIA and the
+  news uncitable.
+- **Fiscal periods come from the database.** The synthesizer is given each company's stored
+  10-K fiscal years and period-end dates. Given only the MMDD fiscal-year end, it wrote
+  Apple's FY end as 09-30 (actual: 2026-09-26).
+- **Citations are checked deterministically.** gpt-oss often cites in its native style
+  (`【3†source】`) despite the prompt. `finalize` maps those to `[3]`, removes other bracket
+  references (step ids) and any number that isn't a source, then adds the footer.
+- **Prompt rules from the demos:** news supports a risk only when the headline is directly
+  about it; no verdicts of its own ("moderate-to-high risk", or "high" leverage for a bank
+  whose ratio is normal for banks).
+- **Known limit:** a citation can point to the wrong source of the right kind (demo 7
+  quoted one Intel risk factor and cited another). Only the Phase 6 citation-accuracy
+  eval can measure this; the check above guarantees only that cited sources exist.
+
+## D-036 · Replans: bounded, additive, and judged at the question's level
+**Status:** Implemented (Phase 3, `agent/nodes/planning.py`, critic prompt v2)
+
+Replans add steps with new ids (`r2s1`…), never touch completed results, and are capped
+at 2. In demo 7 the critic read the 1,200-character review digests as missing data and
+asked for full lists, so two rounds re-fetched the same comparison (27.7K tokens). Digests
+are now marked as shortened. Critic prompt v2 judges at the question's level of detail and
+never asks for a tool call that was already made. The planner (v2) also leaves optional
+years out unless the user names them, because guessing them produced a wrong comparison.
+`compare_risk_factors` now normalises the year order itself, so "new" always means
+"in the later filing".
+
+## D-037 · Entity resolution is deterministic; ambiguity asks
+**Status:** Implemented (Phase 3, `agent/nodes/intake.py`)
+
+Company mentions are matched against the ingested companies with names, aliases and
+uppercase tickers (a 1-letter ticker only as `$F`), using rapidfuzz's strict `ratio`. Its
+`WRatio` partial matching matched "Intel" to "Johnson Controls International". A shared
+short name ("Johnson": JNJ and JCI) interrupts with the candidates. On resume only an exact
+full-name or ticker match is kept, and the run returns to the node that asked. Companies
+the dataset doesn't cover are named in the answer with close matches. They are never
+answered from model knowledge.
+
 ## Adaptations: where libraries or tools differed from the spec's assumptions
 
 - **Postgres 18 image data path (Phase 0).** From v18 the official image sets
@@ -611,3 +684,19 @@ of 50, because 50 covered only a few days for heavily covered companies.
   `core` first. pytest re-enables DeprecationWarnings per test, so the same single message
   is also listed in its `filterwarnings`. Pinning authlib < 1.8 would have silenced it too,
   but holds back an auth library's releases just to hide a notice.
+- **LangGraph reserves `configurable.run_id` (Phase 3).** We first passed our run id as
+  `configurable.run_id`. LangGraph also reads that key as the run's own id, and a second
+  turn in the same thread with a new value ran as a no-op (no new checkpoint, the old
+  answer returned). Our id is now `configurable.agent_run_id`; resumes reuse the paused
+  run's id.
+- **Checkpoint serializer allow-list (Phase 3).** langgraph-checkpoint 3.x warns
+  "Deserializing unregistered type" for Pydantic objects in state that aren't on its
+  allow-list. `agent/checkpoint.py` registers our state models with
+  `JsonPlusSerializer(allowed_msgpack_modules=...)` for both the Postgres and in-memory
+  savers.
+- **ChatGroq's HTTP client (Phase 3).** `ChatGroq` creates its own async client and
+  nothing closes it, so the CLI ended with an "unclosed transport" warning. The agent
+  now passes one `http_async_client` it owns and closes it in `aclose()`.
+- **Windows reports `NUL` as a terminal (Phase 3).** `sys.stdin.isatty()` is true when
+  stdin is redirected from `NUL`, so the CLI's clarification prompt hit EOF. EOF now
+  means "no answer": the run stays paused, to be continued with `python -m agent resume`.
