@@ -47,6 +47,16 @@ $targets = [ordered]@{
     "ready"     = @{ Help = "Query the API readiness probe"; Run = {
             # curl.exe, not the PowerShell `curl` alias; a 503 is a valid answer here.
             & curl.exe -s -w "`nHTTP %{http_code}`n" http://localhost:8000/ready } }
+    "migrate"   = @{ Help = "Apply database migrations"; Run = {
+            Invoke-Step uv @("run", "alembic", "-c", "backend/alembic.ini", "upgrade", "head") } }
+    "ingest-sample" = @{ Help = "Ingest the 10 agreed sample companies (+ headings-only experiment)"; Run = {
+            & $targets["migrate"].Run
+            Invoke-Step uv @("run", "python", "-m", "ingestion", "run", "--sample", "10", "--experiment-headings-only") } }
+    "ingest-full" = @{ Help = "Ingest the whole universe (resumable)"; Run = {
+            & $targets["migrate"].Run
+            Invoke-Step uv @("run", "python", "-m", "ingestion", "run") } }
+    "ingest-report" = @{ Help = "Write the ingestion report for the sample"; Run = {
+            Invoke-Step uv @("run", "python", "-m", "ingestion", "report", "--sample", "10") } }
     "dev-api"   = @{ Help = "Run the API on the host with reload"; Run = {
             Invoke-Step uv @("run", "uvicorn", "api.main:app", "--reload", "--port", "8000", "--loop", "core.aio:selector_loop") } }
     "dev-web"   = @{ Help = "Run the frontend dev server"; Run = { Invoke-Step npm @("--prefix", "frontend", "run", "dev") } }

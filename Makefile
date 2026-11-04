@@ -3,7 +3,7 @@
 # Keep the two in sync — every target here has a twin in make.ps1.
 
 .DEFAULT_GOAL := help
-.PHONY: help install lint format typecheck test check up down logs ready dev-api dev-web web-check clean
+.PHONY: help install lint format typecheck test check up down logs ready dev-api dev-web web-check clean migrate ingest-sample ingest-full ingest-report
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-12s %s\n", $$1, $$2}'
@@ -43,6 +43,18 @@ logs: ## Tail stack logs
 
 ready: ## Query the API readiness probe
 	curl -s -w "\nHTTP %{http_code}\n" http://localhost:8000/ready
+
+migrate: ## Apply database migrations
+	uv run alembic -c backend/alembic.ini upgrade head
+
+ingest-sample: migrate ## Ingest the 10 agreed sample companies (+ headings-only experiment)
+	uv run python -m ingestion run --sample 10 --experiment-headings-only
+
+ingest-full: migrate ## Ingest the whole universe (resumable)
+	uv run python -m ingestion run
+
+ingest-report: ## Write the ingestion report for the sample (REPORT_ARGS= for others)
+	uv run python -m ingestion report $(or $(REPORT_ARGS),--sample 10)
 
 dev-api: ## Run the API on the host with reload
 	uv run uvicorn api.main:app --reload --port 8000 --loop core.aio:selector_loop
