@@ -296,6 +296,12 @@ A host-side check confirmed `select version()` returns the container's PostgreSQ
   `$ErrorActionPreference = "Stop"`, docker's progress output aborted `make.ps1 up`.
   `Invoke-Step` now runs native tools under `Continue` and judges them only by
   `$LASTEXITCODE`.
+- **First CI run on GitHub (Phase 0).** Two failures that a warm local checkout hid.
+  (1) `astral-sh/setup-uv@v10` didn't resolve, because that action publishes no moving
+  major tags; it is pinned to the exact release `v10.3.3`. (2) `tsc` failed with `Cannot
+  find name 'LayoutProps'`: Next 16 generates route types such as `LayoutProps` into
+  `.next/types`, which a clean checkout lacks. `typecheck` now runs `next typegen` first.
+  Reproduced locally by deleting `.next/` before applying the fix.
 - **authlib deprecation warning (Phase 0).** `weaviate-client` imports authlib, which emits
   a `DeprecationWarning` and forces it visible with its own `simplefilter("always")`, so
   pytest's filters can't silence it. It is harmless and outside our code, so we leave it.
