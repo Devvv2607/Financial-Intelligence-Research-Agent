@@ -1,0 +1,54 @@
+# CLAUDE.md — project conventions
+
+Financial Intelligence Research Agent: a LangGraph plan-and-execute research agent over SEC
+filings and news (Groq LLMs, Weaviate hybrid search, Postgres). **`BUILD_SPEC.md` is the
+source of truth**; approved deviations are logged in `docs/DECISIONS.md`.
+
+## Working rules
+- Build **phase by phase** (BUILD_SPEC §9). At the end of a phase: lint + typecheck + tests,
+  a short summary with how to verify, then stop for approval.
+- One branch per phase (`phase-N-<name>`), merged to `main` after approval. Conventional
+  commits (`feat:`, `fix:`, `build:`, `docs:`, `test:`, `chore:`).
+- **Never fake data, metrics or test results.** If a library/API differs from the spec,
+  check current docs, adapt, and add an entry to `docs/DECISIONS.md`.
+- No placeholder stubs or dead code in finished phases. Add packages/targets when they get
+  real code.
+
+## Layout
+- `backend/src/core` — settings, logging, DB engine, Weaviate client (shared by everything)
+- `backend/src/api` — FastAPI app (`api.main:app`)
+- `backend/src/agent` — LangGraph agent (Phase 3)
+- `ingestion/` — EDGAR/NewsAPI pipeline (Phase 1) · `evals/` — eval harness (Phase 6)
+- `frontend/` — Next.js 16 App Router, TypeScript, Tailwind v4
+- Python is a **uv workspace** (root `pyproject.toml`); one `.venv` at the repo root.
+
+## Commands
+Windows PowerShell uses `.\make.ps1 <target>`; Bash/CI uses `make <target>`. Same targets.
+
+| Target | What it does |
+|---|---|
+| `install` | `uv sync` + `npm ci` in frontend |
+| `check` | lint + typecheck + tests + frontend lint/tsc — run before every commit |
+| `lint` / `format` / `typecheck` / `test` | ruff / ruff fix / mypy strict / pytest |
+| `up` / `down` / `logs` | docker compose stack |
+| `ready` | GET `http://localhost:8000/ready` |
+| `dev-api` / `dev-web` | run API / frontend on the host with reload |
+
+Single test: `uv run pytest backend/tests/unit/test_health.py -k ready`.
+Live tests (real Groq/SEC/NewsAPI) are marked `@pytest.mark.live` and excluded by default;
+run with `uv run pytest -m live`.
+
+## Code conventions
+- Python 3.12, fully typed, `mypy --strict` clean, ruff (line length 100).
+- Short "why" comments at decision points; no comments that restate the code.
+- Config only via `core.config.Settings` (pydantic-settings). No secrets or model names in code.
+- Logging via stdlib `logging`; JSON output with `run_id`/`thread_id` from ContextVars.
+- External calls always have timeouts; tool errors are returned as structured results, never raised into the graph.
+- Prompts live in `backend/src/agent/prompts/*.md`, not inline strings.
+- Tests: no network. HTTP mocked with `respx`; LLM replaced with a scripted fake.
+- Frontend: handle loading/empty/error states; no fake data in the UI.
+
+## Environment gotchas
+- `.env` is read from the repo root; `docker-compose` overrides DB/Weaviate hosts for the api container.
+- `CORS_ORIGINS` must be a JSON list in `.env`.
+- Line endings are LF (`.gitattributes`); `.ps1` files are CRLF.
