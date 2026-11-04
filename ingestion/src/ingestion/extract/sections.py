@@ -66,6 +66,40 @@ def find_section_regex(blocks: list[Block], name: SectionName) -> Section | None
     return best
 
 
+_COVER_RE = re.compile(
+    r"(indicate by check mark|commission file number|securities registered pursuant|"
+    r"documents incorporated by reference|forward-looking statements?|table of contents|"
+    r"aggregate market value|exact name of registrant|incorporated by reference|"
+    r"cross-reference index|presentation of content in our form 10-k)",
+    re.I,
+)
+
+
+_BULLET_START_RE = re.compile(r"^\s*[\u2022\u25aa\u25cf\u00b7\uf0b7]")
+
+
+def business_overview(blocks: list[Block], max_words: int = 1_200) -> str:
+    """Opening business description for filers with no single Item 1 (e.g. Intel).
+
+    Takes substantive paragraphs (>= 200 chars) from the start of the document, skipping
+    the cover page, table of contents and forward-looking-statements boilerplate, until
+    `max_words`. Used only for sector classification and indexing, never as "Item 1".
+    """
+    words: list[str] = []
+    for b in blocks:
+        if (
+            len(b.text) < 200
+            or _COVER_RE.search(b.text[:300])
+            or item_code(b.text)
+            or _BULLET_START_RE.match(b.text)  # forward-looking-statement bullet lists
+        ):
+            continue
+        words.extend(b.text.split())
+        if len(words) >= max_words:
+            break
+    return " ".join(words[:max_words])
+
+
 class _Boundaries(BaseModel):
     start_line: int = Field(description="Line number of the section's own heading, or -1")
     end_line: int = Field(description="Line number of the next section's heading, or -1")

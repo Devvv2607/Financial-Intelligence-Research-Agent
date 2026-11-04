@@ -239,7 +239,7 @@ async def upsert_news(engine: AsyncEngine, cik: int, articles: list[Article]) ->
     )
 
 
-async def save_tags(engine: AsyncEngine, tags: list[TagResult]) -> None:
+async def save_tags(engine: AsyncEngine, tags: list[TagResult], tag_version: str) -> None:
     async with engine.begin() as conn:
         for t in tags:
             await conn.execute(
@@ -252,6 +252,7 @@ async def save_tags(engine: AsyncEngine, tags: list[TagResult]) -> None:
                     inherited_from=t.inherited_from,
                     similarity=t.similarity,
                     needs_review=t.needs_review,
+                    tag_version=tag_version,
                 )
             )
 
@@ -307,9 +308,16 @@ async def set_job(
     *,
     error: str | None = None,
     details: dict[str, Any] | None = None,
+    run_id: str | None = None,
 ) -> None:
     stmt = insert(ingestion_jobs).values(
-        cik=cik, stage=stage, status=status, error=error, details=details, attempts=1
+        cik=cik,
+        stage=stage,
+        status=status,
+        error=error,
+        details=details,
+        attempts=1,
+        run_id=run_id,
     )
     stmt = stmt.on_conflict_do_update(
         index_elements=["cik", "stage"],
@@ -317,6 +325,7 @@ async def set_job(
             "status": stmt.excluded.status,
             "error": stmt.excluded.error,
             "details": stmt.excluded.details,
+            "run_id": stmt.excluded.run_id,
             "attempts": ingestion_jobs.c.attempts + (1 if status == "running" else 0),
         },
     )

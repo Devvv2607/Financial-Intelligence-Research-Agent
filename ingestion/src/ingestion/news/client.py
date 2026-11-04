@@ -108,6 +108,16 @@ class NewsApiClient:
     async def aclose(self) -> None:
         await self._http.aclose()
 
+    def _today(self) -> str:
+        return datetime.now(UTC).date().isoformat()
+
+    def cached_today(self, ticker: str) -> bool:
+        return (self._cache_dir / ticker / f"{self._today()}.json").exists()
+
+    def requests_today(self) -> int:
+        """Requests made today (UTC), counted from the one-file-per-request cache."""
+        return sum(1 for _ in self._cache_dir.glob(f"*/{self._today()}.json"))
+
     async def everything(
         self, ticker: str, query: str, window_days: int, today: date | None = None
     ) -> dict[str, Any]:

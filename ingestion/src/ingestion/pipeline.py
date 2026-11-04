@@ -33,6 +33,7 @@ from core.db.schema import (
 from core.embeddings import Embedder
 from core.llm import DailyLimitError, GroqClient
 from core.vectorstore import FILING_CHUNK, NEWS_ARTICLE, RISK_FACTOR, ensure_collections
+from ingestion import prompts
 from ingestion.edgar.client import EdgarClient, EdgarError
 from ingestion.edgar.submissions import FilingRef, load_filings, load_ticker_map
 from ingestion.edgar.xbrl import COMPANYFACTS_URL, extract_annual_facts, metrics_found
@@ -50,6 +51,7 @@ from ingestion.extract.risk_splitter import split_risk_factors
 from ingestion.extract.sections import (
     Section,
     SectionName,
+    business_overview,
     find_section_llm,
     find_section_regex,
 )
@@ -79,6 +81,10 @@ MIN_RISK_FACTORS = 5
 EIGHT_K_MAX_CHARS = 30_000
 RISK_EMBED_TOKENS = 500  # heading + body opening, cut to fit the 512-token window (D-001)
 EXPERIMENT_HEADINGS_ONLY = "headings_only"
+
+
+class StagePaused(RuntimeError):  # noqa: N818 - a pause is an expected outcome, not an error
+    """A daily limit (ours or a provider's) was reached; the stage resumes on the next run."""
 
 
 class StageError(RuntimeError):
@@ -123,6 +129,7 @@ class Pipeline:
         weaviate_client: weaviate.WeaviateAsyncClient,
         news: NewsApiClient | None,
         *,
+        run_id: str,
         concurrency: int = 2,
         experiment_tickers: frozenset[str] = frozenset(),
         on_progress: Callable[[str, str], None] | None = None,
@@ -134,11 +141,14 @@ class Pipeline:
         self.embedder = embedder
         self.wv = weaviate_client
         self.news = news
+        self.run_id = run_id
         self._sem = asyncio.Semaphore(concurrency)
+        # Prompt version + model: tags from another model (e.g. a dev run on the agent
+        # model) count as stale and are redone by the production model.
+        self._tag_version = f"{prompts.version('risk_tagging')}@{settings.model_for('fast')}"
         self._experiment_tickers = experiment_tickers
         self._on_progress = on_progress or (lambda ticker, msg: None)
         self._ticker_map: dict[str, int] = {}
-        self._llm_paused = False
 
     async def run(
         self,
@@ -175,13 +185,14 @@ class Pipeline:
                     out.stages[stage] = "skipped"
                     continue
                 self._on_progress(row.ticker, stage)
-                await pg.set_job(self.engine, cik, stage, "running")
+                await pg.set_job(self.engine, cik, stage, "running", run_id=self.run_id)
                 try:
                     details = await self._run_stage(stage, row, cik, refresh)
-                except DailyLimitError as exc:
-                    self._llm_paused = True
+                except (DailyLimitError, StagePaused) as exc:
                     out.stages[stage], out.errors[stage] = "paused", str(exc)
-                    await pg.set_job(self.engine, cik, stage, "paused", error=str(exc))
+                    await pg.set_job(
+                        self.engine, cik, stage, "paused", error=str(exc), run_id=self.run_id
+                    )
                 except (StageError, EdgarError, NewsApiError) as exc:
                     out.stages[stage], out.errors[stage] = "failed", str(exc)
                     await pg.set_job(
@@ -191,15 +202,20 @@ class Pipeline:
                         "failed",
                         error=str(exc),
                         details=getattr(exc, "details", None),
+                        run_id=self.run_id,
                     )
                 except Exception as exc:  # unexpected: record and keep the run going
                     logger.exception("stage crashed", extra={"ticker": row.ticker, "stage": stage})
                     msg = f"{type(exc).__name__}: {exc}"
                     out.stages[stage], out.errors[stage] = "failed", msg
-                    await pg.set_job(self.engine, cik, stage, "failed", error=msg)
+                    await pg.set_job(
+                        self.engine, cik, stage, "failed", error=msg, run_id=self.run_id
+                    )
                 else:
                     out.stages[stage] = "done"
-                    await pg.set_job(self.engine, cik, stage, "done", details=details)
+                    await pg.set_job(
+                        self.engine, cik, stage, "done", details=details, run_id=self.run_id
+                    )
         self._on_progress(row.ticker, "finished")
         return out
 
@@ -282,6 +298,13 @@ class Pipeline:
                 section = await find_section_llm(blocks, name, self.llm, cik=cik)
             if section is None:
                 info[name] = {"ok": False, "method": None, "chars": 0}
+                if name == "item_1":
+                    overview = business_overview(blocks)
+                    if overview:
+                        await pg.upsert_section(
+                            self.engine, ref.accession_no, "business_overview", overview, "opening"
+                        )
+                        info["business_overview"] = {"ok": True, "chars": len(overview)}
                 continue
             text = blocks_text(section.body(blocks))
             await pg.upsert_section(self.engine, ref.accession_no, name, text, section.method)
@@ -340,7 +363,7 @@ class Pipeline:
             "prior_count": len(prior),
         }
 
-        todo = [_risk_input(r) for r in latest if r["category"] is None]
+        todo = [_risk_input(r) for r in latest if self._needs_tag(r)]
         new_tags = await tag_with_llm(
             self.llm,
             todo,
@@ -348,8 +371,9 @@ class Pipeline:
             stage="risk_tagging",
             batch_size=s.risk_tag_batch_size,
             body_words=s.risk_tag_body_words,
+            mode=s.risk_tag_response_mode,
         )
-        await pg.save_tags(self.engine, new_tags)
+        await pg.save_tags(self.engine, new_tags, self._tag_version)
         details["latest_llm_tagged"] = len(new_tags)
 
         if prior:
@@ -358,10 +382,10 @@ class Pipeline:
             latest_tags = [
                 TagResult(r["id"], r["category"], r["summary"] or "", "llm")
                 for r in latest
-                if r["category"] is not None
+                if not self._needs_tag(r)
             ]
             latest_by_key = {r["id"]: r for r in latest}
-            prior_todo = [_risk_input(r) for r in prior if r["category"] is None]
+            prior_todo = [_risk_input(r) for r in prior if self._needs_tag(r)]
             if prior_todo and latest_tags:
                 latest_vecs = await self.embedder.embed(
                     [
@@ -375,7 +399,7 @@ class Pipeline:
                 inherited, remaining = inherit_tags(
                     prior_todo, latest_tags, prior_vecs, latest_vecs, s.risk_tag_inherit_similarity
                 )
-                await pg.save_tags(self.engine, inherited)
+                await pg.save_tags(self.engine, inherited, self._tag_version)
                 prior_tags = await tag_with_llm(
                     self.llm,
                     remaining,
@@ -383,8 +407,9 @@ class Pipeline:
                     stage="risk_tagging_prior",
                     batch_size=s.risk_tag_batch_size,
                     body_words=s.risk_tag_body_words,
+                    mode=s.risk_tag_response_mode,
                 )
-                await pg.save_tags(self.engine, prior_tags)
+                await pg.save_tags(self.engine, prior_tags, self._tag_version)
                 details["prior_inherited"] = len(inherited)
                 details["prior_llm_tagged"] = len(prior_tags)
 
@@ -392,6 +417,10 @@ class Pipeline:
         if ticker in self._experiment_tickers:
             details["experiment_headings_only"] = await self._headings_experiment(cik, years[0])
         return details
+
+    def _needs_tag(self, r: dict[str, Any]) -> bool:
+        """Untagged, or tagged by an older version of the taxonomy prompt."""
+        return r["category"] is None or r["tag_version"] != self._tag_version
 
     async def _sector_llm(self, cik: int, details: dict[str, Any]) -> None:
         async with self.engine.connect() as conn:
@@ -403,19 +432,27 @@ class Pipeline:
             if company["llm_sector"] is not None:
                 details["sector_llm"] = "already classified"
                 return
-            item_1 = (
+            # Item 1 when extracted; otherwise the filing's opening business overview.
+            source = (
                 await conn.execute(
-                    select(filing_sections.c.text)
+                    select(filing_sections.c.text, filing_sections.c.section)
                     .join(filings, filings.c.accession_no == filing_sections.c.accession_no)
-                    .where(filings.c.cik == cik, filing_sections.c.section == "item_1")
-                    .order_by(filings.c.filing_date.desc())
+                    .where(
+                        filings.c.cik == cik,
+                        filing_sections.c.section.in_(("item_1", "business_overview")),
+                    )
+                    .order_by(
+                        (filing_sections.c.section == "item_1").desc(),
+                        filings.c.filing_date.desc(),
+                    )
                     .limit(1)
                 )
-            ).scalar_one_or_none()
-        if item_1 is None:
-            details["sector_llm"] = "skipped: no Item 1 text"
+            ).one_or_none()
+        if source is None:
+            details["sector_llm"] = "skipped: no Item 1 or business overview text"
             return
-        result = await classify_sector(self.llm, company["name"], item_1, cik=cik)
+        result = await classify_sector(self.llm, company["name"], source.text, cik=cik)
+        details["sector_source"] = source.section
         await pg.save_sector_llm(
             self.engine,
             cik,
@@ -465,6 +502,13 @@ class Pipeline:
                 await conn.execute(select(companies.c.name).where(companies.c.cik == cik))
             ).scalar_one_or_none() or row.name
         query = build_query(name, row.ticker)
+        if (
+            not self.news.cached_today(row.ticker)
+            and self.news.requests_today() >= self.s.newsapi_requests_per_day
+        ):
+            raise StagePaused(
+                f"NewsAPI daily cap reached ({self.s.newsapi_requests_per_day} requests)"
+            )
         payload = await self.news.everything(row.ticker, query, self.s.news_window_days)
         articles = parse_articles(payload)
         await pg.upsert_news(self.engine, cik, articles)
@@ -536,7 +580,11 @@ class Pipeline:
             "company": company["name"],
             "sector": company["llm_sector"] or company["sic_sector"],
         }
-        label = {"item_1": "Item 1 Business", "item_1a": "Item 1A Risk Factors"}
+        label = {
+            "item_1": "Item 1 Business",
+            "item_1a": "Item 1A Risk Factors",
+            "business_overview": "Business overview",
+        }
 
         chunks = PendingObjects(FILING_CHUNK)
         for sec in sections:

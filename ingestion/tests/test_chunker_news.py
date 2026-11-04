@@ -155,3 +155,16 @@ async def test_news_client_raises_on_api_error(tmp_path: Path) -> None:
     client = NewsApiClient("k", "https://newsapi.org/v2", tmp_path, http=httpx.AsyncClient())
     with pytest.raises(NewsApiError, match="rateLimited"):
         await client.everything("AAPL", '"Apple"', 29)
+
+
+def test_news_requests_today_counts_cache_files(tmp_path: Path) -> None:
+    from datetime import UTC, datetime
+
+    client = NewsApiClient("k", "https://newsapi.org/v2", tmp_path, http=httpx.AsyncClient())
+    today = datetime.now(UTC).date().isoformat()
+    for t in ("AAPL", "NVDA"):
+        (tmp_path / "newsapi" / t).mkdir(parents=True)
+        (tmp_path / "newsapi" / t / f"{today}.json").write_text("{}")
+    (tmp_path / "newsapi" / "AAPL" / "2020-01-01.json").write_text("{}")
+    assert client.requests_today() == 2
+    assert client.cached_today("AAPL") and not client.cached_today("TSLA")

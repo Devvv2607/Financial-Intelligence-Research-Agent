@@ -18,7 +18,7 @@ import numpy as np
 from numpy.typing import NDArray
 from pydantic import BaseModel
 
-from core.llm import GroqClient, InvalidOutputError
+from core.llm import GroqClient, InvalidOutputError, ResponseMode
 from ingestion import prompts
 
 RiskCategory = Literal[
@@ -113,6 +113,7 @@ async def tag_with_llm(
     batch_size: int,
     body_words: int,
     headings_only: bool = False,
+    mode: ResponseMode = "json_schema",
 ) -> list[TagResult]:
     results: list[TagResult] = []
     for start in range(0, len(risks), batch_size):
@@ -135,6 +136,7 @@ async def tag_with_llm(
                     ],
                     stage=stage,
                     cik=cik,
+                    mode=mode,
                 )
             except InvalidOutputError as exc:
                 # Retries are spent. Keep what was valid; everything else becomes

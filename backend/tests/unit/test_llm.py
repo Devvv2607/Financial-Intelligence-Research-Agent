@@ -229,3 +229,88 @@ async def test_other_400s_are_not_retried() -> None:
     with pytest.raises(LLMError, match="400"):
         await _client(InMemoryLLMStore(), Sleeps()).structured("fast", Batch, MSG, stage="t")
     assert route.call_count == 1
+
+
+def _ok_cached(content: Any, prompt: int, cached: int, completion: int) -> httpx.Response:
+    return httpx.Response(
+        200,
+        json={
+            "choices": [{"message": {"content": json.dumps(content)}}],
+            "usage": {
+                "prompt_tokens": prompt,
+                "completion_tokens": completion,
+                "prompt_tokens_details": {"cached_tokens": cached},
+            },
+        },
+    )
+
+
+@respx.mock
+async def test_groq_cached_tokens_are_recorded_and_not_counted() -> None:
+    respx.post(URL).mock(
+        return_value=_ok_cached({"tags": []}, prompt=1500, cached=1024, completion=100)
+    )
+    store = InMemoryLLMStore()
+    llm = GroqClient(_settings(), store, http=httpx.AsyncClient(), sleep=Sleeps(), run_id="r1")
+    await llm.structured("fast", Batch, MSG, stage="t")
+    call = store.calls[0]
+    assert (call.cached_tokens, call.counted_tokens, call.run_id) == (1024, 576, "r1")
+    assert await store.tokens_last_24h("fast-model") == 576
+
+
+@respx.mock
+async def test_response_cache_hit_records_what_it_saved() -> None:
+    respx.post(URL).mock(
+        return_value=_ok_cached({"tags": []}, prompt=1500, cached=1000, completion=100)
+    )
+    store = InMemoryLLMStore()
+    llm = _client(store, Sleeps())
+    await llm.structured("fast", Batch, MSG, stage="t")
+    await llm.structured("fast", Batch, MSG, stage="t")
+    hit = store.calls[1]
+    assert hit.cache_hit and hit.saved_tokens == 600 and hit.counted_tokens == 0
+
+
+async def test_daily_budget_setting_is_the_stop_line() -> None:
+    from core.llm import CallRecord
+
+    store = InMemoryLLMStore()
+    await store.record(CallRecord("fast-model", "t", None, 1000, 0, None, 1, False, True))
+    with respx.mock(assert_all_called=False) as mock:
+        route = mock.post(URL)
+        with pytest.raises(DailyLimitError, match="budget is 1,200"):
+            await _client(store, Sleeps(), groq_daily_token_budget=1_200).structured(
+                "fast", Batch, MSG, stage="t"
+            )
+        assert route.call_count == 0
+
+
+@respx.mock
+async def test_json_object_mode_puts_schema_in_static_system_prompt() -> None:
+    route = respx.post(URL).mock(return_value=_ok({"tags": [{"id": 0, "category": "a"}]}))
+    msgs = [{"role": "system", "content": "static rules"}, {"role": "user", "content": "variable"}]
+    await _client(InMemoryLLMStore(), Sleeps()).structured(
+        "fast", Batch, msgs, stage="t", mode="json_object"
+    )
+    body = json.loads(route.calls[0].request.content)
+    assert body["response_format"] == {"type": "json_object"}
+    system, user = body["messages"]
+    assert (
+        system["content"].startswith("static rules")
+        and '"additionalProperties":false' in system["content"]
+    )
+    assert user == {"role": "user", "content": "variable"}  # variable content stays last
+
+
+@respx.mock
+async def test_agent_client_uses_agent_models() -> None:
+    route = respx.post(URL).mock(return_value=_ok({"tags": []}))
+    llm = GroqClient(
+        _settings(agent_model_fast="agent-model"),
+        InMemoryLLMStore(),
+        http=httpx.AsyncClient(),
+        sleep=Sleeps(),
+        agent=True,
+    )
+    await llm.structured("fast", Batch, MSG, stage="t")
+    assert json.loads(route.calls[0].request.content)["model"] == "agent-model"

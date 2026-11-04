@@ -87,7 +87,7 @@ filing_sections = Table(
     "filing_sections",
     metadata,
     Column("accession_no", String(25), ForeignKey("filings.accession_no", ondelete="CASCADE")),
-    Column("section", String(16), nullable=False),  # item_1 | item_1a
+    Column("section", String(32), nullable=False),  # item_1 | item_1a | business_overview
     Column("text", Text, nullable=False),
     Column("char_count", Integer, nullable=False),
     Column("method", String(16), nullable=False),  # regex | llm
@@ -109,6 +109,8 @@ risk_factors = Table(
     Column("category", String(32)),
     Column("summary", Text),
     Column("tag_source", String(16)),  # llm | inherited
+    # Prompt version + model that produced the tag, e.g. risk_tagging:v2@openai/gpt-oss-20b
+    Column("tag_version", String(96)),
     Column("inherited_from", String(32)),
     Column("similarity", Float),
     # Tagged "other" because the model never returned a valid category (D-003).
@@ -173,6 +175,7 @@ ingestion_jobs = Table(
     Column("status", String(16), nullable=False),  # running | done | failed
     Column("error", Text),
     Column("details", JSONB),
+    Column("run_id", String(96)),  # the ingestion run that last set this status
     Column("attempts", Integer, nullable=False, server_default="0"),
     _updated_at(),
     PrimaryKeyConstraint("cik", "stage"),
@@ -183,7 +186,7 @@ risk_tag_experiments = Table(
     "risk_tag_experiments",
     metadata,
     Column("risk_factor_id", String(32), ForeignKey("risk_factors.id", ondelete="CASCADE")),
-    Column("mode", String(32), nullable=False),
+    Column("mode", String(128), nullable=False),
     Column("category", String(32), nullable=False),
     Column("summary", Text),
     Column("needs_review", Boolean, nullable=False, server_default="false"),
@@ -200,10 +203,15 @@ llm_calls = Table(
     Column("model", Text, nullable=False),
     Column("stage", String(48), nullable=False),
     Column("cik", Integer),
+    Column("run_id", String(96)),
     Column("prompt_tokens", Integer, nullable=False, server_default="0"),
+    # Groq prompt-cache hits within prompt_tokens; these don't count toward rate limits.
+    Column("cached_tokens", Integer, nullable=False, server_default="0"),
     Column("completion_tokens", Integer, nullable=False, server_default="0"),
     Column("reasoning_tokens", Integer),
     Column("latency_ms", Integer, nullable=False, server_default="0"),
+    # On a response-cache hit: what the original call cost (lets reports price a full pass).
+    Column("saved_tokens", Integer, nullable=False, server_default="0"),
     Column("cache_hit", Boolean, nullable=False),
     Column("ok", Boolean, nullable=False),
     Column("error", Text),
@@ -216,6 +224,7 @@ llm_cache = Table(
     Column("key", String(64), primary_key=True),  # sha256 of model + schema + messages
     Column("model", Text, nullable=False),
     Column("response", JSONB, nullable=False),
+    Column("counted_tokens", Integer),  # counted tokens of the call that produced it
     Column("created_at", DateTime(timezone=True), server_default=func.now(), nullable=False),
 )
 

@@ -7,7 +7,8 @@ loops use langchain-groq; see DECISIONS D-019).
 Why talk to Groq's OpenAI-compatible HTTP API directly here (not langchain-groq):
 the free tier forces us to pace on Groq's `x-ratelimit-*` headers, distinguish a
 per-minute 429 (wait) from a per-day 429 (stop, resume tomorrow), and record exact
-`usage` per call. Those details are awkward to reach through the LangChain wrapper.
+`usage` per call — including `cached_tokens`, which Groq does not count toward rate
+limits. Those details are awkward to reach through the LangChain wrapper.
 """
 
 import asyncio
@@ -17,7 +18,7 @@ import logging
 import re
 import time
 from dataclasses import dataclass, field
-from typing import Any, Protocol
+from typing import Any, Literal, NamedTuple, Protocol
 
 import httpx
 from pydantic import BaseModel, ValidationError
@@ -30,6 +31,13 @@ logger = logging.getLogger(__name__)
 # one retry). Kept low on purpose: each retry spends daily quota.
 MAX_VALIDATION_ATTEMPTS = 2
 MAX_RATE_LIMIT_RETRIES = 8
+
+# json_schema: Groq enforces the schema server-side (rejects with HTTP 400 on violation).
+# json_object: Groq only guarantees valid JSON; the schema goes in the system prompt and is
+# validated locally, so there are no server-side rejections. Prompt-cache hits were
+# hit-and-miss in both modes when probed (DECISIONS D-024), so the mode is selectable and
+# chosen from measurements.
+ResponseMode = Literal["json_schema", "json_object"]
 
 
 class DailyLimitError(RuntimeError):
@@ -67,16 +75,31 @@ class CallRecord:
     completion_tokens: int
     reasoning_tokens: int | None
     latency_ms: int
-    cache_hit: bool
+    cache_hit: bool  # our response cache (no request sent), not Groq's prompt cache
     ok: bool
     error: str | None = None
+    cached_tokens: int = 0  # Groq prompt-cache hits inside prompt_tokens
+    saved_tokens: int = 0  # on a response-cache hit: counted tokens the original call cost
+    run_id: str | None = None
+
+    @property
+    def counted_tokens(self) -> int:
+        """Tokens that count toward Groq rate limits (cached prompt tokens don't)."""
+        return self.prompt_tokens - self.cached_tokens + self.completion_tokens
+
+
+class CachedResponse(NamedTuple):
+    response: dict[str, Any]
+    counted_tokens: int
 
 
 class LLMStore(Protocol):
     """Persistence for the response cache and the call ledger (Postgres in prod)."""
 
-    async def cache_get(self, key: str) -> dict[str, Any] | None: ...
-    async def cache_put(self, key: str, model: str, response: dict[str, Any]) -> None: ...
+    async def cache_get(self, key: str) -> CachedResponse | None: ...
+    async def cache_put(
+        self, key: str, model: str, response: dict[str, Any], counted_tokens: int
+    ) -> None: ...
     async def record(self, call: CallRecord) -> None: ...
     async def tokens_last_24h(self, model: str) -> int: ...
 
@@ -85,24 +108,22 @@ class LLMStore(Protocol):
 class InMemoryLLMStore:
     """Test/dev store. Same contract as the Postgres store."""
 
-    cache: dict[str, dict[str, Any]] = field(default_factory=dict)
+    cache: dict[str, CachedResponse] = field(default_factory=dict)
     calls: list[CallRecord] = field(default_factory=list)
 
-    async def cache_get(self, key: str) -> dict[str, Any] | None:
+    async def cache_get(self, key: str) -> CachedResponse | None:
         return self.cache.get(key)
 
-    async def cache_put(self, key: str, model: str, response: dict[str, Any]) -> None:
-        self.cache[key] = response
+    async def cache_put(
+        self, key: str, model: str, response: dict[str, Any], counted_tokens: int
+    ) -> None:
+        self.cache[key] = CachedResponse(response, counted_tokens)
 
     async def record(self, call: CallRecord) -> None:
         self.calls.append(call)
 
     async def tokens_last_24h(self, model: str) -> int:
-        return sum(
-            c.prompt_tokens + c.completion_tokens
-            for c in self.calls
-            if c.model == model and not c.cache_hit
-        )
+        return sum(c.counted_tokens for c in self.calls if c.model == model)
 
 
 def strict_json_schema(model: type[BaseModel]) -> dict[str, Any]:
@@ -150,6 +171,20 @@ def _error_body(resp: httpx.Response) -> dict[str, Any]:
     return err if isinstance(err, dict) else {}
 
 
+def _with_schema_instructions(
+    messages: list[dict[str, str]], json_schema: dict[str, Any]
+) -> list[dict[str, str]]:
+    """json_object mode: append the schema to the (static) system message, so it stays part
+    of the cacheable prefix and the variable user content stays last."""
+    note = (
+        "\n\nRespond with a single JSON object that conforms to this JSON Schema:\n"
+        + json.dumps(json_schema, separators=(",", ":"))
+    )
+    if messages and messages[0]["role"] == "system":
+        return [{"role": "system", "content": messages[0]["content"] + note}, *messages[1:]]
+    return [{"role": "system", "content": note.strip()}, *messages]
+
+
 def estimate_tokens(text: str) -> int:
     # ~4 chars/token for English prose; only used to decide whether to wait.
     return len(text) // 4 + 1
@@ -162,6 +197,9 @@ class GroqClient:
         store: LLMStore,
         http: httpx.AsyncClient | None = None,
         sleep: Any = asyncio.sleep,
+        *,
+        agent: bool = False,
+        run_id: str | None = None,
     ) -> None:
         if settings.groq_api_key is None:
             raise LLMError("GROQ_API_KEY is not set")
@@ -169,6 +207,10 @@ class GroqClient:
         self._store = store
         self._http = http or httpx.AsyncClient(timeout=settings.groq_timeout_s)
         self._sleep = sleep
+        # Agent/dev clients resolve to their own models so they never spend the
+        # ingestion model's daily quota (owner's plan for the full run).
+        self._agent = agent
+        self.run_id = run_id
         # One in-flight request per model: with an 8K TPM budget, parallel calls would
         # only race each other into 429s.
         self._locks: dict[str, asyncio.Lock] = {}
@@ -180,6 +222,20 @@ class GroqClient:
     async def aclose(self) -> None:
         await self._http.aclose()
 
+    def model_for(self, slot: ModelSlot) -> str:
+        return self._settings.model_for(slot, agent=self._agent)
+
+    def _record(self, model: str, stage: str, cik: int | None, **kw: Any) -> CallRecord:
+        base: dict[str, Any] = {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "reasoning_tokens": None,
+            "latency_ms": 0,
+            "cache_hit": False,
+            "ok": True,
+        }
+        return CallRecord(model=model, stage=stage, cik=cik, run_id=self.run_id, **(base | kw))
+
     async def structured[T: BaseModel](
         self,
         slot: ModelSlot,
@@ -190,28 +246,40 @@ class GroqClient:
         cik: int | None = None,
         reasoning_effort: str = "low",
         max_completion_tokens: int = 4096,
+        mode: ResponseMode = "json_schema",
     ) -> T:
-        model = self._settings.model_for(slot)
+        model = self.model_for(slot)
         json_schema = strict_json_schema(schema)
+        if mode == "json_object":
+            messages = _with_schema_instructions(messages, json_schema)
         key = hashlib.sha256(
             json.dumps(
-                [model, schema.__name__, json_schema, messages, reasoning_effort],
+                [model, schema.__name__, json_schema, messages, reasoning_effort, mode],
                 sort_keys=True,
             ).encode()
         ).hexdigest()
 
         cached = await self._store.cache_get(key)
         if cached is not None:
-            await self._store.record(CallRecord(model, stage, cik, 0, 0, None, 0, True, True))
-            return schema.model_validate(cached)
+            await self._store.record(
+                self._record(model, stage, cik, cache_hit=True, saved_tokens=cached.counted_tokens)
+            )
+            return schema.model_validate(cached.response)
 
+        # Static content (system prompt, schema) first and the variable content last, so
+        # consecutive calls share an exact prefix that Groq's prompt cache can reuse.
+        response_format: dict[str, Any] = (
+            {
+                "type": "json_schema",
+                "json_schema": {"name": schema.__name__, "strict": True, "schema": json_schema},
+            }
+            if mode == "json_schema"
+            else {"type": "json_object"}
+        )
         body: dict[str, Any] = {
             "model": model,
             "messages": list(messages),
-            "response_format": {
-                "type": "json_schema",
-                "json_schema": {"name": schema.__name__, "strict": True, "schema": json_schema},
-            },
+            "response_format": response_format,
             "reasoning_effort": reasoning_effort,
             "max_completion_tokens": max_completion_tokens,
         }
@@ -219,7 +287,7 @@ class GroqClient:
         async with lock:
             for attempt in range(MAX_VALIDATION_ATTEMPTS):
                 try:
-                    content = await self._complete(model, body, stage=stage, cik=cik)
+                    content, counted = await self._complete(model, body, stage=stage, cik=cik)
                     parsed = schema.model_validate_json(content)
                 except (ValidationError, SchemaRejectedError) as exc:
                     if isinstance(exc, SchemaRejectedError):
@@ -238,13 +306,13 @@ class GroqClient:
                         },
                     ]
                     continue
-                await self._store.cache_put(key, model, parsed.model_dump(mode="json"))
+                await self._store.cache_put(key, model, parsed.model_dump(mode="json"), counted)
                 return parsed
         raise AssertionError("unreachable")
 
     async def _complete(
         self, model: str, body: dict[str, Any], *, stage: str, cik: int | None
-    ) -> str:
+    ) -> tuple[str, int]:
         prompt_text = "".join(m["content"] for m in body["messages"])
         estimate = estimate_tokens(prompt_text) + body["max_completion_tokens"] // 4
         await self._check_daily_budget(model, estimate)
@@ -267,7 +335,9 @@ class GroqClient:
                 message = resp.text
                 if "per day" in message.lower() or "(tpd)" in message.lower():
                     await self._store.record(
-                        CallRecord(model, stage, cik, 0, 0, None, latency_ms, False, False, "TPD")
+                        self._record(
+                            model, stage, cik, latency_ms=latency_ms, ok=False, error="TPD"
+                        )
                     )
                     raise DailyLimitError(f"{model}: Groq daily limit reached")
                 wait = float(resp.headers.get("retry-after", "0") or 0) or 5.0
@@ -282,8 +352,8 @@ class GroqClient:
                 # No `usage` comes back on a 400, so these tokens can't be measured; the
                 # ledger flags them so reports can count them instead of hiding them.
                 await self._store.record(
-                    CallRecord(
-                        model, stage, cik, 0, 0, None, latency_ms, False, False, "schema_rejected"
+                    self._record(
+                        model, stage, cik, latency_ms=latency_ms, ok=False, error="schema_rejected"
                     )
                 )
                 raise SchemaRejectedError(
@@ -291,47 +361,43 @@ class GroqClient:
                 )
             if resp.status_code != 200:
                 await self._store.record(
-                    CallRecord(
+                    self._record(
                         model,
                         stage,
                         cik,
-                        0,
-                        0,
-                        None,
-                        latency_ms,
-                        False,
-                        False,
-                        f"HTTP {resp.status_code}",
+                        latency_ms=latency_ms,
+                        ok=False,
+                        error=f"HTTP {resp.status_code}",
                     )
                 )
                 raise LLMError(f"Groq HTTP {resp.status_code}: {resp.text[:500]}")
 
             data = resp.json()
             usage = data.get("usage", {})
-            details = usage.get("completion_tokens_details") or {}
-            await self._store.record(
-                CallRecord(
-                    model,
-                    stage,
-                    cik,
-                    int(usage.get("prompt_tokens", 0)),
-                    int(usage.get("completion_tokens", 0)),
-                    details.get("reasoning_tokens"),
-                    latency_ms,
-                    False,
-                    True,
-                )
+            prompt_details = usage.get("prompt_tokens_details") or {}
+            completion_details = usage.get("completion_tokens_details") or {}
+            record = self._record(
+                model,
+                stage,
+                cik,
+                prompt_tokens=int(usage.get("prompt_tokens", 0)),
+                completion_tokens=int(usage.get("completion_tokens", 0)),
+                reasoning_tokens=completion_details.get("reasoning_tokens"),
+                cached_tokens=int(prompt_details.get("cached_tokens") or 0),
+                latency_ms=latency_ms,
             )
+            await self._store.record(record)
             content: str = data["choices"][0]["message"]["content"] or ""
-            return content
+            return content, record.counted_tokens
         raise LLMError(f"{model}: still rate limited after {MAX_RATE_LIMIT_RETRIES} retries")
 
     async def _check_daily_budget(self, model: str, estimate: int) -> None:
+        """Stop before our own daily budget (set below Groq's limit to leave headroom)."""
+        budget = self._settings.groq_daily_token_budget
         used = await self._store.tokens_last_24h(model)
-        if used + estimate > self._settings.groq_tokens_per_day:
+        if used + estimate > budget:
             raise DailyLimitError(
-                f"{model}: {used} tokens used in the last 24h; budget is "
-                f"{self._settings.groq_tokens_per_day}"
+                f"{model}: {used:,} counted tokens used in the last 24h; budget is {budget:,}"
             )
 
     async def _pace(self, model: str, estimate: int) -> None:

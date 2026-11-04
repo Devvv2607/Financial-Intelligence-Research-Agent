@@ -209,3 +209,13 @@ def test_inline_css_bold_and_hidden_elements() -> None:
     assert [x.text for x in b] == ["Bold heading text here", "Lead. rest"]
     assert b[0].emphasized and not b[1].emphasized
     assert b[1].lead_emphasis == "Lead."
+
+
+def test_business_overview_skips_cover_and_reaches_business_text() -> None:
+    from ingestion.extract.sections import business_overview
+
+    text = business_overview(blocks("intc-20251227"))
+    assert len(text.split()) == 1_200
+    assert "Indicate by check mark" not in text
+    assert "incorporated by reference" not in text.lower()
+    assert "semiconductor" in text.lower()

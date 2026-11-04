@@ -55,6 +55,15 @@ $targets = [ordered]@{
     "ingest-full" = @{ Help = "Ingest the whole universe (resumable)"; Run = {
             & $targets["migrate"].Run
             Invoke-Step uv @("run", "python", "-m", "ingestion", "run") } }
+    "ingest-daily" = @{ Help = "Resume the full run; stops cleanly at the daily token/news budgets"; Run = {
+            & $targets["migrate"].Run
+            Invoke-Step uv @("run", "python", "-m", "ingestion", "run", "--daily") } }
+    "ingest-progress" = @{ Help = "One line: companies done/remaining, tokens used today"; Run = {
+            Invoke-Step uv @("run", "python", "-m", "ingestion", "progress") } }
+    "review-export" = @{ Help = "Write the 30-row risk-tag review sheet (data/review/)"; Run = {
+            Invoke-Step uv @("run", "python", "-m", "ingestion", "review", "export") } }
+    "review-score" = @{ Help = "Score the model against your labels in the review sheet"; Run = {
+            Invoke-Step uv @("run", "python", "-m", "ingestion", "review", "score") } }
     "ingest-report" = @{ Help = "Write the ingestion report for the sample"; Run = {
             Invoke-Step uv @("run", "python", "-m", "ingestion", "report", "--sample", "10") } }
     "dev-api"   = @{ Help = "Run the API on the host with reload"; Run = {

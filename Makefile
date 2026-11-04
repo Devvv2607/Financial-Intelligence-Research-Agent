@@ -3,7 +3,7 @@
 # Keep the two in sync — every target here has a twin in make.ps1.
 
 .DEFAULT_GOAL := help
-.PHONY: help install lint format typecheck test check up down logs ready dev-api dev-web web-check clean migrate ingest-sample ingest-full ingest-report
+.PHONY: help install lint format typecheck test check up down logs ready dev-api dev-web web-check clean migrate ingest-sample ingest-full ingest-daily ingest-progress ingest-report review-export review-score
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-12s %s\n", $$1, $$2}'
@@ -52,6 +52,18 @@ ingest-sample: migrate ## Ingest the 10 agreed sample companies (+ headings-only
 
 ingest-full: migrate ## Ingest the whole universe (resumable)
 	uv run python -m ingestion run
+
+ingest-daily: migrate ## Resume the full run; stops cleanly at the daily token/news budgets
+	uv run python -m ingestion run --daily
+
+ingest-progress: ## One line: companies done/remaining, tokens used today
+	uv run python -m ingestion progress
+
+review-export: ## Write the 30-row risk-tag review sheet (data/review/)
+	uv run python -m ingestion review export
+
+review-score: ## Score the model against your labels in the review sheet
+	uv run python -m ingestion review score
 
 ingest-report: ## Write the ingestion report for the sample (REPORT_ARGS= for others)
 	uv run python -m ingestion report $(or $(REPORT_ARGS),--sample 10)

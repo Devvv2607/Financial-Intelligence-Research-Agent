@@ -7,8 +7,9 @@ cite these reports directly. Re-run any time: `python -m ingestion report`.
 
 import math
 import statistics
-from collections import Counter, defaultdict
+from collections import defaultdict
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +17,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from core.config import Settings
+from core.db.llm_store import COUNTED_TOKENS
 from core.db.schema import (
     companies,
     eight_k_events,
@@ -24,9 +26,7 @@ from core.db.schema import (
     llm_calls,
     news_articles,
     risk_factors,
-    risk_tag_experiments,
 )
-from ingestion.pipeline import EXPERIMENT_TICKERS
 
 PRODUCTION_STAGES = ("risk_tagging", "risk_tagging_prior", "sector_llm", "extract_fallback")
 EXPERIMENT_STAGE = "experiment_headings_only"
@@ -134,84 +134,128 @@ async def company_section(engine: AsyncEngine, ciks: list[int]) -> str:
 
 
 # ------------------------------------------------------------------ 2. tokens
+@dataclass
+class PassCost:
+    """What one complete ingestion pass cost a company, in tokens Groq's limits count.
+
+    Calls are attributed to the run that last completed each stage (`ingestion_jobs.
+    run_id`); response-cache hits in that run are priced at what the original call cost
+    (`saved_tokens`). Rows from before run ids existed fall back to cumulative totals and
+    are flagged `legacy`, since they may include work that was later redone.
+    """
+
+    counted: int = 0
+    prompt: int = 0
+    cached: int = 0
+    completion: int = 0
+    calls: int = 0
+    cache_hits: int = 0
+    latency_ms: int = 0
+    legacy: bool = False
+
+
+STAGE_JOB = {
+    "risk_tagging": "tagging",
+    "risk_tagging_prior": "tagging",
+    "sector_llm": "tagging",
+    "extract_fallback": "edgar",
+}
+
+
+async def pass_costs(engine: AsyncEngine, ciks: list[int]) -> dict[int, PassCost]:
+    jobs = await _rows(engine, select(ingestion_jobs).where(ingestion_jobs.c.cik.in_(ciks)))
+    run_of = {(j["cik"], j["stage"]): j["run_id"] for j in jobs}
+    calls = await _rows(
+        engine,
+        select(llm_calls).where(
+            llm_calls.c.cik.in_(ciks), llm_calls.c.stage.in_(PRODUCTION_STAGES)
+        ),
+    )
+    out: dict[int, PassCost] = defaultdict(PassCost)
+    for c in calls:
+        run = run_of.get((c["cik"], STAGE_JOB[c["stage"]]))
+        cost = out[c["cik"]]
+        if run is None:
+            cost.legacy = True
+        elif c["run_id"] != run:
+            continue
+        if c["cache_hit"]:
+            cost.cache_hits += 1
+            cost.counted += c["saved_tokens"]
+            continue
+        counted = c["prompt_tokens"] - c["cached_tokens"] + c["completion_tokens"]
+        cost.counted += counted
+        cost.prompt += c["prompt_tokens"]
+        cost.cached += c["cached_tokens"]
+        cost.completion += c["completion_tokens"]
+        cost.calls += int(c["ok"])
+        cost.latency_ms += c["latency_ms"]
+    return dict(out)
+
+
 async def token_section(engine: AsyncEngine, ciks: list[int]) -> tuple[str, dict[str, Any]]:
-    calls = await _rows(engine, select(llm_calls).where(llm_calls.c.cik.in_(ciks)))
     tickers = {
         r["cik"]: r["ticker"]
         for r in await _rows(
             engine, select(companies.c.cik, companies.c.ticker).where(companies.c.cik.in_(ciks))
         )
     }
-    per: dict[tuple[int, str], Counter[str]] = defaultdict(Counter)
-    for c in calls:
-        k = per[(c["cik"], c["stage"])]
-        if c["cache_hit"]:
-            k["cache_hits"] += 1
-            continue
-        k["calls"] += 1
-        k["in"] += c["prompt_tokens"]
-        k["out"] += c["completion_tokens"]
-        k["reasoning"] += c["reasoning_tokens"] or 0
-        k["latency_ms"] += c["latency_ms"]
-
-    stages = [*PRODUCTION_STAGES, EXPERIMENT_STAGE]
+    costs = await pass_costs(engine, ciks)
     rows = []
     for cik in sorted(tickers, key=lambda x: tickers[x]):
-        cells = []
-        for st in stages:
-            k = per.get((cik, st), Counter())
-            cells.append(f"{k['in'] + k['out']:,}" if k["calls"] else "0")
-        prod = sum(
-            per.get((cik, st), Counter())["in"] + per.get((cik, st), Counter())["out"]
-            for st in PRODUCTION_STAGES
+        c = costs.get(cik, PassCost())
+        rows.append(
+            [
+                f"`{tickers[cik]}`" + (" (legacy)" if c.legacy else ""),
+                f"**{c.counted:,}**",
+                c.calls,
+                f"{c.prompt:,}",
+                f"{c.cached / c.prompt:.0%}" if c.prompt else "-",
+                f"{c.completion:,}",
+                c.cache_hits,
+            ]
         )
-        hits = sum(per.get((cik, st), Counter())["cache_hits"] for st in stages)
-        rows.append([f"`{tickers[cik]}`", *cells, f"**{prod:,}**", hits])
-    tot = Counter()  # type: ignore[var-annotated]
-    for (_, st), k in per.items():
-        if st in PRODUCTION_STAGES:
-            tot.update(k)
+    calls = await _rows(engine, select(llm_calls).where(llm_calls.c.cik.in_(ciks)))
+    rejected = sum(1 for c in calls if c["error"] == "schema_rejected")
     reuse = await _rows(
         engine,
-        select(risk_factors.c.tag_source, func.count())
+        select(risk_factors.c.tag_source, risk_factors.c.tag_version, func.count())
         .where(risk_factors.c.cik.in_(ciks))
-        .group_by(risk_factors.c.tag_source),
+        .group_by(risk_factors.c.tag_source, risk_factors.c.tag_version),
     )
-    reuse_map = {r["tag_source"]: r["count_1"] for r in reuse}
-    needs_review_rows = await _rows(
-        engine,
-        select(func.count())
-        .select_from(risk_factors)
-        .where(risk_factors.c.cik.in_(ciks), risk_factors.c.needs_review.is_(True)),
+    reuse_txt = ", ".join(
+        f"{r['tag_source'] or 'untagged'} ({r['tag_version'] or 'no version'}): {r['count_1']}"
+        for r in reuse
     )
-    needs_review = needs_review_rows[0]["count_1"] if needs_review_rows else 0
-    rejected = sum(1 for c in calls if c["error"] == "schema_rejected")
+    needs_review = (
+        await _rows(
+            engine,
+            select(func.count())
+            .select_from(risk_factors)
+            .where(risk_factors.c.cik.in_(ciks), risk_factors.c.needs_review.is_(True)),
+        )
+    )[0]["count_1"]
     text = (
-        "## 2. Groq token usage\n\n"
+        "## 2. Groq token usage (one complete pass per company)\n\n"
         + _table(
             [
                 "Ticker",
-                "Item tagging (latest)",
-                "Tagging (prior, new/changed)",
-                "Sector LLM",
-                "Section fallback",
-                "Experiment: headings-only",
-                "Production total",
-                "Cache hits",
+                "Counted tokens",
+                "Calls",
+                "Prompt",
+                "Prompt cached",
+                "Completion",
+                "Response-cache hits",
             ],
             rows,
         )
-        + f"\n\nProduction totals (excl. experiment): {tot['calls']} calls, "
-        f"{tot['in']:,} input + {tot['out']:,} output tokens "
-        f"({tot['reasoning']:,} of the output were hidden reasoning tokens).\n\n"
-        f"Risk-factor tag sources: LLM {reuse_map.get('llm', 0)}, inherited via similarity "
-        f"{reuse_map.get('inherited', 0)}, untagged {reuse_map.get(None, 0)}.\n\n"
-        f"Quality flags: **{needs_review} risk factors tagged `other` + needs_review** (no "
-        f"valid category after the capped retries); {rejected} Groq schema rejections "
-        "(HTTP 400 `json_validate_failed`, retried once; Groq returns no token usage for "
-        "these, so their tokens are not in the totals above)."
+        + "\n\nCounted = prompt - Groq-cached + completion: what the rate limits see. "
+        "`legacy` rows predate run tracking and include all historical calls.\n\n"
+        f"Tag sources: {reuse_txt}.\n\n"
+        f"Quality flags: **{needs_review} risk factors tagged `other` + needs_review**; "
+        f"{rejected} Groq schema rejections overall (no usage is returned for these)."
     )
-    return text, {"per": per, "tickers": tickers}
+    return text, {"costs": costs, "tickers": tickers}
 
 
 # ------------------------------------------------------------------ 3. projection
@@ -222,7 +266,7 @@ async def projection_section(
     universe_size: int,
     token_data: dict[str, Any],
 ) -> str:
-    per = token_data["per"]
+    costs: dict[int, PassCost] = token_data["costs"]
     done = [
         r["cik"]
         for r in await _rows(
@@ -234,120 +278,90 @@ async def projection_section(
             ),
         )
     ]
-    if not done:
+    measured = [c for c in done if c in costs and not costs[c].legacy]
+    basis = measured or [c for c in done if c in costs]
+    if not basis:
         return "## 3. Full-run projection\n\nNo company has finished tagging yet."
-
-    def prod(cik: int, key: str) -> int:
-        return sum(per.get((cik, st), Counter())[key] for st in PRODUCTION_STAGES)
-
-    totals = sorted(prod(c, "in") + prod(c, "out") for c in done)
-    ins = [prod(c, "in") for c in done]
-    outs = [prod(c, "out") for c in done]
-    calls = [prod(c, "calls") for c in done]
-    lat = [prod(c, "latency_ms") for c in done]
+    totals = sorted(costs[c].counted for c in basis)
+    calls = [costs[c].calls for c in basis]
     median, mean = statistics.median(totals), statistics.mean(totals)
     p90 = totals[min(len(totals) - 1, math.ceil(0.9 * len(totals)) - 1)]
     remaining = universe_size - len(done)
-    tpd, rpd, tpm = (
-        settings.groq_tokens_per_day,
+    budget, rpd, tpm = (
+        settings.groq_daily_token_budget,
         settings.groq_requests_per_day,
         settings.groq_tokens_per_minute,
     )
-    model = settings.groq_model_fast
-    price_in, price_out = settings.groq_prices_usd_per_mtok.get(model, (float("nan"), float("nan")))
 
     def scenario(per_company: float) -> list[str]:
         tokens = per_company * remaining
-        req = statistics.mean(calls) * remaining
-        days = max(math.ceil(tokens / tpd), math.ceil(req / rpd))
-        cost = (
-            remaining * (statistics.mean(ins) * price_in + statistics.mean(outs) * price_out) / 1e6
-        )
-        cost *= per_company / mean
-        return [f"{tokens:,.0f}", f"{days}", f"{tokens / tpm / 60:.1f} h", f"${cost:,.2f}"]
-
-    rows = [
-        ["Median company", *scenario(median)],
-        ["Mean company", *scenario(mean)],
-        ["p90 company", *scenario(p90)],
-    ]
-
-    # Headings-only experiment: same risk factors, tags from heading text only.
-    exp_ciks = [c for c in done if token_data["tickers"].get(c) in EXPERIMENT_TICKERS]
-    full_tok = sum(
-        per.get((c, "risk_tagging"), Counter())["in"]
-        + per.get((c, "risk_tagging"), Counter())["out"]
-        for c in exp_ciks
-    )
-    head_tok = sum(
-        per.get((c, EXPERIMENT_STAGE), Counter())["in"]
-        + per.get((c, EXPERIMENT_STAGE), Counter())["out"]
-        for c in exp_ciks
-    )
-    pairs = await _rows(
-        engine,
-        select(risk_factors.c.category.label("full"), risk_tag_experiments.c.category.label("head"))
-        .join(risk_tag_experiments, risk_tag_experiments.c.risk_factor_id == risk_factors.c.id)
-        .where(
-            risk_factors.c.cik.in_(exp_ciks),
-            risk_tag_experiments.c.mode == "headings_only",
-            risk_factors.c.tag_source == "llm",
-            risk_factors.c.needs_review.is_(False),
-            risk_tag_experiments.c.needs_review.is_(False),
-        ),
-    )
-    agree = sum(p["full"] == p["head"] for p in pairs)
-    confusions = Counter(
-        (p["full"], p["head"]) for p in pairs if p["full"] != p["head"]
-    ).most_common(5)
-    saving = 1 - head_tok / full_tok if full_tok else 0.0
-    tagging_share = statistics.mean(
-        (
-            per.get((c, "risk_tagging"), Counter())["in"]
-            + per.get((c, "risk_tagging"), Counter())["out"]
-            + per.get((c, "risk_tagging_prior"), Counter())["in"]
-            + per.get((c, "risk_tagging_prior"), Counter())["out"]
-        )
-        / max(prod(c, "in") + prod(c, "out"), 1)
-        for c in done
-    )
-    head_mean = mean * (1 - tagging_share * saving)
-    lat_h = statistics.mean(lat) * remaining / 3_600_000
+        days = max(math.ceil(tokens / budget), math.ceil(statistics.mean(calls) * remaining / rpd))
+        return [
+            f"{per_company:,.0f}",
+            f"{tokens:,.0f}",
+            f"**{days}**",
+            f"{tokens / tpm / 60:.1f} h",
+        ]
 
     return (
-        "## 3. Full-run projection\n\n"
-        f"Based on **{len(done)} companies** that finished tagging; **{remaining}** of "
-        f"{universe_size} remain. All production LLM calls use `{model}`. Limits used: "
-        f"{tpd:,} tokens/day, {rpd:,} requests/day, {tpm:,} tokens/min. Price: "
-        f"${price_in}/M input, ${price_out}/M output.\n\n"
+        "## 3. Full-run projection (free tier)\n\n"
+        f"Based on **{len(basis)} companies**"
+        + ("" if measured else " (legacy cost data only)")
+        + f"; **{remaining}** of {universe_size} still need tagging. Daily budget "
+        f"{budget:,} counted tokens on `{settings.groq_model_fast}` (Groq limit "
+        f"{settings.groq_tokens_per_day:,}), {rpd:,} requests/day, {tpm:,} tokens/min.\n\n"
         + _table(
             [
+                "Scenario",
                 "Per-company tokens",
-                "Remaining-run tokens",
-                "Free-tier days",
-                "Min. time at TPM limit",
-                "Paid-tier cost",
+                "Remaining tokens",
+                "Days at budget",
+                "Pure TPM time",
             ],
-            rows,
+            [
+                ["Median company", *scenario(median)],
+                ["Mean company", *scenario(mean)],
+                ["p90 company", *scenario(p90)],
+            ],
         )
-        + f"\n\n- Per-company production tokens: median {median:,.0f}, mean {mean:,.0f}, "
-        f"p90 {p90:,.0f} "
-        f"(min {totals[0]:,}, max {totals[-1]:,}).\n"
-        f"- **Paid-tier time**: LLM calls run one at a time per model by design; summed observed "
-        f"latency projects to ~{lat_h:.1f} h of LLM time for the remaining run, if paid-tier "
-        "rate limits don't bind (not verified: paid limits weren't available to measure). "
-        "SEC download time is extra (~25 requests/company at 8 req/s).\n\n"
-        "### Headings-only tagging\n\n"
-        f"Measured on {len(exp_ciks)} companies, same latest-year risk factors: full mode "
-        f"{full_tok:,} tokens vs headings-only {head_tok:,} tokens → **{saving:.0%} fewer "
-        f"tagging tokens**. Tagging is {tagging_share:.0%} of a company's production tokens, "
-        f"so headings-only would cut the per-company mean from {mean:,.0f} to ~{head_mean:,.0f} "
-        f"tokens (free tier: ~{math.ceil(head_mean * remaining / tpd)} days).\n\n"
-        f"Agreement with full-mode tags: **{_pct(agree, len(pairs))}**. Full-mode tags are the "
-        "reference here, not ground truth, so this measures consistency, not accuracy. "
-        "Most common disagreements (full → headings-only): "
-        + (", ".join(f"{a}→{b} (x{n})" for (a, b), n in confusions) or "none")
-        + "."
+        + f"\n\nRange across companies: {totals[0]:,} to {totals[-1]:,} counted tokens."
+    )
+
+
+async def progress_line(engine: AsyncEngine, settings: Settings, universe: int) -> str:
+    """One line for the daily run: how far along the full run is, and today's spend."""
+    rows = await _rows(
+        engine,
+        select(ingestion_jobs.c.cik, ingestion_jobs.c.stage, ingestion_jobs.c.status),
+    )
+    status: dict[int, dict[str, str]] = defaultdict(dict)
+    for r in rows:
+        status[r["cik"]][r["stage"]] = r["status"]
+    done = sum(
+        1
+        for st in status.values()
+        if all(st.get(s) == "done" for s in ("edgar", "tagging", "index"))
+    )
+    since = datetime.now(UTC) - timedelta(hours=24)
+    used = (
+        await _rows(
+            engine,
+            select(func.coalesce(func.sum(COUNTED_TOKENS), 0).label("t")).where(
+                llm_calls.c.model == settings.groq_model_fast, llm_calls.c.created_at >= since
+            ),
+        )
+    )[0]["t"]
+    news_today = sum(
+        1
+        for _ in (settings.raw_dir / "newsapi").glob(
+            f"*/{datetime.now(UTC).date().isoformat()}.json"
+        )
+    )
+    return (
+        f"Companies done {done}/{universe} ({universe - done} remaining) | "
+        f"{settings.groq_model_fast} tokens used (24h): {int(used):,} / "
+        f"{settings.groq_daily_token_budget:,} | NewsAPI today: {news_today}/"
+        f"{settings.newsapi_requests_per_day}"
     )
 
 

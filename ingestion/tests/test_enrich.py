@@ -1,5 +1,6 @@
 """SIC sector rules and risk-tagging logic (scripted LLM, synthetic vectors)."""
 
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -163,3 +164,51 @@ async def test_unparseable_output_flags_whole_batch() -> None:
         body_words=10,
     )
     assert all(t.category == "other" and t.needs_review for t in out)
+
+
+def test_prompt_versions_come_from_headers() -> None:
+    from ingestion import prompts
+
+    assert prompts.version("risk_tagging") == "risk_tagging:v2"
+    assert prompts.version("sector_classification").startswith("sector_classification:v")
+
+
+def test_experiment_config_parsing() -> None:
+    from ingestion.experiments import Config
+
+    assert Config.parse("json_object:25") == Config("json_object", 25)
+    with pytest.raises(ValueError):
+        Config.parse("xml:5")
+
+
+def test_review_sample_covers_rare_categories_and_spreads_companies() -> None:
+    from ingestion.review import stratified_sample
+
+    rows = [{"category": "regulatory", "ticker": f"T{i % 3}", "id": f"r{i}"} for i in range(40)]
+    rows += [{"category": "ip", "ticker": "T9", "id": "ip1"}]
+    picked = stratified_sample(rows, 10)
+    assert len(picked) == 10 and "ip1" in [r["id"] for r in picked]
+    assert {r["ticker"] for r in picked} >= {"T0", "T1", "T2"}
+
+
+def test_review_scoring(tmp_path: Path) -> None:
+    import csv
+
+    from ingestion.review import COLUMNS, score_review_sheet
+
+    path = tmp_path / "sheet.csv"
+    rows = [
+        ("a", "talent", "talent"),
+        ("b", "regulatory", "geopolitical"),
+        ("c", "ip", ""),
+        ("d", "other", "nonsense"),
+    ]
+    with path.open("w", newline="", encoding="utf-8-sig") as f:
+        w = csv.DictWriter(f, fieldnames=COLUMNS)
+        w.writeheader()
+        for rid, model, mine in rows:
+            w.writerow({"risk_id": rid, "model_category": model, "your_category": mine})
+    s = score_review_sheet(path)
+    assert (s.labelled, s.correct) == (2, 1)
+    assert s.confusions == [(("geopolitical", "regulatory"), 1)]
+    assert s.invalid_labels == ["d: 'nonsense'"]
