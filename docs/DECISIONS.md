@@ -360,6 +360,66 @@ Weaviate objects carry one `sector` filter field. We use the LLM classification 
 (it reflects GICS-style reasoning about the business), falling back to the SIC rule. Both
 signals and the conflict flag stay in Postgres for the screener and the reports.
 
+## D-024 · Groq prompt caching: measured, hit-and-miss, not something to plan around
+**Status:** Measured on gpt-oss-120b (2026-11-04); gpt-oss-20b measurement pending its quota
+
+Groq's docs say prompt caching is supported for gpt-oss-20b/120b, works on exact prefix
+matches, and that "cached tokens do not count towards your rate limits", which would make
+a long static prompt nearly free. Tagging requests already put the static part first (system
+prompt with instructions + taxonomy, then the schema) and the variable risk factors last.
+Probing on 120b with the real tagging prompt (~1.1-1.3K static tokens):
+
+- Hits arrive in **1,024-token blocks** (`usage.prompt_tokens_details.cached_tokens`), and
+  only on some calls, even for byte-identical consecutive requests.
+- `json_schema` (strict): 1 hit in ~11 calls. `json_object`: 3 hits in ~10 calls. Plain: 1
+  in ~5. A first small probe suggested strict mode never caches; a later run got a hit, so
+  that conclusion was withdrawn.
+- On real batches (XOM, 22 risks) cached tokens were 0-21% of prompt tokens.
+
+So caching is a bonus, not a basis for the projection. The ledger records
+`cached_tokens`, and the daily budget counts only *counted* tokens (prompt - cached +
+completion), matching how Groq applies its limits. The response mode is selectable
+(`json_object` validates locally and avoids server-side schema rejections) and is chosen
+from the 20b batch-size/mode experiment. Groq limits are per organization and model, so
+extra API keys don't add capacity.
+
+## D-025 · Taxonomy prompt v2 and versioned tags
+**Status:** Implemented (Phase 1)
+
+The 14 categories are fixed by the spec; v2 sharpens their *boundaries*, aimed at the
+confusions the sample exposed: an overloaded `financial_liquidity` (tax rates, stock price,
+M&A), trade policy split between regulatory and geopolitical, demand pressure split between
+macroeconomic and competition, and M&A with no home. Each category now has include/exclude
+notes, there are explicit tie-break rules (classify by the *source* of harm, not the
+consequence), and there are eight one-line examples. All of it is static, so it belongs to
+the cacheable prefix. Every tag stores `tag_version` = prompt version + model (for example
+`risk_tagging:v2@openai/gpt-oss-20b`). Tagging redoes only missing or stale tags, so moving
+to a new prompt (or a dev run on another model) never needs a destructive wipe, and an
+interrupted re-tag resumes. Accuracy is measured against the owner's labels on a 30-row
+stratified review sheet (`make review-export` / `review-score`), not against another model run.
+
+## D-026 · Run-level token accounting and the daily full-run mode
+**Status:** Implemented (Phase 1)
+
+Every LLM call and every job carries a `run_id`. A response-cache hit records the counted
+tokens the original call cost (`saved_tokens`). The report prices "one complete pass" per
+company from the runs that completed its stages, so retries, killed runs and re-extractions
+no longer inflate per-company cost (the problem hand-corrected in the first sample report).
+The full run is a daily, resumable job: `make ingest-daily` runs the whole universe, stops
+cleanly at `GROQ_DAILY_TOKEN_BUDGET` (default 170K counted tokens per model per rolling 24h,
+below Groq's 200K, for headroom) and at `NEWSAPI_REQUESTS_PER_DAY` (90 of 100). It also
+prints a progress line before and after: companies done/remaining, tokens used in the last
+24h, NewsAPI requests today. Paused stages resume on the next day's run. The rolling 24h
+window is our own conservative choice: Groq's docs don't say whether the daily limit is
+rolling or reset at a fixed time.
+
+## D-027 · Agent and dev testing use a different model than ingestion
+**Status:** Implemented (config); used from Phase 2
+
+Groq's daily limits are per model, so the agent and dev testing use `AGENT_MODEL_*`
+(set to gpt-oss-120b) while ingestion uses gpt-oss-20b. They never compete for the same
+daily quota during the multi-day full run. `GroqClient(agent=True)` resolves the agent models.
+
 ---
 
 ## Adaptations: where libraries or tools differed from the spec's assumptions
@@ -416,6 +476,13 @@ signals and the conflict flag stay in Postgres for the screener and the reports.
   defaults to autoincrement in SQLAlchemy, which is wrong for a natural key like the CIK.
   The column is `autoincrement=False`, and the initial migration was regenerated before
   anything depended on it.
+- **Column lengths caught by a dev smoke test (Phase 1).** Before spending gpt-oss-20b
+  quota, the new path was run end-to-end on 120b. It hit two `VARCHAR` overflows:
+  `filing_sections.section` (16) vs `business_overview` (17), and `run_id` (36) vs experiment
+  run ids (44). The second happened *after* the Groq call returned, so that call's ~4K
+  tokens (120b) were never written to the ledger; on the ingestion model this would have
+  undercounted the daily budget. Both columns were widened, and every text column was
+  checked against its longest real value.
 - **authlib deprecation warning (Phase 0).** `weaviate-client` imports authlib, which emits
   a `DeprecationWarning` and forces it visible with its own `simplefilter("always")`, so
   pytest's filters can't silence it. It is harmless and outside our code, so we leave it.
