@@ -1,0 +1,7 @@
+# Context for the backend image is the repo root; send only what it needs.
+**
+!pyproject.toml
+!uv.lock
+!backend/pyproject.toml
+!backend/src/**
+**/__pycache__
