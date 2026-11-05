@@ -5,11 +5,9 @@ and they use whatever companies are there (the sample or the full universe). In 
 where no stack runs, they skip. No test here calls Groq: the context has no LLM.
 """
 
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import AsyncIterator
 
-import httpx
 import pytest
-import respx
 from sqlalchemy import text
 
 from agent.tools import ToolContext, build_context, close_context
@@ -32,17 +30,3 @@ async def live_ctx() -> AsyncIterator[ToolContext]:
         pytest.skip("no ingested companies")
     yield ctx
     await close_context(ctx)
-
-
-@pytest.fixture(autouse=True)
-def no_groq() -> Iterator[None]:
-    """Zero Groq calls in the test suite: any request to api.groq.com fails the test.
-    Everything else (local Postgres/Weaviate in integration tests) passes through."""
-
-    def refuse(request: httpx.Request) -> httpx.Response:
-        raise AssertionError(f"test tried to call Groq: {request.url}")
-
-    with respx.mock(assert_all_called=False) as router:
-        router.route(host="api.groq.com").mock(side_effect=refuse)
-        router.route().pass_through()
-        yield

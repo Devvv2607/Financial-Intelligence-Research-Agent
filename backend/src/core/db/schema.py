@@ -229,6 +229,20 @@ llm_cache = Table(
     Column("created_at", DateTime(timezone=True), server_default=func.now(), nullable=False),
 )
 
+# Research threads (Phase 4 API). The conversation itself lives in the LangGraph
+# checkpointer; this table only lists threads for the UI and tracks their status.
+threads = Table(
+    "threads",
+    metadata,
+    Column("id", UUID(as_uuid=True), primary_key=True),
+    Column("title", Text, nullable=False),  # the first question, shortened
+    # idle | running | awaiting_clarification | error
+    Column("status", String(24), nullable=False, server_default="idle"),
+    Column("last_run_id", UUID(as_uuid=True)),
+    Column("created_at", DateTime(timezone=True), server_default=func.now(), nullable=False),
+    Column("updated_at", DateTime(timezone=True), server_default=func.now(), nullable=False),
+)
+
 # Agent run log (written by the agent from Phase 3).
 runs = Table(
     "runs",

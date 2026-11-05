@@ -42,7 +42,7 @@ def _settings(groq_key: str | None = "gsk_test") -> Settings:
 
 async def _get(settings: Settings, path: str) -> httpx.Response:
     """Run the app's real lifespan, then make one request."""
-    app = create_app(settings)
+    app = create_app(settings, runtime_factory=None)
     transport = httpx.ASGITransport(app=app)
     async with (
         app.router.lifespan_context(app),

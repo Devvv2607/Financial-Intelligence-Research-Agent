@@ -19,6 +19,9 @@ from core.llm import (
     strict_json_schema,
 )
 
+# Groq is served by each test's own respx mock (canned responses, no network).
+pytestmark = pytest.mark.groq_mocked
+
 URL = "https://api.groq.com/openai/v1/chat/completions"
 
 

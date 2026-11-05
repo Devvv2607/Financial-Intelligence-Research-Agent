@@ -705,6 +705,47 @@ NewsAPI quota to rebuild, so the owner set hard rules in CLAUDE.md:
   commands avoid them. In Git Bash and on Linux the plain pipe works (checked: the piped
   dump lists the same 17 tables).
 
+## D-041 · API: native FastAPI SSE, runs in background tasks, typed events
+**Status:** Implemented (Phase 4, `backend/src/api/`)
+
+- **SSE without a new dependency.** FastAPI 0.162 ships SSE (`fastapi.sse`:
+  `EventSourceResponse`, `format_sse_event`, keep-alive comments), so `sse-starlette`
+  isn't needed. Its generator-style routes start the response before the handler body
+  runs, so a 404/409/422/429 can't be raised there. The run endpoints therefore validate
+  first and then return an `EventSourceResponse` over our own generator, which sends a
+  keep-alive comment every 15 s.
+- **Runs are background tasks.** A run is driven by a task that pushes events into a
+  queue, and the SSE response only drains that queue. A closed tab or dropped connection
+  doesn't cancel a run that is spending tokens: it finishes, is recorded, and its thread
+  can be read back. A thread allows one active run (409 otherwise). A new question on a
+  thread waiting for a clarification is refused with 409 until `/resume` answers it.
+- **Typed events.** Every graph event is validated against a Pydantic discriminated
+  union (`api/schemas.AgentEvent`) before it's sent: the spec's types plus `run_started`,
+  `event:` = type, `id:` = a gapless sequence. Tokens come from LangGraph's `messages`
+  stream mode for the synthesizer node. An unexpected exception ends the stream with an
+  `error` event whose message doesn't leak internals.
+- **Graph event fixes found while building the API:**
+  - `clarification_needed` used to be emitted before `interrupt()` in
+    `ask_clarification`. LangGraph re-runs the interrupted node on resume, so every
+    resume repeated the question. It's now emitted by the node that creates the question
+    (resolver or analyzer), which doesn't re-run.
+  - `evidence_added` carries full source cards (the UI's Sources tab), not just ids.
+  - `step_completed` carries summary, error and duration.
+- **Threads table.** The conversation lives in the checkpointer. A small `threads` table
+  (id, title, status, last run) lists threads for the UI and tracks
+  `running` / `awaiting_clarification` / `error`. `GET /api/threads/{id}` combines it with
+  the checkpointer's state (messages, pending question, latest plan, evidence and
+  citations) and the run ids from `runs`.
+- **Public-demo protection.** Agent runs and resumes are limited per client IP
+  (`API_RUNS_PER_MINUTE`, default 6, in-memory sliding window) and questions are capped
+  at `API_MAX_QUESTION_CHARS`. CORS is locked to the frontend origin.
+- **Tests.** The real app and lifespan with a scripted runtime cover: a full SSE run
+  (event order, schema, gapless ids, live tokens), interrupt -> history -> resume over
+  HTTP, 404/409/422/429, busy threads, a run with no listener, the error event and the
+  graph endpoint. The fake LLM streams through LangChain's `GenericFakeChatModel`, so
+  token events are exercised without Groq. The data endpoints have integration tests
+  against the local stack.
+
 ## Adaptations: where libraries or tools differed from the spec's assumptions
 
 - **Postgres 18 image data path (Phase 0).** From v18 the official image sets

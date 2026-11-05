@@ -121,7 +121,8 @@ def build_specialist(agent: AgentName, deps: AgentDeps) -> CompiledStateGraph:  
                 {
                     "event": "evidence_added",
                     "step_id": step_id,
-                    "sources": [e.source_id for e in result.evidence],
+                    # full cards, not just ids: the UI's Sources tab renders them live
+                    "sources": [e.model_dump(mode="json") for e in result.evidence],
                 }
             )
         return result, log
@@ -247,7 +248,15 @@ def build_specialist(agent: AgentName, deps: AgentDeps) -> CompiledStateGraph:  
             finished_at=datetime.now(UTC),
         )
         get_stream_writer()(
-            {"event": "step_completed", "step_id": step.id, "status": result.status, "mode": mode}
+            {
+                "event": "step_completed",
+                "step_id": step.id,
+                "status": result.status,
+                "mode": mode,
+                "summary": result.summary[:300],
+                "error": result.error,
+                "duration_ms": _duration_ms(result),
+            }
         )
         return {"step_results": {step.id: result}, "evidence": evidence}
 
@@ -279,3 +288,9 @@ def build_specialist(agent: AgentName, deps: AgentDeps) -> CompiledStateGraph:  
     g.add_edge("tools", "llm")
     g.add_edge("finish", END)
     return g.compile(name=node_name)
+
+
+def _duration_ms(r: StepResult) -> int | None:
+    if r.started_at is None or r.finished_at is None:
+        return None
+    return int((r.finished_at - r.started_at).total_seconds() * 1000)

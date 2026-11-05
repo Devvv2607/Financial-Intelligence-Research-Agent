@@ -61,6 +61,10 @@ services:
       WEAVIATE_HTTP_PORT: 8080
       WEAVIATE_GRPC_HOST: weaviate
       WEAVIATE_GRPC_PORT: 50051
+    # The agent needs the embedding model (data/models) and shares the raw-download cache
+    # with host runs; relative DATA_DIR resolves to /app/data in the container.
+    volumes:
+      - ./data:/app/data
     ports: ["8000:8000"]
     depends_on:
       postgres: { condition: service_healthy }

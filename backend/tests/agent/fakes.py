@@ -6,6 +6,7 @@ from collections.abc import Awaitable, Callable, Sequence
 from datetime import date
 from typing import Any
 
+from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
 from langchain_core.messages import AIMessage, BaseMessage
 from pydantic import BaseModel
 
@@ -73,7 +74,14 @@ class FakeLLM:
         if node not in self._chat:
             raise AssertionError(f"unexpected chat call for {node}")
         value = self._next(self._chat[node], messages)
-        return value if isinstance(value, AIMessage) else AIMessage(content=str(value))
+        reply = value if isinstance(value, AIMessage) else AIMessage(content=str(value))
+        if stream and config is not None and not reply.tool_calls:
+            # Stream through a real (fake) LangChain chat model so LangGraph's "messages"
+            # stream mode sees token chunks, exactly as with ChatGroq.
+            model = GenericFakeChatModel(messages=iter([reply]))
+            chunks = [c async for c in model.astream(list(messages), config=config)]
+            return AIMessage(content="".join(str(c.content) for c in chunks))
+        return reply
 
     def count(self, node: str) -> int:
         return sum(1 for n, _ in self.calls if n == node)

@@ -44,6 +44,10 @@ def _emit(event: str, **data: Any) -> None:
     get_stream_writer()({"event": event, **data})
 
 
+def _emit_clarification(c: Clarification) -> None:
+    _emit("clarification_needed", question=c.question, options=c.options, source=c.source)
+
+
 def make_intake_nodes(deps: AgentDeps) -> dict[str, Any]:
     async def start_turn(state: ResearchState, config: RunnableConfig) -> dict[str, Any]:
         last_human = next(
@@ -99,14 +103,13 @@ def make_intake_nodes(deps: AgentDeps) -> dict[str, Any]:
         )
         if ambiguous and state.get("clarification_count", 0) < MAX_CLARIFICATIONS:
             mention, options = ambiguous
-            return {
-                "resolved_entities": entities,
-                "clarification": Clarification(
-                    source="entity_resolver",
-                    question=f'Which company do you mean by "{mention}"?',
-                    options=options,
-                ),
-            }
+            ask = Clarification(
+                source="entity_resolver",
+                question=f'Which company do you mean by "{mention}"?',
+                options=options,
+            )
+            _emit_clarification(ask)
+            return {"resolved_entities": entities, "clarification": ask}
         return {"resolved_entities": entities, "clarification": clar}
 
     async def query_analyzer(state: ResearchState, config: RunnableConfig) -> dict[str, Any]:
@@ -152,6 +155,7 @@ def make_intake_nodes(deps: AgentDeps) -> dict[str, Any]:
                 question=analysis.clarification_question,
                 options=analysis.clarification_options[:4],
             )
+            _emit_clarification(update["clarification"])
             return update
         if uncovered and not entities and analysis.company_mentions:
             update["route"] = "uncovered"
@@ -161,7 +165,8 @@ def make_intake_nodes(deps: AgentDeps) -> dict[str, Any]:
     async def ask_clarification(state: ResearchState) -> dict[str, Any]:
         clar = state["clarification"]
         assert clar is not None
-        _emit("clarification_needed", question=clar.question, options=clar.options)
+        # No event here: LangGraph re-runs this node on resume, so an event emitted before
+        # interrupt() would repeat; the node that created the question emitted it.
         answer = interrupt(
             {"question": clar.question, "options": clar.options, "source": clar.source}
         )

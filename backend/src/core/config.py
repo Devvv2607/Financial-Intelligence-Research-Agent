@@ -84,6 +84,9 @@ class Settings(BaseSettings):
     # API.
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
     readiness_timeout_s: float = 3.0
+    # Public-demo protection: agent runs (and resumes) per client IP per minute.
+    api_runs_per_minute: int = 6
+    api_max_question_chars: int = 1_000
 
     @property
     def news_live_fallback_enabled(self) -> bool:
