@@ -27,7 +27,7 @@ export function RunPanel({
     sources: run.sourceOrder.length ? String(run.sourceOrder.length) : null,
   };
   return (
-    <aside className="flex min-h-0 flex-col border-l border-border">
+    <aside className="flex min-h-0 flex-1 flex-col border-l border-border">
       <div role="tablist" className="flex shrink-0 border-b border-border">
         {(["plan", "graph", "sources"] as const).map((t) => (
           <button
@@ -42,7 +42,7 @@ export function RunPanel({
           </button>
         ))}
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto" role="tabpanel">
+      <div className={`flex min-h-0 flex-1 flex-col ${tab === "graph" ? "" : "overflow-y-auto"}`} role="tabpanel">
         {tab === "plan" && <PlanTab run={run} />}
         {tab === "graph" && <GraphTab run={run} />}
         {tab === "sources" && <SourcesTab run={run} highlight={highlight} />}

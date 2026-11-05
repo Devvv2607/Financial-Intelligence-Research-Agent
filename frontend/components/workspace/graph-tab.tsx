@@ -14,7 +14,7 @@ import type { NodeStatus, RunState } from "@/lib/run-state";
 
 import { AGENT_COLOR } from "./plan-tab";
 
-const W = 132;
+const W = 120;
 const H = 40;
 
 type Data = { node: CNode; status: NodeStatus | undefined; parallel: number; selected: boolean };
@@ -34,11 +34,11 @@ function GraphNode({ data }: NodeProps<Node<Data>>) {
       style={color ? { borderLeft: `3px solid ${color}` } : undefined}
       title={`${node.id}${status ? ` · ${status}` : ""}`}
     >
-      <Handle type="target" position={Position.Left} className="!opacity-0" />
+      <Handle type="target" position={Position.Top} className="!opacity-0" />
       {node.label}
       {Icon && <Icon className={`absolute -right-1.5 -top-1.5 size-3.5 rounded-full bg-background ${status === "active" ? "animate-spin text-accent" : status === "done" ? "text-ok" : status === "paused" ? "text-paused" : "text-bad"}`} aria-label={status} />}
       {parallel > 1 && <span className="absolute -bottom-2 right-1 rounded bg-accent px-1 text-[10px] text-background">×{parallel}</span>}
-      <Handle type="source" position={Position.Right} className="!opacity-0" />
+      <Handle type="source" position={Position.Bottom} className="!opacity-0" />
     </div>
   );
 }
@@ -53,7 +53,9 @@ export function GraphTab({ run }: { run: RunState }) {
   const positions = useMemo(() => {
     if (!collapsed) return new Map<string, { x: number; y: number }>();
     const g = new dagre.graphlib.Graph();
-    g.setGraph({ rankdir: "LR", nodesep: 18, ranksep: 36 });
+    // Top to bottom: the run panel is tall and narrow (420px); left-to-right shrank the
+    // graph until its labels were unreadable.
+    g.setGraph({ rankdir: "TB", nodesep: 14, ranksep: 28 });
     g.setDefaultEdgeLabel(() => ({}));
     for (const n of collapsed.nodes) g.setNode(n.id, { width: W, height: H });
     for (const e of collapsed.edges) if (!e.loop) g.setEdge(e.source, e.target); // loops don't shape the layout
@@ -85,13 +87,15 @@ export function GraphTab({ run }: { run: RunState }) {
   const inner = open ? collapsed.inner[open] : null;
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex min-h-0 flex-1 flex-col">
       <div className="min-h-[320px] flex-1">
         <ReactFlow
           nodes={nodes}
           edges={edges}
           nodeTypes={nodeTypes}
           fitView
+          fitViewOptions={{ padding: 0.06 }}
+          minZoom={0.4}
           proOptions={{ hideAttribution: true }}
           nodesDraggable={false}
           nodesConnectable={false}

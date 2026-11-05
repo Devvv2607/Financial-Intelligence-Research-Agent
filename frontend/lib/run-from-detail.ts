@@ -40,6 +40,16 @@ export function runFromDetail(d: ThreadDetail): RunState | null {
     };
   }
   const sources = Object.fromEntries(l.evidence.map((e) => [e.source_id, e]));
+  // No node events for a rebuilt run: mark the path it must have taken, so the graph
+  // still shows the finished run (intake -> plan -> the specialists used -> answer).
+  const nodes: RunState["nodes"] = {};
+  if (d.thread.status === "idle" && l.plan.length) {
+    for (const n of ["start_turn", "guardrail", "entity_resolver", "query_analyzer", "planner", "dispatcher", "join", "critic", "synthesizer", "finalize"]) {
+      nodes[n] = "done";
+    }
+    for (const p of l.plan) nodes[`${p.agent}_agent`] = "done";
+  }
+  if (d.thread.status === "awaiting_clarification") nodes["ask_clarification"] = "paused";
   const lastAnswer = [...d.messages].reverse().find((m) => m.role === "assistant")?.content;
   const status = d.thread.status;
   const pending = d.pending_clarification;
@@ -57,6 +67,7 @@ export function runFromDetail(d: ThreadDetail): RunState | null {
             : "done",
     rounds: [...rounds.entries()].map(([round, stepIds]) => ({ round, reason: [], stepIds })),
     steps,
+    nodes,
     sources,
     sourceOrder: l.evidence.map((e) => e.source_id),
     clarification: pending

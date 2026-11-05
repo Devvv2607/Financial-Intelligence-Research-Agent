@@ -38,7 +38,7 @@ export function ThreadList({
     ["Earlier", (threads.data ?? []).filter((t) => new Date(t.updated_at).toDateString() !== today)],
   ];
   return (
-    <nav className="flex min-h-0 flex-col border-r border-border" aria-label="Research threads">
+    <nav className="flex min-h-0 flex-1 flex-col border-r border-border" aria-label="Research threads">
       <button
         type="button"
         onClick={onNew}

@@ -65,7 +65,9 @@ export function Workspace() {
     showRun && run.final && lastAssistant >= 0 && messages[lastAssistant].content === run.final.answer
       ? messages.slice(0, lastAssistant)
       : messages;
-  const lastUser = [...history].reverse().find((m) => m.role === "user")?.content;
+  // The question being asked shows until the thread has it (after a clarification the
+  // last user message is the answer, so compare against all of them).
+  const asked = new Set(history.filter((m) => m.role === "user").map((m) => m.content));
   const empty = !threadId && !pending;
 
   return (
@@ -92,7 +94,7 @@ export function Workspace() {
                   <div key={i} className="text-muted"><AnswerMarkdown text={m.content} onCite={() => undefined} /></div>
                 ),
               )}
-              {pending && pending !== lastUser && (
+              {pending && !asked.has(pending) && (
                 <p className="rounded-md bg-surface-2 px-3 py-2 text-sm">{pending}</p>
               )}
               {showRun && (
