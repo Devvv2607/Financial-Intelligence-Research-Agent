@@ -102,6 +102,18 @@ class ClarificationNeeded(_Event):
     source: Literal["entity_resolver", "query_analyzer"] | None = None
 
 
+class NodeEvent(_Event):
+    """A graph node started or ended. `node` matches an id from GET /api/graph; inside a
+    specialist it is "<agent>:<node>". `step_id` tells parallel specialist runs apart."""
+
+    event: Literal["node"]
+    node: str
+    phase: Literal["start", "end"]
+    step_id: str | None = None
+    error: bool = False
+    interrupted: bool = False  # ended by interrupt() (waiting for a clarification)
+
+
 class Token(_Event):
     event: Literal["token"]
     text: str
@@ -130,6 +142,7 @@ AgentEvent = Annotated[
     | StepCompleted
     | CritiqueEvent
     | ClarificationNeeded
+    | NodeEvent
     | Token
     | Final
     | ErrorEvent,

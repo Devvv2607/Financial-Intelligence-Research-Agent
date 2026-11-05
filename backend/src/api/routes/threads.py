@@ -1,17 +1,17 @@
 """Threads: create/list, history from the checkpointer, runs and resumes streamed as SSE."""
 
-import asyncio
 import uuid
 from collections.abc import AsyncIterator
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, status
 from fastapi.sse import KEEPALIVE_COMMENT, EventSourceResponse, format_sse_event
 from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.types import Command
 
+from api.events import RunLog
 from api.ratelimit import limit_runs
-from api.runtime import AgentRuntime, EventQueue, RunConflictError, thread_config
+from api.runtime import AgentRuntime, RunConflictError, thread_config
 from api.schemas import (
     CreateThread,
     LatestTurn,
@@ -49,22 +49,24 @@ async def _thread_or_404(rt: AgentRuntime, thread_id: uuid.UUID) -> Thread:
     return thread
 
 
-async def sse(queue: EventQueue) -> AsyncIterator[bytes]:
-    seq = 0
+async def sse(log: RunLog, after: int = 0) -> AsyncIterator[bytes]:
+    """Replay the log after id `after`, then follow it live until the run ends.
+    Event n of a run always has SSE id n, so a reconnect can resume exactly."""
+    seq = after
     while True:
-        try:
-            ev = await asyncio.wait_for(queue.get(), timeout=KEEPALIVE_S)
-        except TimeoutError:
+        batch = await log.wait_after(seq, KEEPALIVE_S)
+        if batch is None:
             yield KEEPALIVE_COMMENT
             continue
-        if ev is None:
+        for ev in batch:
+            seq += 1
+            yield format_sse_event(event=ev.event, data_str=ev.model_dump_json(), id=str(seq))
+        if log.done and seq >= len(log.events):
             return
-        seq += 1
-        yield format_sse_event(event=ev.event, data_str=ev.model_dump_json(), id=str(seq))
 
 
-def _stream(queue: EventQueue) -> EventSourceResponse:
-    return EventSourceResponse(sse(queue), headers=SSE_HEADERS)
+def _stream(log: RunLog, after: int = 0) -> EventSourceResponse:
+    return EventSourceResponse(sse(log, after), headers=SSE_HEADERS)
 
 
 @router.post("", response_model=Thread, status_code=status.HTTP_201_CREATED)
@@ -141,7 +143,7 @@ async def start_run(
         )
     await rt.threads.set_title_if_empty(thread_id, title_from(query))
     try:
-        queue = rt.runs.start(
+        log = rt.runs.start(
             thread_id,
             {"messages": [HumanMessage(content=query)]},
             str(uuid.uuid4()),
@@ -151,7 +153,7 @@ async def start_run(
         raise HTTPException(
             status.HTTP_409_CONFLICT, "A run is already in progress on this thread."
         ) from None
-    return _stream(queue)
+    return _stream(log)
 
 
 @router.post("/{thread_id}/resume", responses=SSE_DOC, dependencies=[Depends(limit_runs)])
@@ -171,9 +173,43 @@ async def resume_run(
     # Same run id as the paused question: one run, recorded once.
     run_id = str(snap.values.get("run_id") or uuid.uuid4())
     try:
-        queue = rt.runs.start(thread_id, Command(resume=body.answer.strip()), run_id, resumed=True)
+        log = rt.runs.start(thread_id, Command(resume=body.answer.strip()), run_id, resumed=True)
     except RunConflictError:
         raise HTTPException(
             status.HTTP_409_CONFLICT, "A run is already in progress on this thread."
         ) from None
-    return _stream(queue)
+    return _stream(log)
+
+
+@router.get("/{thread_id}/events", responses=SSE_DOC)
+async def follow_events(
+    thread_id: uuid.UUID,
+    request: Request,
+    after: int | None = Query(None, ge=0, description="Last event id received"),
+    run_id: str | None = Query(None, description="Only if this is still the thread's run"),
+    last_event_id: str | None = Header(None),
+) -> EventSourceResponse:
+    """Replay the current (or just-finished) run's events after `after`, then follow live.
+
+    For reconnects and page reloads mid-run. `Last-Event-ID` (sent by browsers on SSE
+    reconnect) is used when `after` isn't given. 404 means no log is held: the run ended
+    more than EVENT_LOG_TTL_S ago or the API restarted. Read GET /api/threads/{id}
+    instead, which has the finished state (D-043)."""
+    rt = runtime_of(request)
+    await _thread_or_404(rt, thread_id)
+    log = rt.runs.log_for(thread_id)
+    if log is None or (run_id is not None and log.run_id != run_id):
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            "No event log for this run (finished a while ago or the API restarted); "
+            "read the thread instead.",
+        )
+    start = after if after is not None else _parse_last_id(last_event_id)
+    return _stream(log, start)  # ids not yet reached are simply waited for
+
+
+def _parse_last_id(value: str | None) -> int:
+    try:
+        return max(int(value), 0) if value else 0
+    except ValueError:
+        return 0

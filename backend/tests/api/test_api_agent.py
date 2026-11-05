@@ -7,6 +7,7 @@ store). Zero Groq calls.
 
 import asyncio
 import json
+import time
 import uuid
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
@@ -18,6 +19,7 @@ from langchain_core.messages import HumanMessage
 from pydantic import SecretStr
 
 from agent.checkpoint import memory_saver
+from api.events import EVENT_LOG_TTL_S
 from api.main import create_app
 from api.runtime import AgentRuntime, make_runtime
 from api.schemas import AGENT_EVENT
@@ -128,11 +130,16 @@ def events(resp: httpx.Response) -> list[dict[str, Any]]:
     return out
 
 
+def first(evs: list[dict[str, Any]], kind: str) -> dict[str, Any]:
+    return next(e for e in evs if e["event"] == kind)
+
+
 def kinds(evs: list[dict[str, Any]]) -> list[str]:
-    """Event types in order, consecutive duplicates collapsed (tokens)."""
+    """Domain event types in order (node events left out), consecutive duplicates
+    collapsed (tokens)."""
     out: list[str] = []
     for e in evs:
-        if not out or out[-1] != e["event"]:
+        if e["event"] != "node" and (not out or out[-1] != e["event"]):
             out.append(e["event"])
     return out
 
@@ -156,14 +163,14 @@ async def test_full_run_streams_typed_events_and_history() -> None:
         ]
         started = evs[0]
         assert started["thread_id"] == thread and not started["resumed"]
-        assert evs[1]["steps"][0]["id"] == "r1s1"
-        assert evs[4]["sources"][0]["source_id"] == "rf1"  # full source cards for the UI
+        assert first(evs, "plan_created")["steps"][0]["id"] == "r1s1"
+        assert first(evs, "evidence_added")["sources"][0]["source_id"] == "rf1"  # full cards
         done = next(e for e in evs if e["event"] == "step_completed")
         assert done["status"] == "done" and done["mode"] == "direct"
         assert done["duration_ms"] is not None
         tokens = "".join(e["text"] for e in evs if e["event"] == "token")
         assert tokens == "NVIDIA faces export controls on China sales [1]."  # streamed live
-        final = evs[-1]
+        final = first(evs, "final")
         assert final["answer"].startswith(tokens)  # + the footer added by finalize
         assert [c["source_id"] for c in final["citations"]] == ["rf1"]
 
@@ -204,9 +211,9 @@ async def test_clarification_interrupts_then_resume_finishes_over_http() -> None
     tools = FakeTools({"get_risk_factors": ok("get_risk_factors", {"x": [1]}, [ev("j", "JNJ")])})
     async with api(llm, tools) as a:
         thread = await a.thread()
-        first = events(await a.run(thread, q))
-        assert kinds(first) == ["run_started", "clarification_needed"]  # stream ends at the pause
-        asked = first[1]
+        paused = events(await a.run(thread, q))
+        assert kinds(paused) == ["run_started", "clarification_needed"]  # stream ends at the pause
+        asked = first(paused, "clarification_needed")
         assert asked["source"] == "entity_resolver"
         assert any("JNJ" in o for o in asked["options"])
 
@@ -223,11 +230,11 @@ async def test_clarification_interrupts_then_resume_finishes_over_http() -> None
             )
         )
         assert resumed[0]["event"] == "run_started" and resumed[0]["resumed"]
-        assert resumed[0]["run_id"] == first[0]["run_id"]  # one run, paused and continued
+        assert resumed[0]["run_id"] == paused[0]["run_id"]  # one run, paused and continued
         # The question is not repeated on resume (LangGraph re-runs the interrupted node).
         assert "clarification_needed" not in kinds(resumed)
         assert kinds(resumed)[-1] == "final"
-        assert resumed[-1]["citations"][0]["source_id"] == "j"
+        assert first(resumed, "final")["citations"][0]["source_id"] == "j"
 
         detail = (await a.client.get(f"/api/threads/{thread}")).json()
         assert detail["thread"]["status"] == "idle"
@@ -276,7 +283,7 @@ async def test_run_continues_and_is_recorded_without_a_listener() -> None:
         a.rt.runs.start(
             thread, {"messages": [HumanMessage(content=Q)]}, str(uuid.uuid4()), resumed=False
         )
-        await a.rt.runs.wait_idle()  # nobody drains the queue
+        await a.rt.runs.wait_idle()  # nobody reads the stream
         assert len(a.recorded) == 1
         detail = (await a.client.get(f"/api/threads/{thread}")).json()
         assert detail["thread"]["status"] == "idle"
@@ -291,8 +298,9 @@ async def test_unexpected_failure_ends_the_stream_with_an_error_event() -> None:
     async with api(llm, nvda_tools()) as a:
         thread = await a.thread()
         evs = events(await a.run(thread, Q))
-        assert evs[-1]["event"] == "error" and evs[-1]["code"] == "internal"
-        assert "planner exploded" not in evs[-1]["message"]  # no internals leak to clients
+        err = first(evs, "error")
+        assert kinds(evs)[-1] == "error" and err["code"] == "internal"
+        assert "planner exploded" not in err["message"]  # no internals leak to clients
         detail = (await a.client.get(f"/api/threads/{thread}")).json()
         assert detail["thread"]["status"] == "error"
 
@@ -326,3 +334,131 @@ async def _until(cond: Callable[[], bool], limit_s: float = 5.0) -> None:
         # polls a plain flag owned by the app under test; there is no event to wait on
         while not cond():  # noqa: ASYNC110
             await asyncio.sleep(0.01)
+
+
+# ---------------------------------------------------------------- node events
+async def test_node_events_trace_the_graph_with_api_graph_ids() -> None:
+    async with api(nvda_llm(), nvda_tools()) as a:
+        graph_ids = {n["id"] for n in (await a.client.get("/api/graph")).json()["nodes"]}
+        evs = events(await a.run(await a.thread(), Q))
+    nodes = [e for e in evs if e["event"] == "node"]
+    starts = [e["node"] for e in nodes if e["phase"] == "start"]
+    assert starts == [
+        "start_turn",
+        "guardrail",
+        "entity_resolver",
+        "query_analyzer",
+        "planner",
+        "dispatcher",
+        "filings_agent",
+        "filings_agent:prepare",
+        "filings_agent:direct",
+        "filings_agent:finish",
+        "join",
+        "dispatcher",
+        "critic",
+        "synthesizer",
+        "finalize",
+    ]
+    # Every node is one /api/graph drew; a specialist's own start/end ("filings_agent")
+    # maps to its subgraph group (xray lists only the subgraph's inner nodes).
+    groups = {n.split(":")[0] for n in graph_ids if ":" in n}
+    assert set(starts) <= graph_ids | groups
+    ends = [e["node"] for e in nodes if e["phase"] == "end"]
+    assert sorted(ends) == sorted(starts)
+    inner = [e for e in nodes if e["node"].startswith("filings_agent")]
+    assert {e["step_id"] for e in inner} == {"r1s1"}
+    assert not any(e["error"] for e in nodes)
+    # node events interleave with domain events in execution order
+    order = [e["event"] if e["event"] != "node" else e["node"] for e in evs]
+    assert order.index("planner") < order.index("plan_created") < order.index("dispatcher")
+
+
+async def test_parallel_specialists_are_told_apart_by_step_id() -> None:
+    plan = {
+        "steps": [
+            step(
+                "a",
+                "filings",
+                entities=["NVDA"],
+                tool_calls=[("get_risk_factors", '{"ticker": "NVDA"}')],
+            ),
+            step(
+                "b",
+                "filings",
+                entities=["AMD"],
+                tool_calls=[("get_risk_factors", '{"ticker": "AMD"}')],
+            ),
+        ]
+    }
+    llm = FakeLLM(
+        {
+            "query_analyzer": [analysis(Q, ["NVIDIA", "AMD"])],
+            "planner": [plan],
+            "critic": [OK_CRITIQUE],
+        },
+        {"synthesizer": ["Both [1][2]."]},
+    )
+    async with api(llm, nvda_tools(delay=0.05)) as a:
+        evs = events(await a.run(await a.thread(), Q))
+    direct = [e for e in evs if e["event"] == "node" and e["node"] == "filings_agent:direct"]
+    assert {e["step_id"] for e in direct} == {"r1s1", "r1s2"}
+    assert len(direct) == 4  # start + end for each parallel step
+
+
+async def test_clarification_node_ends_interrupted() -> None:
+    llm = FakeLLM({"query_analyzer": [analysis("How risky is Johnson?", [])]})
+    async with api(llm, nvda_tools()) as a:
+        evs = events(await a.run(await a.thread(), "How risky is Johnson?"))
+    ask = [e for e in evs if e["event"] == "node" and e["node"] == "ask_clarification"]
+    assert [e["phase"] for e in ask] == ["start", "end"]
+    assert ask[-1]["interrupted"] is True
+
+
+# ---------------------------------------------------------------- replayable event log
+async def test_reconnect_replays_missed_events_then_ends_with_the_run() -> None:
+    async with api(nvda_llm(), nvda_tools(delay=0.2)) as a:
+        thread = await a.thread()
+        first = asyncio.create_task(a.run(thread, Q))
+        await _until(lambda: a.rt.runs.log_for(uuid.UUID(thread)) is not None)
+        log = a.rt.runs.log_for(uuid.UUID(thread))
+        assert log is not None
+        await _until(lambda: len(log.events) >= 5 and not log.done)
+        # A client that saw events 1-3, then lost the connection mid-run:
+        resumed = await a.client.get(f"/api/threads/{thread}/events", params={"after": 3})
+        via_header = await a.client.get(
+            f"/api/threads/{thread}/events", headers={"Last-Event-ID": "3"}
+        )
+        full = _raw_events(await first)
+        tail, tail2 = _raw_events(resumed), _raw_events(via_header)
+        assert tail == full[3:] == tail2  # same events, same ids, nothing missed
+        assert tail[0][0] == 4 and kinds([e for _, e in tail])[-1] == "final"
+        # After the run: a reload replays the whole run from the log.
+        replay = _raw_events(await a.client.get(f"/api/threads/{thread}/events"))
+        assert replay == full
+
+
+async def test_event_log_404s_when_gone_or_for_another_run() -> None:
+    async with api(nvda_llm(), nvda_tools()) as a:
+        thread = await a.thread()
+        never_ran = await a.client.get(f"/api/threads/{thread}/events")
+        assert never_ran.status_code == 404
+        run_id = events(await a.run(thread, Q))[0]["run_id"]
+        url = f"/api/threads/{thread}/events"
+        assert (await a.client.get(url, params={"run_id": run_id})).status_code == 200
+        other = await a.client.get(url, params={"run_id": str(uuid.uuid4())})
+        assert other.status_code == 404
+        # TTL: the log is dropped EVENT_LOG_TTL_S after the run ended (then: poll the thread)
+        now = time.monotonic()
+        a.rt.runs.clock = lambda: now + EVENT_LOG_TTL_S + 1
+        assert (await a.client.get(url)).status_code == 404
+        assert (await a.client.get(f"/api/threads/{thread}")).json()["latest"]["citations"]
+
+
+def _raw_events(resp: httpx.Response) -> list[tuple[int, dict[str, Any]]]:
+    out = []
+    for block in resp.text.split("\n\n"):
+        f = dict(x.split(": ", 1) for x in block.splitlines() if x and not x.startswith(":"))
+        if f:
+            out.append((int(f["id"]), json.loads(f["data"])))
+    return out

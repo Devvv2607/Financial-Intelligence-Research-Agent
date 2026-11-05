@@ -1,14 +1,16 @@
 """The agent inside the API: one compiled graph per process, runs in background tasks.
 
-A run is driven by a background task, not by the HTTP response: it pushes typed events
-into a queue that the SSE response drains. If the client disconnects (closed tab,
-dropped network), the run still finishes, is recorded, and its thread can be read back
-with GET /api/threads/{id}, so the tokens it spent aren't wasted. One active run per
+A run is driven by a background task, not by the HTTP response: it appends typed events
+to the run's log (api/events.py), which any number of SSE responses read and follow. If
+the client disconnects (closed tab, dropped network), the run still finishes and is
+recorded, and the client can replay the missed events or read the thread back, so the
+tokens it spent aren't wasted. One active run per
 thread; a second one is refused (409) instead of racing on the same checkpoint.
 """
 
 import asyncio
 import logging
+import time
 import uuid
 from collections.abc import AsyncIterator, Callable
 from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager
@@ -31,7 +33,8 @@ from agent.runlog import make_run_recorder
 from agent.tools import call_tool
 from agent.tools.base import ToolContext
 from agent.tools.common import Company, fiscal_periods, resolve_tickers
-from api.schemas import AGENT_EVENT, AgentEvent
+from api.events import NodeTracker, RunLog
+from api.schemas import AGENT_EVENT
 from core.config import Settings
 from core.db.llm_store import PostgresLLMStore
 from core.embeddings import Embedder
@@ -40,8 +43,6 @@ from core.newsapi import NewsApiClient
 from core.threads import PostgresThreadStore, ThreadStatus, ThreadStore
 
 logger = logging.getLogger(__name__)
-
-EventQueue = asyncio.Queue[AgentEvent | None]  # None ends the stream
 
 
 class RunConflictError(Exception):
@@ -60,22 +61,34 @@ def thread_config(thread_id: uuid.UUID, run_id: str | None = None) -> RunnableCo
 class RunManager:
     graph: Any  # CompiledStateGraph
     threads: ThreadStore
+    clock: Callable[[], float] = time.monotonic
     _active: dict[uuid.UUID, asyncio.Task[None]] = field(default_factory=dict)
+    _logs: dict[uuid.UUID, RunLog] = field(default_factory=dict)
 
     def is_active(self, thread_id: uuid.UUID) -> bool:
         return thread_id in self._active
 
-    def start(
-        self, thread_id: uuid.UUID, payload: Any, run_id: str, *, resumed: bool
-    ) -> EventQueue:
+    def start(self, thread_id: uuid.UUID, payload: Any, run_id: str, *, resumed: bool) -> RunLog:
         # Check-and-set without an await in between: atomic on the event loop.
         if thread_id in self._active:
             raise RunConflictError(str(thread_id))
-        queue: EventQueue = asyncio.Queue()
-        task = asyncio.create_task(self._drive(thread_id, payload, run_id, resumed, queue))
+        self._expire()
+        log = RunLog(run_id)
+        self._logs[thread_id] = log  # a thread's newest run replaces its previous log
+        task = asyncio.create_task(self._drive(thread_id, payload, run_id, resumed, log))
         self._active[thread_id] = task
         task.add_done_callback(lambda _: self._active.pop(thread_id, None))
-        return queue
+        return log
+
+    def log_for(self, thread_id: uuid.UUID) -> RunLog | None:
+        """The thread's current or recently finished run log (None after TTL / restart)."""
+        self._expire()
+        return self._logs.get(thread_id)
+
+    def _expire(self) -> None:
+        now = self.clock()
+        for tid in [t for t, log in self._logs.items() if log.expired(now)]:
+            del self._logs[tid]
 
     async def wait_idle(self) -> None:
         """Wait for every running task (tests; graceful shutdown)."""
@@ -93,13 +106,14 @@ class RunManager:
         payload: Any,
         run_id: str,
         resumed: bool,
-        queue: EventQueue,
+        log: RunLog,
     ) -> None:
         config = thread_config(thread_id, run_id)
         status: ThreadStatus = "idle"
+        nodes = NodeTracker()
         await self._safe_status(thread_id, "running", uuid.UUID(run_id))
         self._put(
-            queue,
+            log,
             {
                 "event": "run_started",
                 "run_id": run_id,
@@ -108,11 +122,13 @@ class RunManager:
             },
         )
         try:
-            async for _ns, mode, chunk in self.graph.astream(
-                payload, config, stream_mode=["custom", "messages"], subgraphs=True
+            async for ns, mode, chunk in self.graph.astream(
+                payload, config, stream_mode=["custom", "messages", "tasks"], subgraphs=True
             ):
                 if mode == "custom" and isinstance(chunk, dict):
-                    self._put(queue, chunk)
+                    self._put(log, chunk)
+                elif mode == "tasks":
+                    self._put(log, nodes.event(ns, chunk))
                 elif mode == "messages":
                     msg, meta = chunk
                     if (
@@ -120,7 +136,7 @@ class RunManager:
                         and isinstance(msg, AIMessageChunk)
                         and msg.content
                     ):
-                        self._put(queue, {"event": "token", "text": str(msg.content)})
+                        self._put(log, {"event": "token", "text": str(msg.content)})
             snap = await self.graph.aget_state(config)
             if snap.interrupts:
                 status = "awaiting_clarification"
@@ -131,7 +147,7 @@ class RunManager:
             logger.exception("run failed", extra={"run_id": run_id, "thread_id": str(thread_id)})
             status = "error"
             self._put(
-                queue,
+                log,
                 {
                     "event": "error",
                     "code": "internal",
@@ -140,12 +156,12 @@ class RunManager:
             )
         finally:
             await self._safe_status(thread_id, status)
-            queue.put_nowait(None)
+            log.close(self.clock)
 
     @staticmethod
-    def _put(queue: EventQueue, raw: dict[str, Any]) -> None:
+    def _put(log: RunLog, raw: dict[str, Any]) -> None:
         try:
-            queue.put_nowait(AGENT_EVENT.validate_python(raw))
+            log.append(AGENT_EVENT.validate_python(raw))
         except ValidationError:
             # An event shape the API doesn't know is a bug in the graph: log it, keep going.
             logger.error("dropped invalid agent event", extra={"event": raw.get("event")})
