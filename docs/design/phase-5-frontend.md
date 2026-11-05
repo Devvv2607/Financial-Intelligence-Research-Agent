@@ -1,8 +1,9 @@
-# Phase 5 frontend design (draft for review)
+# Phase 5 frontend design
 
-Status: **draft, no code yet**. Stack as scaffolded: Next.js 16 App Router, React 19, TypeScript,
-Tailwind v4. The API is Phase 4 (`docs/DECISIONS.md` D-041). Items marked **[backend]** need
-a small API change and your OK.
+Status: **approved 2026-11-05** (decisions at the end); no frontend code until Phase 5
+starts. Stack as scaffolded: Next.js 16 App Router, React 19, TypeScript, Tailwind v4. The
+API is Phase 4 (`docs/DECISIONS.md` D-041). The **[backend]** items are already built on
+`phase-4-api` (D-043, D-044).
 
 ---
 
@@ -30,6 +31,19 @@ panel instead of being mixed into the chat.
 2. **Answer**: streamed markdown with GFM tables. `[n]` renders as a citation chip. Clicking
    it opens Sources and highlights card *n*. `[unverified]` renders as a muted outlined chip
    with a tooltip.
+   - **Verify swap.** The streamed text is a preview, because `finalize` checks every
+     citation and may move one, drop one, or mark a claim `[unverified]`.
+     - **Start:** the swap begins when the `node` event `finalize` starts. A "Verifying
+       citations…" pill appears (a spinner icon plus the label) and the preview dims
+       slightly. The pill stays at least 400 ms, so it never just flashes.
+     - **Finish:** on `final` the preview cross-fades to the verified text.
+     - **Changed markers:** each citation marker is compared with the preview by position.
+       Any marker that changed (renumbered, moved to another source, or now `[unverified]`)
+       gets a brief amber outline pulse, plus a tooltip saying what changed
+       ("moved from [3]", "no source supports this").
+     - **Result:** the swap reads as a deliberate check step, not a glitch.
+     - **Reduced motion:** with `prefers-reduced-motion`, there's no cross-fade or pulse,
+       only the pill and the tooltips.
 3. **Footer row**:
    - the citation-check badge (`citations 14/15 verified`);
    - total tokens and duration;
@@ -113,6 +127,7 @@ This page proves the pipeline exists (spec §6).
 | `clarification_needed` | clarification card; composer locked | | `ask_clarification` violet (paused) | | thread → `awaiting_clarification` |
 | `token` | append to the answer (markdown rendered incrementally) | | synthesizer active | | |
 | `final` | **replace** the streamed text with `answer` (finalize may have fixed citations, added `[unverified]` and the footer); render citation chips; check badge | | finalize → end, all done | number and re-sort by `citations` | thread → `idle`; refetch thread list |
+| `node` | finalize start → "Verifying citations…" pill | | exact active node (start) / done (end); `interrupted` → paused | | |
 | `error` | error banner with **Retry** | running cards → `failed` | active node red | | thread → `error` |
 
 Two rules:
@@ -120,7 +135,7 @@ Two rules:
   citations.
 - **Events are the only writer of run state.** The UI never infers progress from timers.
 
-**[backend] `node` event (proposed).** Today the graph view would have to infer the active
+**`node` event (built, D-044).** Today the graph view would have to infer the active
 node from the events above. That works for planner, agents, critic and synthesizer, but not
 for entity resolver, query analyzer or join. LangGraph's `tasks` stream mode reports each
 node's start and finish, with the subgraph namespace. A thin
@@ -213,7 +228,7 @@ visited node marked done and the taken loops highlighted.
 **Reconnects.** A run outlives its connection (D-041), so a dropped stream never loses
 the run. The question is how the UI catches up. The proposal has two layers:
 
-1. **[backend] Resumable event log (recommended).** `RunManager` keeps each active or
+1. **Resumable event log (built, D-043).** `RunManager` keeps each active or
    just-finished run's events in an in-memory buffer, ids already gapless, kept 10 minutes
    after the end. A new endpoint, `GET /api/threads/{id}/events`, accepts the
    `Last-Event-ID` header or `?after=n`. It replays what was missed, then continues live.
@@ -229,7 +244,7 @@ the run. The question is how the UI catches up. The proposal has two layers:
 On load, a thread in `awaiting_clarification` shows its card from `pending_clarification`.
 A thread in `error` shows the banner with Retry.
 
-**[backend] Scripted E2E mode (proposed).** Playwright (spec §7) needs runs without Groq. A
+**Scripted E2E mode (built, D-044).** Playwright (spec §7) needs runs without Groq. A
 runtime factory selected by `AGENT_RUNTIME=scripted` (refused when `APP_ENV=production`)
 would replay recorded runs through the same fakes the API tests use. E2E would then cover
 the full UI (plan, graph, sources, clarification) at zero tokens.
@@ -286,13 +301,34 @@ releases): `@xyflow/react`, `@dagrejs/dagre`, `@tanstack/react-query`, `react-ma
 
 ---
 
-## Decisions needed from you
+## Decisions (approved 2026-11-05)
 
-1. **[backend] `node` event** from LangGraph's `tasks` stream: an exact live graph,
-   including intake nodes and join.
-2. **[backend] Resumable event log** with `GET /api/threads/{id}/events` (reconnect and
-   reload mid-run), with polling as the fallback.
-3. **[backend] Event JSON Schema export** for generated TS types, with a CI staleness check.
-4. **[backend] Scripted runtime** for zero-token Playwright E2E.
-5. **Palette:** amber accent with violet for "paused". Or would you prefer a cooler cyan
-   accent?
+1. **`node` events:** yes. Built (D-044); node ids match `/api/graph`, parallel
+   specialists are told apart by `step_id`, and the paused node has `interrupted`.
+2. **Replayable event log:** yes, in memory with a 10-minute TTL, not a table. After an API
+   restart a reconnect gets 404 and polls the thread. Redis Streams is the scale-up path.
+   Built (D-043).
+3. **Types export:** yes. `contracts/*.json` feed `frontend/lib/generated/*.ts`, and the CI
+   job `contracts` fails on staleness. Built (D-044).
+4. **Scripted runtime** for zero-token browser E2E: yes. Built (`AGENT_RUNTIME=scripted`,
+   D-044).
+5. **Accent:** amber. Running and waiting states always carry an icon and a label, never
+   color alone (see the status table below).
+6. **Owner addition:** the "Verifying citations…" state between the streamed preview and
+   the verified answer, with changed citation markers animated (section 1, Answer).
+
+### Status vocabulary (icon + label + color, everywhere a status appears)
+
+| State | Icon (lucide) | Label | Color |
+|---|---|---|---|
+| pending | `Circle` (outline) | Pending | `faint` |
+| running | `Loader2` (spinning; static under reduced motion) | Running | `accent` amber |
+| waiting for you | `MessageCircleQuestion` | Needs your answer | `paused` violet |
+| verifying | `ShieldCheck` (pulsing) | Verifying citations… | `accent` amber |
+| done | `CheckCircle2` | Done | `ok` |
+| skipped | `MinusCircle` | Skipped (with reason) | `muted` |
+| failed / error | `XCircle` | Failed (with reason) | `bad` |
+| unverified claim | `AlertTriangle` (small) | Unverified | `muted`, outlined |
+
+This applies to thread rows, step cards, graph nodes (the icon sits in the node's corner),
+the status line and the clarification card.

@@ -8,6 +8,7 @@ checkpointer, embedding model) are created once in the lifespan and stored on
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from typing import Literal
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,15 +16,23 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.ratelimit import RateLimiter
 from api.routes import data, health, threads
 from api.runtime import RuntimeFactory, live_runtime
+from api.scripted import scripted_runtime
 from core import db, vectorstore
 from core.config import Settings, get_settings
 from core.logging import configure_logging
 
+FROM_SETTINGS: Literal["from_settings"] = "from_settings"
+
 
 def create_app(
-    settings: Settings | None = None, runtime_factory: RuntimeFactory | None = live_runtime
+    settings: Settings | None = None,
+    runtime_factory: RuntimeFactory | Literal["from_settings"] | None = FROM_SETTINGS,
 ) -> FastAPI:
+    """`runtime_factory`: by default the live agent, or the scripted one when
+    AGENT_RUNTIME=scripted; None = no agent (health checks, contract export)."""
     settings = settings or get_settings()
+    if runtime_factory == FROM_SETTINGS:
+        runtime_factory = scripted_runtime if settings.agent_runtime == "scripted" else live_runtime
     configure_logging(settings.log_level)
 
     @asynccontextmanager

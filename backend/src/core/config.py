@@ -8,7 +8,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ModelSlot = Literal["reasoning", "fast"]
@@ -87,6 +87,15 @@ class Settings(BaseSettings):
     # Public-demo protection: agent runs (and resumes) per client IP per minute.
     api_runs_per_minute: int = 6
     api_max_question_chars: int = 1_000
+    # "scripted": replay canned scenarios with no LLM or tools (zero-token browser E2E,
+    # api/scripted.py). Refused in production.
+    agent_runtime: Literal["live", "scripted"] = "live"
+
+    @model_validator(mode="after")
+    def _no_scripted_agent_in_production(self) -> "Settings":
+        if self.app_env == "production" and self.agent_runtime == "scripted":
+            raise ValueError("AGENT_RUNTIME=scripted is for tests and E2E only, not production")
+        return self
 
     @property
     def news_live_fallback_enabled(self) -> bool:

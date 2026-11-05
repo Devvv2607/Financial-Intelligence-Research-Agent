@@ -779,6 +779,68 @@ different machines, so the skew would be larger and not under our control.
   - News recency scoring: compared with external publish times.
   - Ingestion run ids and file stamps.
 
+## D-043 · Replayable event log: in memory with a TTL; Redis Streams to scale out
+**Status:** Implemented (Phase 4, `api/events.py`, `GET /api/threads/{id}/events`)
+
+Each run's typed events go to an in-memory `RunLog`, where event *n* has SSE id *n*.
+- **Start:** the POST that starts a run streams the log from the beginning.
+- **Reconnect:** `GET /api/threads/{id}/events` replays everything after `?after=n` (or the
+  browser's `Last-Event-ID`) and then follows live. A reload mid-run uses `after=0` and
+  rebuilds the whole run, tokens included.
+- **Lifetime:** a log is kept 10 minutes (`EVENT_LOG_TTL_S`) after its run ends. A thread's
+  next run replaces it.
+- **`run_id` guard:** a client can pass `run_id`, so it never replays a newer run by
+  mistake.
+
+**Trade-off (owner decision).** The log is in memory, not a table.
+- **API restart:** the logs are lost, but the runs aren't. Their state is in Postgres (the
+  checkpointer and `runs`), so the endpoint returns 404 and the client falls back to
+  polling `GET /api/threads/{id}`. The client loses the token-by-token replay for that one
+  run; it doesn't lose content.
+- **Why not a table:** it would mean about a hundred rows per run (tokens, node events)
+  that matter only for minutes.
+
+**Scale-up path.** With more than one API instance a reconnect can land on an instance
+that doesn't hold the log. The shared version is Redis Streams:
+- one stream per run, `XADD` per event, with the SSE id as the stream position;
+- replay with `XREAD` from the last id;
+- expire with `EXPIRE`.
+
+The `RunLog` interface (`append` / `close` / `wait_after`) is what would move behind it.
+
+## D-044 · Node events, generated contract types, scripted E2E runtime
+**Status:** Implemented (Phase 4, owner-approved Phase 5 prerequisites)
+
+- **`node` events.** LangGraph's `tasks` stream mode reports every node's start and end,
+  including inside specialist subgraphs (namespace `"<agent>:<task id>"`).
+  - `NodeTracker` maps them to the node ids `/api/graph` uses (`"filings_agent:direct"`)
+    and attaches the plan `step_id`, so parallel runs of one specialist can be told apart.
+  - `interrupted` marks the node that paused for a clarification.
+  - The graph view can now light up exactly what runs, including intake nodes and `join`.
+- **Contract types.**
+  - `python -m api.contracts` writes `contracts/openapi.json` and
+    `contracts/agent-events.schema.json` (deterministic, sorted). The event union isn't in
+    OpenAPI because the SSE routes return a response object.
+  - `npm run gen:types` generates `frontend/lib/generated/{api,events}.ts`
+    (openapi-typescript 7.13.0, json-schema-to-typescript 16.0.0, pinned).
+  - Event fields with defaults are marked required, because they are always sent.
+  - The CI job `contracts` (`make contracts-check`) fails if either step's output differs
+    from what's committed.
+- **Scripted runtime** (`AGENT_RUNTIME=scripted`; settings refuse it with
+  `APP_ENV=production`).
+  - It's the real graph, API, SSE, event log and citation check. The LLM and tools are
+    canned (`agent/scripted.py`, also used by the tests), with an in-memory checkpointer
+    and thread store, so nothing is written to the database.
+  - Scenarios cover parallel steps with one deliberately unsupported claim (exercises
+    `[unverified]` and the UI's verify-swap), a critic gap leading to a replan with an
+    agentic step, the analyzer and resolver clarifications with resume, the advice
+    refusal, and unknown questions.
+  - Every scripted source is titled "(scripted)" and links to example.com.
+  - Small delays (300 ms per tool, 15 ms per token) let the UI's live states be seen.
+    Tests set them to 0.
+  - Checked over `curl` against a real uvicorn process: clarification, then resume, then
+    replay, with zero LLM calls.
+
 ## Adaptations: where libraries or tools differed from the spec's assumptions
 
 - **Postgres 18 image data path (Phase 0).** From v18 the official image sets
