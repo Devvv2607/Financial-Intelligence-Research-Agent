@@ -3,8 +3,8 @@
   1,
   {
    "event": "run_started",
-   "run_id": "71e02327-d912-45fd-b8ac-1cbc150ba49a",
-   "thread_id": "1dc701f1-494a-4e9d-b805-8c261ec382f6",
+   "run_id": "9278ddb6-a230-4ae2-89c4-19827d1418a9",
+   "thread_id": "023496ae-bb2f-4dfc-a422-e76689fb5872",
    "resumed": false
   }
  ],
@@ -298,7 +298,7 @@
    "summary": "compare_risk_factors: 2 sources (direct calls)",
    "error": null,
    "reason": null,
-   "duration_ms": 4
+   "duration_ms": 5
   }
  ],
  [
@@ -644,7 +644,7 @@
    "summary": "Two recent headlines cover Apple's AI risk.",
    "error": null,
    "reason": null,
-   "duration_ms": 8
+   "duration_ms": 15
   }
  ],
  [

@@ -3,8 +3,8 @@
   1,
   {
    "event": "run_started",
-   "run_id": "4bc42b3f-91a2-44c3-942f-e284334855ab",
-   "thread_id": "7e8fdc8e-92c4-4793-b442-b9cbd6a0e4f5",
+   "run_id": "8943e4e9-cc35-49e3-a3cc-9a5278ee9077",
+   "thread_id": "77d5f589-24cb-4a9a-9f43-f70f6a01bc90",
    "resumed": false
   }
  ],
@@ -677,7 +677,7 @@
    "summary": "get_risk_factors: 3 sources (direct calls)",
    "error": null,
    "reason": null,
-   "duration_ms": 15
+   "duration_ms": 26
   }
  ],
  [
@@ -690,16 +690,16 @@
    "summary": "get_risk_factors: 3 sources (direct calls)",
    "error": null,
    "reason": null,
-   "duration_ms": 15
+   "duration_ms": 26
   }
  ],
  [
   49,
   {
    "event": "node",
-   "node": "filings_agent:finish",
+   "node": "news_agent:direct",
    "phase": "end",
-   "step_id": "r1s1",
+   "step_id": "r1s3",
    "error": false,
    "interrupted": false
   }
@@ -708,9 +708,9 @@
   50,
   {
    "event": "node",
-   "node": "filings_agent:finish",
-   "phase": "end",
-   "step_id": "r1s2",
+   "node": "news_agent:finish",
+   "phase": "start",
+   "step_id": "r1s3",
    "error": false,
    "interrupted": false
   }
@@ -721,7 +721,7 @@
    "event": "node",
    "node": "news_agent:direct",
    "phase": "end",
-   "step_id": "r1s3",
+   "step_id": "r1s4",
    "error": false,
    "interrupted": false
   }
@@ -732,7 +732,7 @@
    "event": "node",
    "node": "news_agent:finish",
    "phase": "start",
-   "step_id": "r1s3",
+   "step_id": "r1s4",
    "error": false,
    "interrupted": false
   }
@@ -740,28 +740,6 @@
  [
   53,
   {
-   "event": "node",
-   "node": "news_agent:direct",
-   "phase": "end",
-   "step_id": "r1s4",
-   "error": false,
-   "interrupted": false
-  }
- ],
- [
-  54,
-  {
-   "event": "node",
-   "node": "news_agent:finish",
-   "phase": "start",
-   "step_id": "r1s4",
-   "error": false,
-   "interrupted": false
-  }
- ],
- [
-  55,
-  {
    "event": "step_completed",
    "step_id": "r1s3",
    "status": "done",
@@ -769,11 +747,11 @@
    "summary": "search_news: 1 sources (direct calls)",
    "error": null,
    "reason": null,
-   "duration_ms": 20
+   "duration_ms": 30
   }
  ],
  [
-  56,
+  54,
   {
    "event": "step_completed",
    "step_id": "r1s4",
@@ -782,7 +760,29 @@
    "summary": "search_news: 1 sources (direct calls)",
    "error": null,
    "reason": null,
-   "duration_ms": 20
+   "duration_ms": 30
+  }
+ ],
+ [
+  55,
+  {
+   "event": "node",
+   "node": "filings_agent:finish",
+   "phase": "end",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  56,
+  {
+   "event": "node",
+   "node": "filings_agent:finish",
+   "phase": "end",
+   "step_id": "r1s2",
+   "error": false,
+   "interrupted": false
   }
  ],
  [

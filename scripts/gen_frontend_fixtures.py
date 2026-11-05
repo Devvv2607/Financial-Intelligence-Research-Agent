@@ -3,7 +3,8 @@
     uv run python scripts/gen_frontend_fixtures.py
 
 Runs the real API app with AGENT_RUNTIME=scripted (zero tokens) and writes
-frontend/lib/__fixtures__/<scenario>.json: [[id, event], ...] per stream. Re-run when the
+frontend/lib/__fixtures__/<scenario>.json: [[id, event], ...] per stream, and graph.json
+(GET /api/graph). Re-run when the
 event contract changes (ids, run ids and durations differ between runs; tests don't
 depend on them).
 """
@@ -60,6 +61,8 @@ async def main() -> None:
         _, apple = await run("How did Apple's risk factors change between its last two 10-Ks?")
         t, bank = await run("How risky is the bank?")
         resume = await c.post(f"/api/threads/{t}/resume", json={"answer": "JPMorgan Chase (JPM)"})
+        graph = (await c.get("/api/graph")).json()
+        (OUT / "graph.json").write_text(json.dumps(graph, indent=1) + "\n", encoding="utf-8")
         for name, events in {
             "compare": compare,
             "apple-replan": apple,

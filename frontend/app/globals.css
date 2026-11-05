@@ -1,22 +1,39 @@
 @import "tailwindcss";
 
-/* Dark-first: the dark palette is the default; light is opt-in later. */
+/* Dark-first research-terminal palette (docs/design/phase-5-frontend.md §5).
+   Every color has one meaning; status is never color alone (icons + labels). */
 :root {
   --background: #0b0d10;
+  --surface: #12161c;
+  --surface-2: #181d25;
+  --border: #232a34;
   --foreground: #e6e8eb;
   --muted: #8a919c;
-  --border: #1f242c;
+  --faint: #5c6370; /* disabled / decorative only (~3.3:1) */
+  --accent: #f0b429; /* amber: running, active, focus */
+  --link: #6cb6ff; /* citations, links */
   --ok: #3fb950;
   --bad: #f85149;
+  --paused: #a78bfa; /* violet: waiting for the user */
+  --agent-filings: #6cb6ff;
+  --agent-financials: #3fb950;
+  --agent-news: #f778ba;
+  --agent-screener: #39c5cf;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
-  --color-border: var(--border);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-link: var(--link);
   --color-ok: var(--ok);
   --color-bad: var(--bad);
+  --color-paused: var(--paused);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -25,4 +42,96 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Live-state motion only; off under reduced motion. */
+@keyframes live-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+.live-pulse {
+  animation: live-pulse 1.2s ease-in-out infinite;
+}
+@keyframes marker-changed {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  30% {
+    box-shadow: 0 0 0 3px var(--accent);
+  }
+}
+.marker-changed {
+  animation: marker-changed 1.4s ease-out 2;
+}
+.fade-in {
+  animation: fade-in 150ms ease-out;
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-pulse,
+  .marker-changed,
+  .fade-in,
+  .animate-spin {
+    animation: none !important;
+  }
+}
+
+/* Answer prose (react-markdown output). */
+.prose-answer {
+  font-size: 15px;
+  line-height: 1.6;
+}
+.prose-answer p,
+.prose-answer ul,
+.prose-answer ol,
+.prose-answer table {
+  margin: 0.6em 0;
+}
+.prose-answer ul {
+  list-style: disc;
+  padding-left: 1.25em;
+}
+.prose-answer ol {
+  list-style: decimal;
+  padding-left: 1.25em;
+}
+.prose-answer h1,
+.prose-answer h2,
+.prose-answer h3 {
+  font-weight: 600;
+  margin: 0.9em 0 0.4em;
+}
+.prose-answer table {
+  border-collapse: collapse;
+  font-size: 13px;
+  display: block;
+  overflow-x: auto;
+}
+.prose-answer th,
+.prose-answer td {
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  vertical-align: top;
+}
+.prose-answer th {
+  background: var(--surface-2);
+  text-align: left;
+}
+.prose-answer hr {
+  border-color: var(--border);
+  margin: 1em 0;
+}
+.prose-answer em {
+  color: var(--muted);
 }

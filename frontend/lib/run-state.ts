@@ -61,6 +61,10 @@ export type RunState = {
   nodes: Record<string, NodeStatus>; // graph node id -> status (subgraph nodes "agent:node")
   activeSteps: Record<string, number>; // specialist node -> running instances
   lastEventId: number;
+  // Arrival times (ms) passed in by the caller: the reducer stays pure. They let the UI
+  // hold "Verifying citations…" for a minimum time before revealing the final text.
+  verifyingSince: number | null;
+  finalAt: number | null;
 };
 
 export const initialRun: RunState = {
@@ -79,18 +83,20 @@ export const initialRun: RunState = {
   nodes: {},
   activeSteps: {},
   lastEventId: 0,
+  verifyingSince: null,
+  finalAt: null,
 };
 
 /** Apply one event. Ids at or below the last applied one are ignored (replays). */
-export function applyEvent(s: RunState, e: AgentEvent, id: number): RunState {
+export function applyEvent(s: RunState, e: AgentEvent, id: number, now = 0): RunState {
   // run_started opens a new server-side event log (a resume included), whose ids restart
   // at 1: it always applies and resets the counter.
   if (e.event !== "run_started" && id > 0 && id <= s.lastEventId) return s;
-  const next = reduce(s, e);
+  const next = reduce(s, e, now);
   return id > 0 ? { ...next, lastEventId: id } : next;
 }
 
-function reduce(s: RunState, e: AgentEvent): RunState {
+function reduce(s: RunState, e: AgentEvent, now: number): RunState {
   switch (e.event) {
     case "run_started":
       // A resume continues the paused run: keep what it built so far.
@@ -145,7 +151,7 @@ function reduce(s: RunState, e: AgentEvent): RunState {
         clarification: { question: e.question, options: e.options, source: e.source },
       };
     case "node":
-      return onNode(s, e);
+      return onNode(s, e, now);
     case "token":
       return { ...s, phase: "writing", preview: s.preview + e.text };
     case "final":
@@ -153,6 +159,7 @@ function reduce(s: RunState, e: AgentEvent): RunState {
         ...s,
         phase: "done",
         final: { answer: e.answer, citations: e.citations, check: e.citation_check },
+        finalAt: now,
         steps: settle(s.steps),
         activeSteps: {},
       };
@@ -201,7 +208,7 @@ function updateStep(
   return { ...s, steps: { ...s.steps, [id]: { ...st, ...p } } };
 }
 
-function onNode(s: RunState, e: EventOf<"node">): RunState {
+function onNode(s: RunState, e: EventOf<"node">, now: number): RunState {
   const nodes = { ...s.nodes };
   const active = { ...s.activeSteps };
   const top = e.node.split(":")[0];
@@ -218,8 +225,15 @@ function onNode(s: RunState, e: EventOf<"node">): RunState {
   let phase = s.phase;
   if (e.node === "planner" && e.phase === "start") phase = "planning";
   if (e.node === "critic" && e.phase === "start") phase = "reviewing";
-  if (e.node === "finalize" && e.phase === "start") phase = "verifying";
-  return { ...s, nodes, activeSteps: active, phase };
+  const verifying = e.node === "finalize" && e.phase === "start";
+  if (verifying) phase = "verifying";
+  return {
+    ...s,
+    nodes,
+    activeSteps: active,
+    phase,
+    verifyingSince: verifying && s.verifyingSince === null ? now : s.verifyingSince,
+  };
 }
 
 function settle(steps: Record<string, StepView>, to: StepStatus = "skipped") {
