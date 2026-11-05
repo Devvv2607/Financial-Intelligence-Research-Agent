@@ -9,7 +9,7 @@ from datetime import date, datetime
 from typing import Annotated, Any, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, Field, TypeAdapter
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 
 from agent.state import Citation, PlanStep, StepResult
 from agent.tools.base import Evidence
@@ -33,7 +33,9 @@ class ResumeRequest(BaseModel):
 
 # ---------------------------------------------------------------- events
 class _Event(BaseModel):
-    pass
+    # Fields with defaults are always serialized, so the exported schema (and the
+    # generated TypeScript types) mark them required: what the wire really carries.
+    model_config = ConfigDict(json_schema_serialization_defaults_required=True)
 
 
 class RunStarted(_Event):

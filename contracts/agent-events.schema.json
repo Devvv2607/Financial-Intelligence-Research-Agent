@@ -1,0 +1,801 @@
+{
+  "$defs": {
+    "Citation": {
+      "properties": {
+        "n": {
+          "title": "N",
+          "type": "integer"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Url"
+        }
+      },
+      "required": [
+        "n",
+        "source_id",
+        "title",
+        "url"
+      ],
+      "title": "Citation",
+      "type": "object"
+    },
+    "ClarificationNeeded": {
+      "properties": {
+        "event": {
+          "const": "clarification_needed",
+          "title": "Event",
+          "type": "string"
+        },
+        "options": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Options",
+          "type": "array"
+        },
+        "question": {
+          "title": "Question",
+          "type": "string"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "enum": [
+                "entity_resolver",
+                "query_analyzer"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source"
+        }
+      },
+      "required": [
+        "event",
+        "question",
+        "options",
+        "source"
+      ],
+      "title": "ClarificationNeeded",
+      "type": "object"
+    },
+    "CritiqueEvent": {
+      "properties": {
+        "event": {
+          "const": "critique",
+          "title": "Event",
+          "type": "string"
+        },
+        "gaps": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Gaps",
+          "type": "array"
+        },
+        "replanning": {
+          "title": "Replanning",
+          "type": "boolean"
+        },
+        "verdict": {
+          "enum": [
+            "ok",
+            "gaps"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event",
+        "verdict",
+        "gaps",
+        "replanning"
+      ],
+      "title": "CritiqueEvent",
+      "type": "object"
+    },
+    "ErrorEvent": {
+      "properties": {
+        "code": {
+          "enum": [
+            "agent_error",
+            "internal"
+          ],
+          "title": "Code",
+          "type": "string"
+        },
+        "event": {
+          "const": "error",
+          "title": "Event",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event",
+        "code",
+        "message"
+      ],
+      "title": "ErrorEvent",
+      "type": "object"
+    },
+    "Evidence": {
+      "description": "One citable source. `source_id` is stable across runs (used to dedupe).",
+      "properties": {
+        "filed_or_published": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Filed Or Published"
+        },
+        "fiscal_year": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fiscal Year"
+        },
+        "form_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Form Type"
+        },
+        "score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Score"
+        },
+        "section": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Section"
+        },
+        "snippet": {
+          "description": "The exact text supporting a claim (<= ~600 chars)",
+          "title": "Snippet",
+          "type": "string"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_type": {
+          "enum": [
+            "filing_chunk",
+            "risk_factor",
+            "8k",
+            "financial_fact",
+            "news",
+            "sql"
+          ],
+          "title": "Source Type",
+          "type": "string"
+        },
+        "ticker": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ticker"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        }
+      },
+      "required": [
+        "source_id",
+        "source_type",
+        "title",
+        "snippet"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "EvidenceAdded": {
+      "properties": {
+        "event": {
+          "const": "evidence_added",
+          "title": "Event",
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "title": "Sources",
+          "type": "array"
+        },
+        "step_id": {
+          "title": "Step Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event",
+        "step_id",
+        "sources"
+      ],
+      "title": "EvidenceAdded",
+      "type": "object"
+    },
+    "Final": {
+      "properties": {
+        "answer": {
+          "title": "Answer",
+          "type": "string"
+        },
+        "citation_check": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Citation Check"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "title": "Citations",
+          "type": "array"
+        },
+        "event": {
+          "const": "final",
+          "title": "Event",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event",
+        "answer",
+        "citations",
+        "citation_check"
+      ],
+      "title": "Final",
+      "type": "object"
+    },
+    "NodeEvent": {
+      "description": "A graph node started or ended. `node` matches an id from GET /api/graph; inside a\nspecialist it is \"<agent>:<node>\". `step_id` tells parallel specialist runs apart.",
+      "properties": {
+        "error": {
+          "default": false,
+          "title": "Error",
+          "type": "boolean"
+        },
+        "event": {
+          "const": "node",
+          "title": "Event",
+          "type": "string"
+        },
+        "interrupted": {
+          "default": false,
+          "title": "Interrupted",
+          "type": "boolean"
+        },
+        "node": {
+          "title": "Node",
+          "type": "string"
+        },
+        "phase": {
+          "enum": [
+            "start",
+            "end"
+          ],
+          "title": "Phase",
+          "type": "string"
+        },
+        "step_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Step Id"
+        }
+      },
+      "required": [
+        "event",
+        "node",
+        "phase",
+        "step_id",
+        "error",
+        "interrupted"
+      ],
+      "title": "NodeEvent",
+      "type": "object"
+    },
+    "PlanCreated": {
+      "properties": {
+        "event": {
+          "const": "plan_created",
+          "title": "Event",
+          "type": "string"
+        },
+        "round": {
+          "title": "Round",
+          "type": "integer"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/PlanStep"
+          },
+          "title": "Steps",
+          "type": "array"
+        }
+      },
+      "required": [
+        "event",
+        "round",
+        "steps"
+      ],
+      "title": "PlanCreated",
+      "type": "object"
+    },
+    "PlanStep": {
+      "properties": {
+        "agent": {
+          "enum": [
+            "filings",
+            "financials",
+            "news",
+            "screener"
+          ],
+          "title": "Agent",
+          "type": "string"
+        },
+        "depends_on": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Depends On",
+          "type": "array"
+        },
+        "entities": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Entities",
+          "type": "array"
+        },
+        "goal": {
+          "title": "Goal",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "tool_calls": {
+          "description": "Exact calls to run without an LLM (direct mode)",
+          "items": {
+            "$ref": "#/$defs/ToolCallSpec"
+          },
+          "title": "Tool Calls",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "goal",
+        "agent"
+      ],
+      "title": "PlanStep",
+      "type": "object"
+    },
+    "Replan": {
+      "properties": {
+        "event": {
+          "const": "replan",
+          "title": "Event",
+          "type": "string"
+        },
+        "round": {
+          "title": "Round",
+          "type": "integer"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/PlanStep"
+          },
+          "title": "Steps",
+          "type": "array"
+        }
+      },
+      "required": [
+        "event",
+        "round",
+        "steps"
+      ],
+      "title": "Replan",
+      "type": "object"
+    },
+    "RunStarted": {
+      "properties": {
+        "event": {
+          "const": "run_started",
+          "title": "Event",
+          "type": "string"
+        },
+        "resumed": {
+          "default": false,
+          "title": "Resumed",
+          "type": "boolean"
+        },
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        },
+        "thread_id": {
+          "title": "Thread Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event",
+        "run_id",
+        "thread_id",
+        "resumed"
+      ],
+      "title": "RunStarted",
+      "type": "object"
+    },
+    "StepCompleted": {
+      "properties": {
+        "duration_ms": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration Ms"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        },
+        "event": {
+          "const": "step_completed",
+          "title": "Event",
+          "type": "string"
+        },
+        "mode": {
+          "anyOf": [
+            {
+              "enum": [
+                "direct",
+                "agentic",
+                "none"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mode"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "status": {
+          "enum": [
+            "done",
+            "failed",
+            "skipped"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "step_id": {
+          "title": "Step Id",
+          "type": "string"
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Summary"
+        }
+      },
+      "required": [
+        "event",
+        "step_id",
+        "status",
+        "mode",
+        "summary",
+        "error",
+        "reason",
+        "duration_ms"
+      ],
+      "title": "StepCompleted",
+      "type": "object"
+    },
+    "StepStarted": {
+      "properties": {
+        "agent": {
+          "title": "Agent",
+          "type": "string"
+        },
+        "event": {
+          "const": "step_started",
+          "title": "Event",
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "direct",
+            "agentic"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "step_id": {
+          "title": "Step Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event",
+        "step_id",
+        "agent",
+        "mode"
+      ],
+      "title": "StepStarted",
+      "type": "object"
+    },
+    "Token": {
+      "properties": {
+        "event": {
+          "const": "token",
+          "title": "Event",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event",
+        "text"
+      ],
+      "title": "Token",
+      "type": "object"
+    },
+    "ToolCallSpec": {
+      "properties": {
+        "args_json": {
+          "description": "JSON object with the tool's arguments",
+          "title": "Args Json",
+          "type": "string"
+        },
+        "tool": {
+          "title": "Tool",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tool",
+        "args_json"
+      ],
+      "title": "ToolCallSpec",
+      "type": "object"
+    },
+    "ToolCalled": {
+      "properties": {
+        "args": {
+          "additionalProperties": true,
+          "title": "Args",
+          "type": "object"
+        },
+        "event": {
+          "const": "tool_called",
+          "title": "Event",
+          "type": "string"
+        },
+        "evidence": {
+          "title": "Evidence",
+          "type": "integer"
+        },
+        "ok": {
+          "title": "Ok",
+          "type": "boolean"
+        },
+        "step_id": {
+          "title": "Step Id",
+          "type": "string"
+        },
+        "tool": {
+          "title": "Tool",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event",
+        "step_id",
+        "tool",
+        "args",
+        "ok",
+        "evidence"
+      ],
+      "title": "ToolCalled",
+      "type": "object"
+    }
+  },
+  "discriminator": {
+    "mapping": {
+      "clarification_needed": "#/$defs/ClarificationNeeded",
+      "critique": "#/$defs/CritiqueEvent",
+      "error": "#/$defs/ErrorEvent",
+      "evidence_added": "#/$defs/EvidenceAdded",
+      "final": "#/$defs/Final",
+      "node": "#/$defs/NodeEvent",
+      "plan_created": "#/$defs/PlanCreated",
+      "replan": "#/$defs/Replan",
+      "run_started": "#/$defs/RunStarted",
+      "step_completed": "#/$defs/StepCompleted",
+      "step_started": "#/$defs/StepStarted",
+      "token": "#/$defs/Token",
+      "tool_called": "#/$defs/ToolCalled"
+    },
+    "propertyName": "event"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/RunStarted"
+    },
+    {
+      "$ref": "#/$defs/PlanCreated"
+    },
+    {
+      "$ref": "#/$defs/Replan"
+    },
+    {
+      "$ref": "#/$defs/StepStarted"
+    },
+    {
+      "$ref": "#/$defs/ToolCalled"
+    },
+    {
+      "$ref": "#/$defs/EvidenceAdded"
+    },
+    {
+      "$ref": "#/$defs/StepCompleted"
+    },
+    {
+      "$ref": "#/$defs/CritiqueEvent"
+    },
+    {
+      "$ref": "#/$defs/ClarificationNeeded"
+    },
+    {
+      "$ref": "#/$defs/NodeEvent"
+    },
+    {
+      "$ref": "#/$defs/Token"
+    },
+    {
+      "$ref": "#/$defs/Final"
+    },
+    {
+      "$ref": "#/$defs/ErrorEvent"
+    }
+  ],
+  "title": "AgentEvent"
+}

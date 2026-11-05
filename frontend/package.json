@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "next typegen && tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit",
+    "gen:types": "openapi-typescript ../contracts/openapi.json -o lib/generated/api.ts && json2ts -i ../contracts/agent-events.schema.json -o lib/generated/events.ts --additionalProperties=false --bannerComment \"/* Generated from contracts/agent-events.schema.json by npm run gen:types. Do not edit. */\""
   },
   "dependencies": {
     "next": "16.4.5",
@@ -21,6 +22,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
+    "json-schema-to-typescript": "16.0.0",
+    "openapi-typescript": "7.13.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

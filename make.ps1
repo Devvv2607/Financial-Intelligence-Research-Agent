@@ -99,6 +99,13 @@ $targets = [ordered]@{
             Invoke-Container "pg_restore -U `$POSTGRES_USER -d $target $clean --no-owner --exit-on-error /tmp/fira-restore.dump"
             Invoke-Container 'rm -f /tmp/fira-restore.dump'
             Write-Host "Restored $File into '$target'." -ForegroundColor Green } }
+    "contracts" = @{ Help = "Export API contracts (contracts/*.json) and regenerate frontend types"; Run = {
+            Invoke-Step uv @("run", "python", "-m", "api.contracts")
+            Invoke-Step npm @("--prefix", "frontend", "run", "gen:types") } }
+    "contracts-check" = @{ Help = "Fail if contracts or generated frontend types are stale (CI)"; Run = {
+            Invoke-Step uv @("run", "python", "-m", "api.contracts", "--check")
+            Invoke-Step npm @("--prefix", "frontend", "run", "gen:types")
+            Invoke-Step git @("diff", "--exit-code", "--", "frontend/lib/generated") } }
     "migrate"   = @{ Help = "Apply database migrations"; Run = {
             Invoke-Step uv @("run", "alembic", "-c", "backend/alembic.ini", "upgrade", "head") } }
     "ingest-sample" = @{ Help = "Ingest the 10 agreed sample companies (+ headings-only experiment on 3)"; Run = {
