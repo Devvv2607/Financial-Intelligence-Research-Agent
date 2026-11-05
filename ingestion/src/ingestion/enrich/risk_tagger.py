@@ -22,6 +22,7 @@ from pydantic import BaseModel
 from rapidfuzz import fuzz
 
 from core.llm import GroqClient, InvalidOutputError, ResponseMode
+from core.taxonomy import RiskCategory
 from ingestion import prompts
 
 logger = logging.getLogger(__name__)
@@ -30,23 +31,6 @@ logger = logging.getLogger(__name__)
 # risk's heading fails.
 ECHO_WORDS = 6  # the prompt asks for the first 6 words
 ECHO_MIN_RATIO = 80
-
-RiskCategory = Literal[
-    "regulatory",
-    "competition",
-    "supply_chain",
-    "cybersecurity",
-    "macroeconomic",
-    "geopolitical",
-    "litigation",
-    "technology",
-    "talent",
-    "financial_liquidity",
-    "climate_esg",
-    "customer_concentration",
-    "ip",
-    "other",
-]
 
 
 class RiskTag(BaseModel):

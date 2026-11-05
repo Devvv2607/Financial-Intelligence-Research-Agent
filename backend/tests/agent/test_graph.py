@@ -468,3 +468,40 @@ async def test_finalize_verifies_citations_and_records_precision() -> None:
     check = out["citation_check"]
     assert (check["checked"], check["supported"], check["unverified_claims"]) == (2, 1, 1)
     assert recorded[0]["citation_check"] == check
+
+
+async def test_planner_sees_categories_and_a_category_filter_reaches_the_tool() -> None:
+    """Demo 3 fetched every UNH risk factor for a 'regulatory risks' question; the planner
+    is now told to filter, sees the valid names, and a bad name never reaches the tool."""
+    q = "What are UNH's main regulatory risks?"
+    plan = planner_returns(
+        step(
+            "a",
+            "filings",
+            entities=["JNJ"],
+            tool_calls=[("get_risk_factors", '{"ticker": "JNJ", "category": "regulatory"}')],
+        ),
+        step(
+            "b",
+            "filings",
+            entities=["JNJ"],
+            tool_calls=[("get_risk_factors", '{"ticker": "JNJ", "category": "regulation"}')],
+        ),
+    )
+    tools = FakeTools({"get_risk_factors": ok("get_risk_factors", {"x": [1]}, [ev("r", "JNJ")])})
+    llm = FakeLLM(
+        {
+            "query_analyzer": [analysis(q, ["Johnson & Johnson"])],
+            "planner": [plan],
+            "critic": [OK_CRITIQUE],
+        },
+        {"filings_agent": ["nothing more"], "synthesizer": ["Regulatory [1]."]},
+    )
+    out = await ask(build_graph(make_deps(llm, tools), memory_saver()), q)
+    planner_prompt = next(m for n, m in llm.calls if n == "planner")[0]["content"]
+    assert "pass get_risk_factors the matching `category`" in planner_prompt
+    assert "category?: regulatory|competition|supply_chain" in planner_prompt
+    assert ("get_risk_factors", {"ticker": "JNJ", "category": "regulatory"}) in [
+        (name, args) for name, args, *_ in tools.log
+    ]
+    assert out["plan"][1].tool_calls == []  # "regulation" is not a category: dropped

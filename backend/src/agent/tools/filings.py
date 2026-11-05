@@ -16,6 +16,7 @@ from agent.tools.base import Evidence, Output, ToolContext, ToolFailure, snippet
 from agent.tools.common import fetch_dicts, missing_warning, resolve_tickers
 from agent.tools.eight_k_items import describe_items, event_excerpt
 from core.db.schema import eight_k_events, filings, risk_factors
+from core.taxonomy import RiskCategory
 from core.vectorstore import FILING_CHUNK
 
 Section = Literal["item_1", "item_1a", "business_overview", "8k_body"]
@@ -142,7 +143,11 @@ async def search_filings(ctx: ToolContext, inp: SearchFilingsInput) -> Output:
 class GetRiskFactorsInput(BaseModel):
     ticker: str
     fiscal_year: int | None = Field(None, description="Defaults to the latest 10-K")
-    category: str | None = Field(None, description="Taxonomy category, e.g. supply_chain")
+    category: RiskCategory | None = Field(
+        None,
+        description="Only risk factors tagged with this category. Use it whenever the "
+        "question is about one kind of risk (e.g. regulatory, cybersecurity, supply_chain).",
+    )
     limit: int = Field(60, ge=1, le=100)
 
 

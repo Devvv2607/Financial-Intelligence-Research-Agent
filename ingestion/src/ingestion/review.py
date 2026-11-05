@@ -17,7 +17,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from core.db.schema import companies, risk_factors
-from ingestion.enrich.risk_tagger import RiskCategory
+from core.taxonomy import RiskCategory
 
 CATEGORIES: tuple[str, ...] = get_args(RiskCategory)
 COLUMNS = [
