@@ -273,3 +273,46 @@ def test_salvage_keeps_only_tags_whose_heading_matches_their_id() -> None:
         ' "category": "ip", "summary": "right risk"}]}'
     )
     assert salvage_tags(raw, pending) == {1: ("ip", "right risk")}
+
+
+async def test_review_scores_exported_and_current_tags_on_the_same_rows(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """After a re-tag, both tag sets are scored on the rows that still exist; a risk whose
+    text changed or vanished in re-extraction is excluded from both and listed."""
+    import csv
+
+    from ingestion import review
+
+    path = tmp_path / "sheet.csv"
+    rows = [  # id, exported (v2) tag, owner label
+        ("a", "talent", "talent"),
+        ("b", "regulatory", "geopolitical"),
+        ("c", "ip", "ip"),  # re-extraction removed it
+    ]
+    with path.open("w", newline="", encoding="utf-8-sig") as f:
+        w = csv.DictWriter(f, fieldnames=review.COLUMNS)
+        w.writeheader()
+        for rid, model, mine in rows:
+            w.writerow(
+                {
+                    "risk_id": rid,
+                    "ticker": "UNH",
+                    "fiscal_year": "2025",
+                    "heading": f"Heading {rid}",
+                    "model_category": model,
+                    "your_category": mine,
+                }
+            )
+
+    async def stored(_: object, ids: list[str]) -> dict[str, tuple[str, str]]:
+        return {"a": ("talent", "risk_tagging:v3@m"), "b": ("geopolitical", "risk_tagging:v3@m")}
+
+    monkeypatch.setattr(review, "current_tags", stored)
+    c = await review.score_sheet_and_current(None, path, "v2")  # type: ignore[arg-type]
+    assert (c.sheet.labelled, c.sheet.correct) == (2, 1)  # c excluded from both
+    assert (c.current.labelled, c.current.correct) == (2, 2)
+    assert c.gone == ["UNH FY2025: Heading c"]
+    md = review.compared_markdown(c)
+    assert "| exported (v2) | **50%** (1/2) |" in md
+    assert "| current (risk_tagging:v3@m) | **100%** (2/2) |" in md

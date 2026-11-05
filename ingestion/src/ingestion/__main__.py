@@ -189,7 +189,17 @@ async def _review(args: argparse.Namespace, s: Settings) -> int:
             + ", ".join(review.CATEGORIES)
         )
         return 0
-    _save(s, "review-score", review.score_markdown(review.score_review_sheet(path)))
+    # Score the exported (frozen) tags and today's stored tags on the same rows: after a
+    # re-tag both numbers matter (e.g. prompt v2 at export vs v3 now).
+    engine = create_engine(s.database_url)
+    rows, _ = review.read_labels(path)
+    sheet_version = args.sheet_version or "exported"
+    compared = await review.score_sheet_and_current(engine, path, sheet_version)
+    await engine.dispose()
+    if not rows:
+        console.print("No labelled rows yet: fill `your_category` first.")
+        return 1
+    _save(s, "review-score", review.compared_markdown(compared))
     return 0
 
 
@@ -255,6 +265,7 @@ def main() -> None:
     rev.add_argument("action", choices=["export", "score"])
     rev.add_argument("--path", default=str(REVIEW_SHEET))
     rev.add_argument("--n", type=int, default=30)
+    rev.add_argument("--sheet-version", help="label for the tags in the sheet, e.g. v2")
     args = parser.parse_args()
 
     s = get_settings()
