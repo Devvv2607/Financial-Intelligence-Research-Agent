@@ -1,0 +1,51 @@
+thread 4685a2e7-0589-490e-b38e-9b25ed9c42f5
+
+== PLAN
+  r1s1 [filings, direct]: Compare Apple Inc.'s risk factors between its two most recent 10-K filings
+      -> compare_risk_factors({"ticker":"AAPL"})
+  > r1s1 started (filings, direct)
+    . r1s1 compare_risk_factors({'ticker': 'AAPL'}) ok=True sources=42
+  < r1s1 done (direct)
+
+== CRITIC: ok
+
+== ANSWER
+
+**Answer**  
+Apple added one new risk factor, removed none, and materially revised 20 of its existing risk factors between FY 2025 (ended 2025‑09‑27) and FY 2026 (ended 2026‑09‑26) [1]. The total number of disclosed risks grew from 27 to 28 [1].
+
+**Key changes**
+
+| Change type | FY 2025 (ended 2025‑09‑27) | FY 2026 (ended 2026‑09‑26) | Example |
+|-------------|---------------------------|---------------------------|---------|
+| **New risk** | – | “Issues related to artificial intelligence may result in reputational, competitive and financial harm … regulatory action, legal liability, and other adverse effects” [2] | AI‑related regulatory, legal and reputational exposure |
+| **Removed risk** | – | – | None [1] |
+| **Materially changed** | “Future operating results depend upon the Company’s ability to obtain components in sufficient quantities on commercially reasonable terms.” [23] | “Future operating results depend upon the Company’s ability to obtain components, **compute capacity and storage resources** in sufficient quantities and on commercially reasonable terms.” [3] | Supply‑chain risk expanded to include compute and storage |
+| **Unchanged** | 7 risk factors remained word‑for‑word [1] | – | – |
+
+Overall, the filing shows Apple is emphasizing emerging AI‑related exposures and the growing importance of compute and storage capacity in its supply‑chain risk narrative, while the rest of the risk landscape stays largely stable.  
+
+**Limits**  
+No additional quantitative details about the other 19 revised risk factors are provided in the supplied sources.
+
+---
+*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*
+
+== STEPS
+  r1s1   filings    direct   done     tools: compare_risk_factors
+
+== TOKENS (counted = prompt - cached + completion)
+  synthesizer          4,513  calls=1 reasoning=202 cache_hits=0 (saved 0)
+  planner              1,589  calls=1 reasoning=282 cache_hits=0 (saved 0)
+  critic               1,061  calls=1 reasoning=134 cache_hits=0 (saved 0)
+  query_analyzer           0  calls=0 reasoning=0 cache_hits=1 (saved 842)
+  TOTAL                7,163   run b04a8d4e-21de-42ea-afd4-8043c25682ef | thread 4685a2e7-0589-490e-b38e-9b25ed9c42f5
+
+== SOURCES
+  [1] AAPL risk factors, FY2025 vs FY2026 10-K (comparison) - https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm
+  [2] AAPL 10-K FY2026 risk factor: Issues related to artificial intelligence may result in reputational, competitive and financial harm to the Company, regulatory action, legal liability, and other adverse effects to the Company’s business. - https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm
+  [3] AAPL 10-K FY2026 risk factor: Future operating results depend upon the Company’s ability to obtain components, compute capacity and storage resources in sufficient quantities and on commercially reasonable terms. - https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm
+  [23] AAPL 10-K FY2025 risk factor: Future operating results depend upon the Company’s ability to obtain components in sufficient quantities on commercially reasonable terms. - https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+C:\Users\Dev\AppData\Local\Programs\Python\Python312\Lib\asyncio\selector_events.py:875: ResourceWarning: unclosed transport <_SelectorSocketTransport fd=1360>
+  _warn(f"unclosed transport {self!r}", ResourceWarning, source=self)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback

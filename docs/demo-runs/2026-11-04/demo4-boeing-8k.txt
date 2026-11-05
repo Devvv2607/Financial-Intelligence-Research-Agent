@@ -1,0 +1,64 @@
+thread e2a7d5c5-252a-403f-8e8d-40b023dd5d23
+
+== PLAN
+  r1s1 [filings, agentic]: List Boeing's material events reported in 8‑K filings during 2026
+  > r1s1 started (filings, agentic)
+    . r1s1 get_8k_events({'limit': 20, 'since': '2026-01-01', 'ticker': 'BA'}) ok=True sources=7
+  < r1s1 done (agentic)
+
+== CRITIC: ok
+
+== ANSWER
+
+**Boeing’s material 8‑K events reported in 2026**
+
+| Filing date | Item(s) reported | Key event |
+|-------------|------------------|-----------|
+| **Oct 27 2026** | 2.02 – Results of Operations and Financial Condition; 9.01 – Financial Statements & Exhibits | Press release furnishing Boeing’s Q3 2026 financial results (exhibit 99.1)【1】 |
+| **Aug 28 2026** | 1.01 – Entry into a Material Definitive Agreement; 2.03 – Creation of a Direct Financial Obligation; 9.01 – Financial Statements & Exhibits | Execution of a $3.0 billion, 364‑day revolving credit agreement with Citibank and JPMorgan Chase, replacing the prior facility【2】 |
+| **Aug 21 2026** | 5.02 – Departure or Appointment of Directors or Officers; Compensation Arrangements | Board actions reporting departures/appointments of certain directors/officers and related compensation matters【3】 |
+| **Jul 28 2026** | 2.02 – Results of Operations and Financial Condition; 9.01 – Financial Statements & Exhibits | Press release reporting Boeing’s Q2 2026 financial results (exhibit 99.1)【4】 |
+| **Apr 22 2026** | 2.02 – Results of Operations and Financial Condition; 9.01 – Financial Statements & Exhibits | Press release reporting Boeing’s Q1 2026 financial results (exhibit 99.1)【5】 |
+| **Apr 17 2026** | 5.07 – Submission of Matters to a Vote of Security Holders | Disclosure of the final voting results from Boeing’s 2026 Annual Shareholder Meeting【6】 |
+| **Jan 27 2026** | 2.02 – Results of Operations and Financial Condition; 9.01 – Financial Statements & Exhibits | Press release reporting Boeing’s Q4 2025 financial results (exhibit 99.1)【7】 |
+
+**Limits** – No additional material 8‑K filings for Boeing in 2026 are present in the provided sources.
+
+== ANSWER (citations checked)
+
+**Boeing’s material 8‑K events reported in 2026**
+
+| Filing date | Item(s) reported | Key event |
+|-------------|------------------|-----------|
+| **Oct 27 2026** | 2.02 – Results of Operations and Financial Condition; 9.01 – Financial Statements & Exhibits | Press release furnishing Boeing’s Q3 2026 financial results (exhibit 99.1)[1] |
+| **Aug 28 2026** | 1.01 – Entry into a Material Definitive Agreement; 2.03 – Creation of a Direct Financial Obligation; 9.01 – Financial Statements & Exhibits | Execution of a $3.0 billion, 364‑day revolving credit agreement with Citibank and JPMorgan Chase, replacing the prior facility[2] |
+| **Aug 21 2026** | 5.02 – Departure or Appointment of Directors or Officers; Compensation Arrangements | Board actions reporting departures/appointments of certain directors/officers and related compensation matters[3] |
+| **Jul 28 2026** | 2.02 – Results of Operations and Financial Condition; 9.01 – Financial Statements & Exhibits | Press release reporting Boeing’s Q2 2026 financial results (exhibit 99.1)[4] |
+| **Apr 22 2026** | 2.02 – Results of Operations and Financial Condition; 9.01 – Financial Statements & Exhibits | Press release reporting Boeing’s Q1 2026 financial results (exhibit 99.1)[5] |
+| **Apr 17 2026** | 5.07 – Submission of Matters to a Vote of Security Holders | Disclosure of the final voting results from Boeing’s 2026 Annual Shareholder Meeting[6] |
+| **Jan 27 2026** | 2.02 – Results of Operations and Financial Condition; 9.01 – Financial Statements & Exhibits | Press release reporting Boeing’s Q4 2025 financial results (exhibit 99.1)[7] |
+
+**Limits** – No additional material 8‑K filings for Boeing in 2026 are present in the provided sources.
+
+---
+*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*
+
+== STEPS
+  r1s1   filings    agentic  done     tools: get_8k_events
+
+== TOKENS (counted = prompt - cached + completion)
+  synthesizer          2,849  calls=1 reasoning=457 cache_hits=0 (saved 0)
+  filings_agent        2,761  calls=2 reasoning=26 cache_hits=0 (saved 0)
+  critic               1,574  calls=1 reasoning=285 cache_hits=0 (saved 0)
+  planner              1,526  calls=1 reasoning=203 cache_hits=0 (saved 0)
+  query_analyzer         855  calls=1 reasoning=72 cache_hits=0 (saved 0)
+  TOTAL                9,565   run f8ffbbf5-282f-4d90-a898-fee6f11aeb1e | thread e2a7d5c5-252a-403f-8e8d-40b023dd5d23
+
+== SOURCES
+  [1] BA 8-K 2026-10-27: 2.02 Results of operations and financial condition; 9.01 Financial statements and exhibits - https://www.sec.gov/Archives/edgar/data/12927/000162828026067411/ba-20261027.htm
+  [2] BA 8-K 2026-08-28: 1.01 Entry into a material definitive agreement; 2.03 Creation of a direct financial obligation or off-balance-sheet arrangement; 9.01 Financial statements and exhibits - https://www.sec.gov/Archives/edgar/data/12927/000162828026059427/ba-20260824.htm
+  [3] BA 8-K 2026-08-21: 5.02 Departure or appointment of directors or officers; compensation arrangements - https://www.sec.gov/Archives/edgar/data/12927/000162828026058481/ba-20260819.htm
+  [4] BA 8-K 2026-07-28: 2.02 Results of operations and financial condition; 9.01 Financial statements and exhibits - https://www.sec.gov/Archives/edgar/data/12927/000162828026049929/ba-20260728.htm
+  [5] BA 8-K 2026-04-22: 2.02 Results of operations and financial condition; 9.01 Financial statements and exhibits - https://www.sec.gov/Archives/edgar/data/12927/000162828026026391/ba-20260422.htm
+  [6] BA 8-K 2026-04-17: 5.07 Submission of matters to a vote of security holders - https://www.sec.gov/Archives/edgar/data/12927/000162828026025684/ba-20260417.htm
+  [7] BA 8-K 2026-01-27: 2.02 Results of operations and financial condition; 9.01 Financial statements and exhibits - https://www.sec.gov/Archives/edgar/data/12927/000162828026003518/ba-20260127.htm

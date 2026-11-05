@@ -12,6 +12,8 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 
+from core.db.engine import CONNECT_TIMEOUT_S
+
 STATE_TYPES: list[tuple[str, str]] = [
     ("agent.state", name)
     for name in (
@@ -33,6 +35,8 @@ def memory_saver() -> InMemorySaver:
 async def postgres_saver(database_url: str) -> AsyncIterator[AsyncPostgresSaver]:
     """Postgres checkpointer keyed by thread_id; creates its tables on first use."""
     conn_string = database_url.replace("postgresql+psycopg://", "postgresql://", 1)
+    sep = "&" if "?" in conn_string else "?"
+    conn_string += f"{sep}connect_timeout={CONNECT_TIMEOUT_S}"  # fail fast if Postgres is down
     async with AsyncPostgresSaver.from_conn_string(conn_string, serde=serializer()) as saver:
         await saver.setup()
         yield saver
