@@ -26,7 +26,7 @@ OUT_DIR = Path("contracts")
 
 
 def documents() -> dict[str, dict[str, Any]]:
-    settings = Settings(_env_file=None, app_env="test")  # type: ignore[call-arg]
+    settings = Settings(_env_file=None, app_env="test")
     openapi = create_app(settings, runtime_factory=None).openapi()
     events = AGENT_EVENT.json_schema(mode="serialization")
     events["title"] = "AgentEvent"
