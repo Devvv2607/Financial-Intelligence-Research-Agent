@@ -268,3 +268,35 @@ def test_intel_risk_factors_found_by_title_with_none_lost(doc: str, count: int) 
 @pytest.mark.parametrize("doc", ["aapl-20260926", "xom-20251231", "jpm-20251231"])
 def test_title_finder_leaves_item_headed_filings_alone(doc: str) -> None:
     assert find_risk_factors_titled(blocks(doc)) is None
+
+
+def test_notices_and_preambles_are_not_risk_factors() -> None:
+    """UNH files its forward-looking-statements notice under Item 1A; AMD and Tesla open it
+    with an introductory sentence styled like a heading (2026-11-05 sample)."""
+    long_body = "We have experienced and may experience launch and production ramp delays. " * 8
+    rfs = split_risk_factors(
+        [
+            B("CAUTIONARY STATEMENTS", bold=True),
+            B("The statements contained in this Annual Report include forward-looking " + BODY),
+            B(
+                "The risks and uncertainties described below are not the only ones we face.",
+                bold=True,
+            ),
+            B("The following is a summary of the principal risks that could affect us. " * 2),
+            B(
+                "You should carefully consider the risks described below together with the other "
+                "information set forth in this report.",
+                bold=True,
+            ),
+            B(long_body),
+            B("We face intense competition in all of our markets.", bold=True),
+            B(BODY),
+        ]
+    )
+    assert [r.heading for r in rfs] == [
+        # Tesla case: a real risk whose heading was absorbed -> its first sentence
+        "We have experienced and may experience launch and production ramp delays.",
+        "We face intense competition in all of our markets.",
+    ]
+    assert rfs[0].body == long_body.strip()
+    assert [r.ordinal for r in rfs] == [0, 1]

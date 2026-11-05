@@ -25,9 +25,22 @@ LARGER_FONT_PT = 1.5  # this much above the body font size reads as a heading
 _LABEL_MAX_CHARS = 120
 _BOILERPLATE_RE = re.compile(
     r"^(the following|the above summary|summary|risk factors? summary|summary of risk factors"
-    r"|forward-looking|investing in our|an investment in)\b",
+    r"|forward-looking|investing in our|an investment in"
+    # Notices that some filers place inside Item 1A (UNH: "CAUTIONARY STATEMENTS").
+    r"|cautionary (statements?|note|language)|special note|safe harbor"
+    r"|(note|statement)s? (regarding|about|concerning) forward-looking)\b",
     re.I,
 )
+# Introductory sentences styled like a heading. With a short or summary body the segment
+# is just the preamble (AMD); with a substantial body it is a real risk whose own heading
+# was absorbed (Tesla), so it is kept under its body's first sentence.
+_PREAMBLE_RE = re.compile(
+    r"^(the risks (and uncertainties )?described (below|in this)|you should carefully consider"
+    r"|in addition to the other information)",
+    re.I,
+)
+PREAMBLE_BODY_MIN = 400
+_FIRST_SENTENCE_RE = re.compile(r"^(.{20,240}?[.!?])(\s|$)", re.S)
 _BULLET_RE = re.compile(r"^\s*[\u2022\u25cf\u25aa\u25e6\u00b7\uf0b7\-\u2013]")
 
 
@@ -120,5 +133,12 @@ def split_risk_factors(blocks: list[Block]) -> list[RiskFactor]:
             # The bulleted risk *summary* sits before the first real risk factor. Later
             # risk factors may legitimately have bulleted bodies, so only skip up front.
             continue
-        out.append(RiskFactor(seg.heading.strip(), body, seg.subsection, ordinal=len(out)))
+        heading = seg.heading.strip()
+        if _PREAMBLE_RE.match(heading):
+            first = _FIRST_SENTENCE_RE.match(body)
+            short = len(body) < PREAMBLE_BODY_MIN or body.lower().startswith("the following")
+            if short or not first:
+                continue
+            heading = first.group(1)
+        out.append(RiskFactor(heading, body, seg.subsection, ordinal=len(out)))
     return out
