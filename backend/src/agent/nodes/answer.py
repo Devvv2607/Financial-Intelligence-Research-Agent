@@ -23,7 +23,8 @@ from core.llm import DailyLimitError, LLMError
 
 MAX_REPLANS = 2
 MAX_SOURCES = 30
-SOURCE_SNIPPET = 300
+MAX_PER_STEP = 12
+SOURCE_SNIPPET = 200
 DIGEST_FOR_REVIEW = 1_200
 FOOTER = (
     "\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and "
@@ -57,22 +58,26 @@ def _step_details(state: ResearchState) -> str:
 
 
 def numbered_sources(state: ResearchState) -> list[Evidence]:
-    """The [n] numbering: evidence taken round-robin across steps, deduped, capped.
+    """The [n] numbering: each step's top MAX_PER_STEP evidence, round-robin, deduped, capped.
 
     Round-robin so one large step (53 AMD risk factors) can't use up the cap and leave
-    other companies or the news without citable sources; each step's own order is kept
-    (tools return the most relevant items first)."""
+    other companies or the news without citable sources. "Top" is the tool's own order:
+    tools return the most relevant items first, and on the 2026-11-04 runs that kept far
+    more of the cited sources than ranking by embedding similarity to the question."""
     by_id = {e.source_id: e for e in state.get("evidence", [])}
     queues = []
+    in_steps: set[str] = set()
     for s in state.get("plan", []):
         r = state.get("step_results", {}).get(s.id)
-        queues.append([sid for sid in (r.evidence_ids if r else []) if sid in by_id])
+        ids = [sid for sid in (r.evidence_ids if r else []) if sid in by_id]
+        in_steps.update(ids)
+        queues.append(ids[:MAX_PER_STEP])
     order: list[str] = []
     for rank in range(max((len(q) for q in queues), default=0)):
         for q in queues:
             if rank < len(q) and q[rank] not in order:
                 order.append(q[rank])
-    order += [sid for sid in by_id if sid not in order]
+    order += [sid for sid in by_id if sid not in in_steps]  # evidence of no step (rare)
     return [by_id[sid] for sid in order[:MAX_SOURCES]]
 
 
@@ -129,8 +134,6 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
     async def synthesizer(state: ResearchState, config: RunnableConfig) -> dict[str, Any]:
         sources = numbered_sources(state)
         companies = {c.ticker: c for c in await deps.companies()}
-        analysis = state.get("analysis")
-        critique = state.get("critique")
         tickers = [e.ticker for e in state.get("resolved_entities", []) if e.ticker in companies]
         periods = await deps.fiscal_periods(tickers) if deps.fiscal_periods and tickers else {}
         fy = [
@@ -139,29 +142,7 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
             else f"{t}: fiscal year ends {companies[t].fiscal_year_end} (MMDD)"
             for t in tickers
         ]
-        source_lines = [
-            f"[{i}] {e.title}"
-            + (
-                f" ({e.form_type}" + (f", FY{e.fiscal_year}" if e.fiscal_year else "") + ")"
-                if e.form_type
-                else ""
-            )
-            + (f" {e.filed_or_published}" if e.filed_or_published else "")
-            + f"\n{e.snippet[:SOURCE_SNIPPET]}"
-            for i, e in enumerate(sources, start=1)
-        ]
-        limits = [f"- {u.mention}: not covered by the dataset" for u in state.get("uncovered", [])]
-        limits += [f"- {g}" for g in (critique.unanswerable if critique else [])]
-        user = "\n\n".join(
-            [
-                f"Today's date: {state['today']}",
-                f"Question: {analysis.standalone_query if analysis else state['query']}",
-                "Fiscal periods:\n" + ("\n".join(fy) or "n/a"),
-                f"Step results:\n{_step_details(state)}",
-                "Known limits:\n" + ("\n".join(limits) or "none"),
-                "Sources:\n" + ("\n\n".join(source_lines) or "(no sources were retrieved)"),
-            ]
-        )
+        user = "\n\n".join(s for _, s in synthesis_sections(state, sources, fy))
         try:
             reply = await deps.llm.chat(
                 "synthesizer",
@@ -208,6 +189,47 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
         return {"answer": answer, "citations": citations, "messages": [AIMessage(content=answer)]}
 
     return {"critic": critic, "synthesizer": synthesizer, "finalize": finalize}
+
+
+def source_text(e: Evidence, limit: int = SOURCE_SNIPPET) -> str:
+    """The snippet as the synthesizer sees it: without the heading already in the title
+    (risk factors and news repeat it), cut at a word boundary."""
+    snippet = e.snippet
+    heading = e.title.split(": ", 1)[-1]
+    if len(heading) >= 20 and snippet.lower().startswith(heading.lower()):
+        snippet = snippet[len(heading) :].lstrip(" .:-")
+    if len(snippet) > limit:
+        snippet = snippet[:limit].rsplit(" ", 1)[0] + "…"
+    return snippet
+
+
+def synthesis_sections(
+    state: ResearchState, sources: list[Evidence], fiscal_periods: list[str]
+) -> list[tuple[str, str]]:
+    """The synthesizer's user message as named sections (named so their size can be measured)."""
+    analysis = state.get("analysis")
+    critique = state.get("critique")
+    source_lines = [
+        f"[{i}] {e.title}"
+        + (
+            f" ({e.form_type}" + (f", FY{e.fiscal_year}" if e.fiscal_year else "") + ")"
+            if e.form_type
+            else ""
+        )
+        + (f" {e.filed_or_published}" if e.filed_or_published else "")
+        + f"\n{source_text(e)}"
+        for i, e in enumerate(sources, start=1)
+    ]
+    limits = [f"- {u.mention}: not covered by the dataset" for u in state.get("uncovered", [])]
+    limits += [f"- {g}" for g in (critique.unanswerable if critique else [])]
+    return [
+        ("header", f"Today's date: {state['today']}"),
+        ("question", f"Question: {analysis.standalone_query if analysis else state['query']}"),
+        ("fiscal_periods", "Fiscal periods:\n" + ("\n".join(fiscal_periods) or "n/a")),
+        ("step_results", f"Step results:\n{_step_details(state)}"),
+        ("limits", "Known limits:\n" + ("\n".join(limits) or "none")),
+        ("sources", "Sources:\n" + ("\n\n".join(source_lines) or "(no sources were retrieved)")),
+    ]
 
 
 def resolve_citations(answer: str, state: ResearchState) -> tuple[str, list[Citation]]:

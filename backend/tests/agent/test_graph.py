@@ -19,9 +19,11 @@ from agent.graph import RECURSION_LIMIT, build_graph
 from agent.nodes.answer import (
     FOOTER,
     FOOTER_NO_SOURCES,
+    MAX_PER_STEP,
     MAX_SOURCES,
     numbered_sources,
     resolve_citations,
+    source_text,
 )
 from agent.state import PlanStep, StepResult
 
@@ -419,5 +421,18 @@ def test_sources_are_shared_across_steps() -> None:
     }
     state: Any = {"plan": plan, "step_results": results, "evidence": big + small}
     order = [e.source_id for e in numbered_sources(state)]
-    assert len(order) == MAX_SOURCES
+    assert len(order) == MAX_PER_STEP + 2 <= MAX_SOURCES  # the big step keeps its top items
     assert order[:4] == ["amd0", "nvda0", "news0", "amd1"]
+    assert order[-1] == f"amd{MAX_PER_STEP - 1}"
+
+
+def test_source_text_drops_repeated_heading_and_cuts_at_a_word() -> None:
+    e = ev("rf1").model_copy(
+        update={
+            "title": "AMD 10-K FY2025 risk factor: The markets are highly competitive.",
+            "snippet": "The markets are highly competitive. " + "Rivals ship faster parts " * 20,
+        }
+    )
+    text = source_text(e, limit=40)
+    assert text.startswith("Rivals ship") and text.endswith("…")
+    assert len(text) <= 41

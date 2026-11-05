@@ -441,11 +441,12 @@ async def compare_risk_factors(ctx: ToolContext, inp: CompareRiskFactorsInput) -
         category_counts_b=_category_counts(b),
     )
     by_id = {r["id"]: r for r in rows}
-    cited = (
-        [r["id"] for r in new + removed]
-        + [c.after.id for c in changed]
-        + [c.before.id for c in changed]
-    )
+    # Evidence order is priority order (the synthesizer gets the first items of each step):
+    # new and removed first, then each changed risk's later and earlier wording side by side,
+    # so a cap never keeps one side of a comparison without the other.
+    cited = [r["id"] for r in new + removed] + [
+        i for c in changed for i in (c.after.id, c.before.id)
+    ]
     summary_url = next((str(r["url"]) for r in b), None)
     summary = Evidence(
         source_id=f"compare:{company.ticker}:{year_a}:{year_b}",
