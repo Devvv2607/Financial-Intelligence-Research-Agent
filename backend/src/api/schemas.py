@@ -13,8 +13,9 @@ from pydantic import BaseModel, Field, TypeAdapter
 
 from agent.state import Citation, PlanStep, StepResult
 from agent.tools.base import Evidence
+from core.threads import Thread, ThreadStatus
 
-ThreadStatus = Literal["idle", "running", "awaiting_clarification", "error"]
+__all__ = ["Thread", "ThreadStatus"]  # re-exported: part of the API's schema
 
 
 # ---------------------------------------------------------------- requests
@@ -138,15 +139,6 @@ AGENT_EVENT: TypeAdapter[AgentEvent] = TypeAdapter(AgentEvent)
 
 
 # ---------------------------------------------------------------- threads
-class Thread(BaseModel):
-    id: UUID
-    title: str
-    status: ThreadStatus
-    last_run_id: UUID | None = None
-    created_at: datetime
-    updated_at: datetime
-
-
 class Message(BaseModel):
     role: Literal["user", "assistant"]
     content: str

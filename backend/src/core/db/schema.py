@@ -11,6 +11,7 @@ what makes ingestion idempotent: re-running an upsert with the same key is a no-
 from sqlalchemy import (
     BigInteger,
     Boolean,
+    CheckConstraint,
     Column,
     Date,
     DateTime,
@@ -231,16 +232,21 @@ llm_cache = Table(
 
 # Research threads (Phase 4 API). The conversation itself lives in the LangGraph
 # checkpointer; this table only lists threads for the UI and tracks their status.
+THREAD_STATUSES = ("idle", "running", "awaiting_clarification", "error")
 threads = Table(
     "threads",
     metadata,
     Column("id", UUID(as_uuid=True), primary_key=True),
     Column("title", Text, nullable=False),  # the first question, shortened
-    # idle | running | awaiting_clarification | error
     Column("status", String(24), nullable=False, server_default="idle"),
     Column("last_run_id", UUID(as_uuid=True)),
     Column("created_at", DateTime(timezone=True), server_default=func.now(), nullable=False),
+    # The server default only fires on INSERT; the thread store sets it on every update.
     Column("updated_at", DateTime(timezone=True), server_default=func.now(), nullable=False),
+    CheckConstraint(
+        "status IN (" + ", ".join(f"'{s}'" for s in THREAD_STATUSES) + ")",
+        name="ck_threads_status",
+    ),
 )
 
 # Agent run log (written by the agent from Phase 3).

@@ -21,8 +21,8 @@ from agent.checkpoint import memory_saver
 from api.main import create_app
 from api.runtime import AgentRuntime, make_runtime
 from api.schemas import AGENT_EVENT
-from api.threads import MemoryThreadStore
 from core.config import Settings
+from core.threads import MemoryThreadStore
 
 from ..agent.fakes import OK_CRITIQUE, FakeLLM, FakeTools, analysis, ev, make_deps, ok, step
 

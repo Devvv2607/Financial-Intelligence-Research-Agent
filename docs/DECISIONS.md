@@ -736,6 +736,13 @@ NewsAPI quota to rebuild, so the owner set hard rules in CLAUDE.md:
   `running` / `awaiting_clarification` / `error`. `GET /api/threads/{id}` combines it with
   the checkpointer's state (messages, pending question, latest plan, evidence and
   citations) and the run ids from `runs`.
+  - A CHECK constraint (`ck_threads_status`) limits `status` to those four values; a
+    test keeps the code's `ThreadStatus` in sync with it.
+  - `updated_at`'s server default fires only on INSERT, so every update in
+    `core/threads.py` goes through one helper that sets it. Tests run against both the
+    in-memory and the Postgres store.
+  - The agent CLI registers its threads too (`ensure()` + status around each run), so
+    CLI demo conversations appear in the UI's thread list.
 - **Public-demo protection.** Agent runs and resumes are limited per client IP
   (`API_RUNS_PER_MINUTE`, default 6, in-memory sliding window) and questions are capped
   at `API_MAX_QUESTION_CHARS`. CORS is locked to the frontend origin.

@@ -32,6 +32,7 @@ from core import aio
 from core.config import Settings, get_settings
 from core.db.llm_store import PostgresLLMStore
 from core.logging import configure_logging
+from core.threads import PostgresThreadStore, ThreadStatus, title_from
 
 
 def _print_event(e: dict[str, Any]) -> None:
@@ -178,9 +179,17 @@ async def main(args: argparse.Namespace) -> int:
                 streamed = await _stream(graph, None, config)
                 await _report(graph, config, settings, ctx.engine, streamed)
                 return 0
+            try:
+                thread_uuid = uuid.UUID(thread)
+            except ValueError:
+                print(f"--thread must be a UUID (got {thread!r}).")
+                return 2
+            # Registered like API threads, so CLI conversations show in the UI's list.
+            store = PostgresThreadStore(ctx.engine)
             if args.command == "ask":
                 config["configurable"]["agent_run_id"] = str(uuid.uuid4())
                 payload: Any = {"messages": [HumanMessage(content=args.question)]}
+                await store.ensure(thread_uuid, title_from(args.question))
             else:  # resume: same run id as the paused question
                 snap = await graph.aget_state(config)
                 if not snap.interrupts:
@@ -188,25 +197,36 @@ async def main(args: argparse.Namespace) -> int:
                     return 1
                 config["configurable"]["agent_run_id"] = snap.values.get("run_id")
                 payload = Command(resume=args.answer_text)
-            print(f"thread {thread}")
-            streamed = await _stream(graph, payload, config)
-            while True:
-                snap = await graph.aget_state(config)
-                if not snap.interrupts:
-                    break
-                answer = args.answer if args.command == "ask" else None
-                if answer is None and sys.stdin.isatty():
-                    try:
-                        answer = (await asyncio.to_thread(input, "\nYour answer: ")).strip()
-                    except EOFError:  # Windows reports NUL as a tty: treat as no answer
-                        answer = None
-                if not answer:
-                    print(f'\nPaused. Answer with: python -m agent resume --thread {thread} "..."')
-                    return 0
-                args.answer = None  # use a scripted answer once
-                print(f"(answer: {answer})")
-                streamed = await _stream(graph, Command(resume=answer), config)
-            await _report(graph, config, settings, ctx.engine, streamed)
+                await store.ensure(thread_uuid, title_from(str(snap.values.get("query") or "")))
+            run_id = config["configurable"]["agent_run_id"]
+            await store.set_status(thread_uuid, "running", uuid.UUID(run_id) if run_id else None)
+            status: ThreadStatus = "error"  # unless the run ends or pauses normally
+            try:
+                print(f"thread {thread}")
+                streamed = await _stream(graph, payload, config)
+                while True:
+                    snap = await graph.aget_state(config)
+                    if not snap.interrupts:
+                        break
+                    answer = args.answer if args.command == "ask" else None
+                    if answer is None and sys.stdin.isatty():
+                        try:
+                            answer = (await asyncio.to_thread(input, "\nYour answer: ")).strip()
+                        except EOFError:  # Windows reports NUL as a tty: treat as no answer
+                            answer = None
+                    if not answer:
+                        status = "awaiting_clarification"
+                        print(
+                            f'\nPaused. Answer with: python -m agent resume --thread {thread} "..."'
+                        )
+                        return 0
+                    args.answer = None  # use a scripted answer once
+                    print(f"(answer: {answer})")
+                    streamed = await _stream(graph, Command(resume=answer), config)
+                status = "idle"
+                await _report(graph, config, settings, ctx.engine, streamed)
+            finally:
+                await store.set_status(thread_uuid, status)
     finally:
         await llm.aclose()
         await close_context(ctx)

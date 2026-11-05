@@ -22,8 +22,8 @@ from api.schemas import (
     Thread,
     ThreadDetail,
 )
-from api.threads import title_from
 from core.config import Settings
+from core.threads import title_from
 
 router = APIRouter(prefix="/api/threads", tags=["threads"])
 KEEPALIVE_S = 15.0  # proxies drop idle streams; a comment line keeps them open

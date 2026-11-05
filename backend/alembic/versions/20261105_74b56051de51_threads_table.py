@@ -1,8 +1,8 @@
 """threads table
 
-Revision ID: 4688dc8b50de
+Revision ID: 74b56051de51
 Revises: 795d6c9a96c9
-Create Date: 2026-11-05 13:45:09.444761
+Create Date: 2026-11-05 13:55:22.760790
 """
 
 from collections.abc import Sequence
@@ -10,7 +10,7 @@ from collections.abc import Sequence
 import sqlalchemy as sa
 from alembic import op
 
-revision: str = "4688dc8b50de"
+revision: str = "74b56051de51"
 down_revision: str | None = "795d6c9a96c9"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
@@ -35,6 +35,10 @@ def upgrade() -> None:
             sa.DateTime(timezone=True),
             server_default=sa.text("now()"),
             nullable=False,
+        ),
+        sa.CheckConstraint(
+            "status IN ('idle', 'running', 'awaiting_clarification', 'error')",
+            name="ck_threads_status",
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_threads")),
     )
