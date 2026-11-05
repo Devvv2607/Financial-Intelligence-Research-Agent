@@ -66,6 +66,46 @@ def find_section_regex(blocks: list[Block], name: SectionName) -> Section | None
     return best
 
 
+_RISK_TITLE_RE = re.compile(r"(item\s*1a[.:\s]*)?risk factors", re.I)
+TITLE_MIN_PT = 13.0  # Intel's section titles are 14-18pt; its risk headings are 12pt
+
+
+def _title_like(b: Block) -> bool:
+    return len(b.text) <= 120 and (b.emphasized or b.font_pt >= TITLE_MIN_PT)
+
+
+def find_risk_factors_titled(blocks: list[Block]) -> Section | None:
+    """Item 1A for filers with no "Item 1A" heading (Intel): a heading-styled line that
+    reads exactly "Risk Factors", up to the next heading set at least as large.
+
+    Deterministic, so it runs before the LLM fallback. On Intel FY2024 the LLM picked a
+    sub-heading inside the section as its start and the first 7 risk factors were lost
+    (2026-11-05). Several "Risk Factors" lines can exist (contents, cross-reference
+    index); the one spanning the most text wins, as in find_section_regex.
+    """
+    best: Section | None = None
+    best_len = 0
+    for i, b in enumerate(blocks):
+        if not (_RISK_TITLE_RE.fullmatch(b.text.strip()) and _title_like(b)):
+            continue
+        end = next(
+            (
+                j
+                for j in range(i + 1, len(blocks))
+                if _title_like(blocks[j]) and blocks[j].font_pt >= b.font_pt
+            ),
+            None,
+        )
+        if end is None:
+            continue
+        length = _span_chars(blocks, i + 1, end)
+        if length > best_len:
+            best, best_len = Section("item_1a", i, end, "regex"), length
+    if best is None or best_len < MIN_SECTION_CHARS["item_1a"]:
+        return None
+    return best
+
+
 _COVER_RE = re.compile(
     r"(indicate by check mark|commission file number|securities registered pursuant|"
     r"documents incorporated by reference|forward-looking statements?|table of contents|"

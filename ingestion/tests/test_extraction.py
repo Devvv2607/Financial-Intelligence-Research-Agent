@@ -21,6 +21,7 @@ from ingestion.extract.html_clean import Block, html_to_blocks
 from ingestion.extract.risk_splitter import split_risk_factors
 from ingestion.extract.sections import (
     fallback_candidates,
+    find_risk_factors_titled,
     find_section_llm,
     find_section_regex,
 )
@@ -246,3 +247,24 @@ def test_whitespace_between_inline_elements_is_kept() -> None:
         "<span> financial</span> <b>results</b>.</p>"
     )
     assert html_to_blocks(html)[0].text == "We seek to ensure accurate financial results."
+
+
+@pytest.mark.parametrize(
+    ("doc", "count"),
+    [("intc-20241228", 24), ("intc-20251227", 22)],
+)
+def test_intel_risk_factors_found_by_title_with_none_lost(doc: str, count: int) -> None:
+    """Intel has no "Item 1A" heading. Its section was left to the LLM fallback, which on
+    FY2024 started at a sub-heading and lost the first 7 risk factors (2026-11-05)."""
+    b = blocks(doc)
+    assert find_section_regex(b, "item_1a") is None
+    section = find_risk_factors_titled(b)
+    assert section is not None
+    rfs = split_risk_factors(section.body(b))
+    assert len(rfs) == count
+    assert rfs[0].heading.startswith("We are in a highly competitive and rapidly changing")
+
+
+@pytest.mark.parametrize("doc", ["aapl-20260926", "xom-20251231", "jpm-20251231"])
+def test_title_finder_leaves_item_headed_filings_alone(doc: str) -> None:
+    assert find_risk_factors_titled(blocks(doc)) is None

@@ -53,6 +53,7 @@ from ingestion.extract.sections import (
     Section,
     SectionName,
     business_overview,
+    find_risk_factors_titled,
     find_section_llm,
     find_section_regex,
 )
@@ -294,6 +295,8 @@ class Pipeline:
         names: tuple[SectionName, ...] = ("item_1", "item_1a")
         for name in names:
             section: Section | None = find_section_regex(blocks, name)
+            if section is None and name == "item_1a":
+                section = find_risk_factors_titled(blocks)  # deterministic, before the LLM
             if section is None:
                 section = await find_section_llm(blocks, name, self.llm, cik=cik)
             if section is None:
