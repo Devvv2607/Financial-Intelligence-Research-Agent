@@ -555,3 +555,44 @@ async def test_agentic_fallback_does_not_rerun_a_failed_direct_call() -> None:
     r = out["step_results"]["r1s1"]
     assert r.status == "failed"  # a reused failure doesn't make the step look ok
     assert [t.reused for t in r.tool_calls] == [False, True]
+
+
+async def test_demo7_detail_only_gaps_do_not_replan() -> None:
+    """Demo 7 (2026-11-04 and -05): the comparison was done, but the critic asked for full
+    lists 'because the output is truncated' and replanned to re-fetch the same data."""
+    q = "Now do the same for Intel."
+    plan = planner_returns(
+        step(
+            "a",
+            "filings",
+            entities=["INTC"],
+            tool_calls=[("compare_risk_factors", '{"ticker": "INTC"}')],
+        )
+    )
+    critic_says = {
+        "verdict": "gaps",
+        "gaps": [
+            "list of risk factors that were removed between 2024 and 2025 10-K",
+            "list of risk factors that changed (with brief description) between 2024 and 2025",
+            "full headings for the new risk factors (the current output is truncated)",
+        ],
+        "unanswerable": [],
+        "notes": "need more detail",
+    }
+    tools = FakeTools(
+        {
+            "compare_risk_factors": ok(
+                "compare_risk_factors", {"counts": {"new": 7}}, [ev("cmp", "INTC")]
+            )
+        }
+    )
+    llm = FakeLLM(
+        {"query_analyzer": [analysis(q, ["Intel"])], "planner": [plan], "critic": [critic_says]},
+        {"synthesizer": ["Intel added 7 risk factors [1]."]},
+    )
+    out = await ask(build_graph(make_deps(llm, tools), memory_saver()), q)
+    assert llm.count("planner") == 1 and llm.count("critic") == 1  # no replan round
+    assert out["critique"].verdict == "ok" and out["critique"].gaps == []
+    assert "3 detail-only gap(s) dropped" in out["critique"].notes
+    critic_prompt = next(m for n, m in llm.calls if n == "critic")[0]["content"]
+    assert "intentionally shortened summaries" in critic_prompt

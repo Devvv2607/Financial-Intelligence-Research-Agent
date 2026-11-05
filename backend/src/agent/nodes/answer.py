@@ -117,6 +117,7 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
                 notes=f"Critic unavailable ({type(exc).__name__}); answering "
                 "from the results collected.",
             )
+        critique = drop_detail_gaps(critique)
         replan = (
             critique.verdict == "gaps"
             and bool(critique.gaps)
@@ -267,6 +268,35 @@ def normalize_citation_style(answer: str) -> str:
     """gpt-oss native citations to [n]; other bracketed references (step ids) removed."""
     answer = _NATIVE_CITE_RE.sub(lambda m: f"[{m.group(1)}]", answer)
     return _NATIVE_OTHER_RE.sub("", answer)  # e.g. 【r1s1】: not a source number
+
+
+# Gaps that only ask for more of what a step already retrieved (demo 7, 2026-11-04 and -05:
+# "full headings ... the current output is truncated", "list of risk factors that were
+# removed"). The full data is in the sources; replanning re-fetches it for nothing.
+_DETAIL_GAP_RE = re.compile(
+    r"truncat|\bfull (list|text|heading|wording|description|detail)|\bcomplete "
+    r"(list|set|text|heading|description)|word[- ]by[- ]word|\ball (of the )?(\d+ )?"
+    r"(risk factors?|headings?|items|changes)\b|\blist of (the )?(risk factors?|headings?|"
+    r"items|changes) that (were|are|have|changed)|\beach of the \d+|\b(original|old|updated) "
+    r"wording",
+    re.I,
+)
+
+
+def drop_detail_gaps(critique: Critique) -> Critique:
+    """Remove detail-only gaps; a critique left with none becomes "ok"."""
+    kept = [g for g in critique.gaps if not _DETAIL_GAP_RE.search(g)]
+    if len(kept) == len(critique.gaps):
+        return critique
+    dropped = len(critique.gaps) - len(kept)
+    return critique.model_copy(
+        update={
+            "gaps": kept,
+            "verdict": critique.verdict if kept else "ok",
+            "notes": f"{critique.notes} ({dropped} detail-only gap(s) dropped: the data is "
+            "already in the sources.)".strip(),
+        }
+    )
 
 
 def resolve_citations(answer: str, state: ResearchState) -> tuple[str, list[Citation]]:
