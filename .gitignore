@@ -32,3 +32,4 @@ Thumbs.db
 data/models/
 fastembed_cache/
 *.onnx
+data/backups/

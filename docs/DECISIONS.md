@@ -678,6 +678,33 @@ fell 54% and the multi-step runs 5-13%. All 52 citations of runs on current code
 had their source. The only 3 not kept come from demo 1's first run, whose numbering was
 the bug fixed in D-035. The next lever is the step-results section (28%).
 
+## D-040 · Backups: pg_dump of Postgres, restore proven, data-safety rules
+**Status:** Implemented (`make.ps1` / `Makefile` targets `backup`, `restore`; CLAUDE.md)
+
+This follows the checkpoint-table loss (D-038). The ingested data costs days of Groq and
+NewsAPI quota to rebuild, so the owner set hard rules in CLAUDE.md:
+- back up before any migration, re-extraction, re-tag or bulk delete;
+- generate and apply migrations in separate steps, with the owner's OK in between;
+- no destructive command without asking, in any mode.
+
+- **What is backed up:** Postgres only, as a full `pg_dump -Fc` into
+  `data/backups/<db>-<timestamp>.dump` (gitignored). Weaviate is derived: the `index`
+  stage reads only Postgres and embeds locally, so `ingestion run --only index --force`
+  rebuilds it without quota. Raw EDGAR/NewsAPI downloads in `data/raw/` are a cache.
+- **Restore:** `restore <file> -Database <new>` creates a new database and never
+  overwrites one. Restoring into the live database asks for its name to be typed, and
+  uses `--clean --if-exists`.
+- **Proof:** the first backup (`fira-20261105-131536.dump`, 1.4 MB, 17 tables with data)
+  was restored into the scratch database `fira_restore_test`. Every table's row count
+  matched the live database, the Alembic revision matched, and an md5 over all
+  `risk_factors` rows was identical.
+- **Windows pitfall:** in PowerShell 5.1, piping a native command's binary output
+  (`pg_dump > file`) re-encodes it as text and corrupts the dump. The PowerShell target
+  dumps inside the container and copies the file out with `docker compose cp`. PS 5.1
+  also doesn't escape embedded double quotes in native arguments, so the container
+  commands avoid them. In Git Bash and on Linux the plain pipe works (checked: the piped
+  dump lists the same 17 tables).
+
 ## Adaptations: where libraries or tools differed from the spec's assumptions
 
 - **Postgres 18 image data path (Phase 0).** From v18 the official image sets
