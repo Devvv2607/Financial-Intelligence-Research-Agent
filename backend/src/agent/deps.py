@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
+from agent.citecheck import Embed
 from agent.llm import AgentLLM
 from agent.tools.base import ToolResult
 from agent.tools.common import Company
@@ -28,6 +29,7 @@ class AgentDeps:
     today: Callable[[], date] = date.today
     record_run: RunRecorder | None = None
     fiscal_periods: FiscalPeriods | None = None
+    embed: Embed | None = None  # local embedding model; enables citation verification
     _companies: list[Company] | None = field(default=None, repr=False)
 
     async def companies(self) -> list[Company]:

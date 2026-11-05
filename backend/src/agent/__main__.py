@@ -123,6 +123,13 @@ async def _report(
             )
         thread = config["configurable"]["thread_id"]
         print(f"  {'TOTAL':18} {total:>7,}   run {run_id} | thread {thread}")
+    check = values.get("citation_check")
+    if check:
+        print(
+            f"\n== CITATION CHECK: precision {check['precision']} ({check['supported']}"
+            f"/{check['checked']} supported; {check['reattached']} re-attached, "
+            f"{check['dropped']} dropped, {check['unverified_claims']} claims unverified)"
+        )
     if values.get("citations"):
         print("\n== SOURCES")
         for c in values["citations"]:
@@ -143,6 +150,7 @@ async def main(args: argparse.Namespace) -> int:
         list_companies=companies,
         record_run=make_run_recorder(ctx.engine, settings),
         fiscal_periods=partial(fiscal_periods, ctx),
+        embed=ctx.embedder.embed if ctx.embedder else None,
     )
     try:
         async with postgres_saver(settings.database_url) as saver:

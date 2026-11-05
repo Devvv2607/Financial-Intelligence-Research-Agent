@@ -70,6 +70,7 @@ def make_intake_nodes(deps: AgentDeps) -> dict[str, Any]:
             "answer": None,
             "evidence_order": [],
             "citations": [],
+            "citation_check": None,
         }
 
     async def guardrail(state: ResearchState) -> dict[str, Any]:

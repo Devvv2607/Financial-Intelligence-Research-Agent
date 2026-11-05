@@ -160,6 +160,7 @@ class ResearchState(TypedDict, total=False):
     answer: str | None
     evidence_order: list[str]  # source ids in [n] order, fixed by the synthesizer
     citations: list[Citation]
+    citation_check: dict[str, Any] | None  # verification counts + precision (agent/citecheck)
 
 
 class SpecialistInput(TypedDict):

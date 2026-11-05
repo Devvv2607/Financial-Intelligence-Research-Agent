@@ -241,6 +241,7 @@ runs = Table(
     Column("plan", JSONB),
     Column("steps", JSONB),
     Column("node_usage", JSONB),  # tokens/calls/cache hits per graph node, from llm_calls
+    Column("citation_check", JSONB),  # citation verification counts + precision (D-038)
     Column("prompt_tokens", Integer),
     Column("completion_tokens", Integer),
     Column("latency_ms", Integer),

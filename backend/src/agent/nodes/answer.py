@@ -6,6 +6,7 @@ checks every [n] against that numbering, drops any that don't exist, adds the fi
 footer, records the run, and appends the answer to the conversation memory.
 """
 
+import logging
 import re
 from typing import Any
 
@@ -14,6 +15,7 @@ from langchain_core.runnables import RunnableConfig
 from langgraph.config import get_stream_writer
 
 from agent import prompts
+from agent.citecheck import CitationReport, verify_citations
 from agent.deps import AgentDeps
 from agent.nodes.intake import run_id_of
 from agent.nodes.planning import _step_status_lines
@@ -30,7 +32,9 @@ FOOTER = (
     "\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and "
     "NewsAPI headlines, as cited above.*"
 )
+UNVERIFIED_NOTE = "\n*Claims marked [unverified] could not be matched to any retrieved source.*"
 FOOTER_NO_SOURCES = "\n\n---\n*Not investment advice.*"
+logger = logging.getLogger(__name__)
 _CITE_RE = re.compile(r"\[(\d{1,3})\]")
 # gpt-oss often cites in its native style: 【3】 or 【3†source】. Normalise to [3].
 _NATIVE_CITE_RE = re.compile(r"\u3010\s*(\d{1,3})(?:[^\u3011]*)\u3011")
@@ -164,9 +168,25 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
         return {"answer": answer, "evidence_order": [e.source_id for e in sources]}
 
     async def finalize(state: ResearchState, config: RunnableConfig) -> dict[str, Any]:
-        answer = state.get("answer") or "I couldn't produce an answer."
+        answer = normalize_citation_style(state.get("answer") or "I couldn't produce an answer.")
+        report: CitationReport | None = None
+        order = state.get("evidence_order", [])
+        by_id = {e.source_id: e for e in state.get("evidence", [])}
+        if deps.embed is not None and order and all(sid in by_id for sid in order):
+            try:
+                answer, report = await verify_citations(
+                    answer, [by_id[sid] for sid in order], deps.embed
+                )
+            except Exception:  # a local-model failure must not cost the user the answer
+                logger.exception("citation check failed", extra={"run_id": run_id_of(config)})
         answer, citations = resolve_citations(answer, state)
-        answer = answer.rstrip() + (FOOTER if citations else FOOTER_NO_SOURCES)
+        footer = FOOTER if citations else FOOTER_NO_SOURCES
+        if report and report.unverified_claims:
+            footer += UNVERIFIED_NOTE
+        answer = answer.rstrip() + footer
+        check = report.summary() if report else None
+        if check:
+            logger.info("citation check", extra={"run_id": run_id_of(config), **check})
         cfg = config.get("configurable") or {}
         if deps.record_run is not None:
             await deps.record_run(
@@ -181,12 +201,23 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
                         for k, v in state.get("step_results", {}).items()
                     },
                     "answer": answer,
+                    "citation_check": check,
                 }
             )
         get_stream_writer()(
-            {"event": "final", "answer": answer, "citations": [c.model_dump() for c in citations]}
+            {
+                "event": "final",
+                "answer": answer,
+                "citations": [c.model_dump() for c in citations],
+                "citation_check": check,
+            }
         )
-        return {"answer": answer, "citations": citations, "messages": [AIMessage(content=answer)]}
+        return {
+            "answer": answer,
+            "citations": citations,
+            "citation_check": check,
+            "messages": [AIMessage(content=answer)],
+        }
 
     return {"critic": critic, "synthesizer": synthesizer, "finalize": finalize}
 
@@ -232,10 +263,15 @@ def synthesis_sections(
     ]
 
 
+def normalize_citation_style(answer: str) -> str:
+    """gpt-oss native citations to [n]; other bracketed references (step ids) removed."""
+    answer = _NATIVE_CITE_RE.sub(lambda m: f"[{m.group(1)}]", answer)
+    return _NATIVE_OTHER_RE.sub("", answer)  # e.g. 【r1s1】: not a source number
+
+
 def resolve_citations(answer: str, state: ResearchState) -> tuple[str, list[Citation]]:
     """Map [n] to sources; remove references to numbers that don't exist."""
-    answer = _NATIVE_CITE_RE.sub(lambda m: f"[{m.group(1)}]", answer)
-    answer = _NATIVE_OTHER_RE.sub("", answer)  # e.g. 【r1s1】: not a source number
+    answer = normalize_citation_style(answer)
     order = state.get("evidence_order", [])
     by_id = {e.source_id: e for e in state.get("evidence", [])}
     used: dict[int, Citation] = {}
