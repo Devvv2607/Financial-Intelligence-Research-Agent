@@ -388,7 +388,8 @@ def _synthesizer(messages: Sequence[BaseMessage]) -> str:
     if s == "apple":
         return (
             "Comparing the FY2025 and FY2026 10-K risk factors: 1 new, 0 removed, 20 "
-            f"materially changed and 7 unchanged {c('FY2025 vs FY2026')}. The new risk: artificial intelligence may cause "
+            f"materially changed and 7 unchanged {c('FY2025 vs FY2026')}. "
+            "The new risk: artificial intelligence may cause "
             f"reputational harm and regulatory action {c('Artificial intelligence')}. "
             f"Regulators examine AI features in Apple devices {c('Regulators examine')}."
         )
