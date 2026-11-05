@@ -739,8 +739,8 @@ NewsAPI quota to rebuild, so the owner set hard rules in CLAUDE.md:
   - A CHECK constraint (`ck_threads_status`) limits `status` to those four values; a
     test keeps the code's `ThreadStatus` in sync with it.
   - `updated_at`'s server default fires only on INSERT, so every update in
-    `core/threads.py` goes through one helper that sets it. Tests run against both the
-    in-memory and the Postgres store.
+    `core/threads.py` goes through one helper that sets it, from the database clock
+    (D-042). Tests run against both the in-memory and the Postgres store.
   - The agent CLI registers its threads too (`ensure()` + status around each run), so
     CLI demo conversations appear in the UI's thread list.
 - **Public-demo protection.** Agent runs and resumes are limited per client IP
@@ -752,6 +752,32 @@ NewsAPI quota to rebuild, so the owner set hard rules in CLAUDE.md:
   graph endpoint. The fake LLM streams through LangChain's `GenericFakeChatModel`, so
   token events are exercised without Groq. The data endpoints have integration tests
   against the local stack.
+
+## D-042 · Single source of truth for time: the database clock
+**Status:** Implemented (Phase 4; `core/threads.py`, `core/db/llm_store.py`, `ingestion/report.py`)
+
+**Rule:** any timestamp stored in Postgres, and any time window compared against stored
+timestamps, comes from the database's clock (`now()` / server defaults). The host's
+clock is used only within one process: step durations, recency scoring against
+external publish dates, and file names.
+
+**Why:** the new thread-store test caught `threads.updated_at` going *backwards*. Inserts
+took it from Postgres (`server_default=now()`), updates from Python (`datetime.now()`),
+and the Docker VM's clock ran about 9 ms ahead of the Windows host. Two writers with two
+clocks cannot keep an order. In production the API host and the managed database are
+different machines, so the skew would be larger and not under our control.
+
+**Applied:**
+- **Thread store:** sets `updated_at = now()` in SQL on every update. The in-memory test
+  store uses the process clock, its only clock.
+- **Token-budget window:** the daily guard (`tokens_last_24h`) and the ingestion report's
+  "last 24 h" figure are now `created_at >= now() - interval '24 hours'`. Before, they
+  compared host time with database-set `created_at`. Same totals at today's skew,
+  correct at any skew.
+- **Reviewed, unchanged:**
+  - `started_at` / `finished_at` of agent steps: one process, durations only.
+  - News recency scoring: compared with external publish times.
+  - Ingestion run ids and file stamps.
 
 ## Adaptations: where libraries or tools differed from the spec's assumptions
 

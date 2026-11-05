@@ -342,7 +342,7 @@ async def progress_line(engine: AsyncEngine, settings: Settings, universe: int) 
         for st in status.values()
         if all(st.get(s) == "done" for s in ("edgar", "tagging", "index"))
     )
-    since = datetime.now(UTC) - timedelta(hours=24)
+    since = func.now() - timedelta(hours=24)  # the database's clock, like created_at (D-042)
     used = (
         await _rows(
             engine,
