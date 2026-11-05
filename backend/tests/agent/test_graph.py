@@ -21,6 +21,7 @@ from agent.nodes.answer import (
     FOOTER_NO_SOURCES,
     MAX_PER_STEP,
     MAX_SOURCES,
+    UNVERIFIED_NOTE,
     numbered_sources,
     resolve_citations,
     source_text,
@@ -38,6 +39,7 @@ from .fakes import (
     ok,
     step,
 )
+from .test_citecheck import bow_embed
 
 
 def cfg(thread: str = "t1", run: str = "00000000-0000-0000-0000-000000000001") -> dict[str, Any]:
@@ -436,3 +438,33 @@ def test_source_text_drops_repeated_heading_and_cuts_at_a_word() -> None:
     text = source_text(e, limit=40)
     assert text.startswith("Rivals ship") and text.endswith("…")
     assert len(text) <= 41
+
+
+async def test_finalize_verifies_citations_and_records_precision() -> None:
+    q = "NVDA risks"
+    plan = planner_returns(
+        step("a", "filings", tool_calls=[("get_risk_factors", '{"ticker": "NVDA"}')])
+    )
+    export = ev("rf-export").model_copy(
+        update={"title": "NVDA risk factor", "snippet": "Export controls restrict sales to China."}
+    )
+    tools = FakeTools({"get_risk_factors": ok("get_risk_factors", {"x": [1]}, [export])})
+    llm = FakeLLM(
+        {"query_analyzer": [analysis(q, ["NVDA"])], "planner": [plan], "critic": [OK_CRITIQUE]},
+        {
+            "synthesizer": [
+                "Export controls restrict NVIDIA sales to China [1]. "
+                "Quarterly revenue doubled on gaming demand [1]."
+            ]
+        },
+    )
+    recorded: list[dict[str, Any]] = []
+    deps = make_deps(llm, tools, recorded)
+    deps.embed = bow_embed
+    out = await ask(build_graph(deps, memory_saver()), q)
+    assert "China [1]." in out["answer"]
+    assert "gaming demand [unverified]." in out["answer"]
+    assert out["answer"].endswith(FOOTER + UNVERIFIED_NOTE)
+    check = out["citation_check"]
+    assert (check["checked"], check["supported"], check["unverified_claims"]) == (2, 1, 1)
+    assert recorded[0]["citation_check"] == check
