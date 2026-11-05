@@ -11,6 +11,7 @@ from ingestion.enrich.risk_tagger import (
     RiskInput,
     TagResult,
     inherit_tags,
+    salvage_tags,
     tag_with_llm,
 )
 from ingestion.enrich.sector_rules import sic_to_sector
@@ -45,10 +46,18 @@ def test_unknown_sic() -> None:
 
 
 class ScriptedTagger:
-    """Answers tag batches; can drop ids on the first call to test the re-ask."""
+    """Answers tag batches, echoing each risk's heading. Can drop ids on the first call
+    (to test the re-ask) or return a bad batch: "swap" (two tags' headings exchanged,
+    i.e. tags attached to the wrong ids), "dup" or "unknown" ids, once or every time."""
 
-    def __init__(self, drop_first: set[int] | None = None) -> None:
+    def __init__(
+        self,
+        drop_first: set[int] | None = None,
+        bad: str | None = None,
+        bad_every_time: bool = False,
+    ) -> None:
         self.drop_first = drop_first or set()
+        self.bad, self.bad_every_time = bad, bad_every_time
         self.prompts: list[str] = []
 
     async def structured(
@@ -56,17 +65,34 @@ class ScriptedTagger:
     ) -> Any:
         listing = messages[-1]["content"]
         self.prompts.append(listing)
-        ids = [
-            int(line[1 : line.index("]")]) for line in listing.split("\n") if line.startswith("[")
+        rows = [
+            (int(line[1 : line.index("]")]), line[line.index("]") + 2 :])
+            for line in listing.split("\n")
+            if line.startswith("[")
         ]
-        if len(self.prompts) == 1:
-            ids = [i for i in ids if i not in self.drop_first]
-        return schema.model_validate(
-            {"tags": [{"id": i, "category": "regulatory", "summary": f"s{i}"} for i in ids]}
-        )
+        first = len(self.prompts) == 1
+        if first:
+            rows = [r for r in rows if r[0] not in self.drop_first]
+        tags = [
+            {"id": i, "heading_start": h, "category": "regulatory", "summary": f"s{i}"}
+            for i, h in rows
+        ]
+        if self.bad and (first or self.bad_every_time) and len(tags) >= 2:
+            if self.bad == "swap":
+                tags[0]["heading_start"], tags[1]["heading_start"] = (
+                    tags[1]["heading_start"],
+                    tags[0]["heading_start"],
+                )
+            elif self.bad == "dup":
+                tags[1]["id"] = tags[0]["id"]
+            elif self.bad == "unknown":
+                tags[1]["id"] = 99
+        return schema.model_validate({"tags": tags})
 
 
-RISKS = [RiskInput(f"k{i}", f"Heading {i}", "word " * 400) for i in range(5)]
+RISKS = [
+    RiskInput(f"k{i}", f"Risk heading number {i} about topic {i}", "word " * 400) for i in range(5)
+]
 
 
 async def test_tagging_batches_and_truncates_bodies() -> None:
@@ -144,8 +170,10 @@ class AlwaysInvalid:
 
 async def test_invalid_batch_salvages_valid_tags_and_flags_the_rest() -> None:
     raw = (
-        '{"tags": [{"id": 0, "category": "talent", "summary": "key people"},'
-        ' {"id": 1, "category": "pandemic", "summary": "made-up category"}]}'
+        '{"tags": [{"id": 0, "heading_start": "Risk heading number 0 about",'
+        ' "category": "talent", "summary": "key people"},'
+        ' {"id": 1, "heading_start": "Risk heading number 1 about",'
+        ' "category": "pandemic", "summary": "made-up category"}]}'
     )
     llm = AlwaysInvalid(raw)
     out = await tag_with_llm(llm, RISKS[:3], cik=1, stage="x", batch_size=5, body_words=10)  # type: ignore[arg-type]
@@ -169,7 +197,7 @@ async def test_unparseable_output_flags_whole_batch() -> None:
 def test_prompt_versions_come_from_headers() -> None:
     from ingestion import prompts
 
-    assert prompts.version("risk_tagging") == "risk_tagging:v2"
+    assert prompts.version("risk_tagging") == "risk_tagging:v3"
     assert prompts.version("sector_classification").startswith("sector_classification:v")
 
 
@@ -212,3 +240,36 @@ def test_review_scoring(tmp_path: Path) -> None:
     assert (s.labelled, s.correct) == (2, 1)
     assert s.confusions == [(("geopolitical", "regulatory"), 1)]
     assert s.invalid_labels == ["d: 'nonsense'"]
+
+
+@pytest.mark.parametrize("bad", ["swap", "dup", "unknown"])
+async def test_misaligned_duplicate_or_unknown_ids_reject_the_batch(bad: str) -> None:
+    """Nothing from a confused output is kept; the re-ask gets the full batch again."""
+    llm = ScriptedTagger(bad=bad)
+    out = await tag_with_llm(llm, RISKS[:3], cik=1, stage="x", batch_size=5, body_words=10)  # type: ignore[arg-type]
+    assert len(llm.prompts) == 2
+    assert all(f"[{i}]" in llm.prompts[1] for i in range(3))  # whole batch re-asked
+    assert sorted((t.key, t.summary, t.needs_review) for t in out) == [
+        ("k0", "s0", False),
+        ("k1", "s1", False),
+        ("k2", "s2", False),
+    ]
+
+
+async def test_persistently_misaligned_batch_is_flagged_not_trusted() -> None:
+    llm = ScriptedTagger(bad="swap", bad_every_time=True)
+    out = await tag_with_llm(llm, RISKS[:3], cik=1, stage="x", batch_size=5, body_words=10)  # type: ignore[arg-type]
+    assert len(llm.prompts) == 2  # capped
+    assert all(t.category == "other" and t.needs_review for t in out)
+    assert sorted(t.key for t in out) == ["k0", "k1", "k2"]  # no risk silently dropped
+
+
+def test_salvage_keeps_only_tags_whose_heading_matches_their_id() -> None:
+    pending = dict(enumerate(RISKS[:2]))
+    raw = (
+        '{"tags": [{"id": 0, "heading_start": "Risk heading number 1 about",'
+        ' "category": "talent", "summary": "wrong risk"},'
+        ' {"id": 1, "heading_start": "Risk heading number 1 about",'
+        ' "category": "ip", "summary": "right risk"}]}'
+    )
+    assert salvage_tags(raw, pending) == {1: ("ip", "right risk")}
