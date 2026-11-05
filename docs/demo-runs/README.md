@@ -17,7 +17,14 @@ applied to earlier transcripts, and each fix is logged in `docs/DECISIONS.md`.
 | 2026-11-04 | 5 "How risky is the bank?" | `demo5-bank-clarify-pause.txt`, `demo5-bank-resume.txt` | 14,107 | interrupt, then resume from a new process; the CLI crash on pause and the answer's own risk verdict were fixed afterwards |
 | 2026-11-04 | 7 "Now do the same for Intel." | `demo7-intel-followup.txt` | 27,652 | follow-up in demo 2's thread; critic over-asked (2 replans, fixed D-036); one wrong citation |
 | 2026-11-05 | 6 "Should I buy Tesla?" | `demo6-tesla-advice.txt` | 0 | guardrail, no LLM call |
+| 2026-11-05 | 3 Healthcare revenue growth | `demo3-healthcare-growth.txt` | 15,680 | 6 steps (4 direct, 2 agentic after their dependencies); citation precision 1.0. UNH's "regulatory risk" is a forward-looking-statements notice extracted as a risk factor (planner didn't use the `category` filter) |
+| 2026-11-05 | 2 Apple risk changes | `demo2-apple-risk-changes.txt` | 19,043 | correct; precision 1.0; planner went agentic and the specialist repeated an identical `search_filings` call 3x (vs 7,163 direct yesterday) |
+| 2026-11-05 | 7 "Now do the same for Intel." | `demo7-intel-followup.txt` | 19,139 | follow-up in demo 2's thread; 1 replan; precision 0.727 (2 vague claims marked [unverified]). "New" list wrong: Intel FY2024 lost 7 risk factors in the re-extraction (open regression) |
 
-Data caveat for 2026-11-04: stored risk factors still had the "Table of Contents" split
-from the first extraction (see the navigation-link entry under "Adaptations" in
-`docs/DECISIONS.md`); the sample is re-extracted before the next runs.
+Data caveats:
+- **2026-11-04:** the stored risk factors still had the "Table of Contents" split from
+  the first extraction.
+- **2026-11-05:** the sample was re-extracted and re-tagged (v2 taxonomy) before demos 3,
+  2 and 7. That fixed the split, but Intel FY2024 lost its first 7 risk factors.
+
+See the navigation-link entry under "Adaptations" in `docs/DECISIONS.md`.

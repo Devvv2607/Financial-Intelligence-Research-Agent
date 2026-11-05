@@ -911,6 +911,16 @@ The `RunLog` interface (`append` / `close` / `wait_after`) is what would move be
   are now dropped regardless of styling. Per-filing risk counts fell accordingly (e.g.
   NVIDIA 38 -> 23, AMD 53 -> 44) and none of these headings remain; a regression test covers
   it. The stored sample is re-extracted (no LLM cost) before the 20b re-tag.
+  **Re-extracted 2026-11-05:**
+  - 111 -> 0 navigation rows; 701 -> 583 risk factors.
+  - Every filing matches its expected count (old rows minus navigation rows) except
+    **Intel FY2024, 24 -> 17**. Its first 7 risk factors were lost, starting with "We are
+    in a highly competitive and rapidly changing industry".
+  - Intel styles its repeated section title as emphasized text, which the old filter
+    kept on purpose. Dropping navigation links regardless of styling evidently cuts the
+    start of that section.
+  - Open: fix plus a regression test on Intel's FY2024 fixture, then re-extract and
+    re-tag Intel.
 - **SQLAlchemy array column named `items` (Phase 2).** `eight_k_events.c.items` resolves to
   the column collection's `.items()` method, not the column (mypy caught it), so it is
   indexed as `c["items"]`. The generic `sqlalchemy.ARRAY` also has no `.overlap()`; the

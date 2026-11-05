@@ -1,0 +1,134 @@
+thread 9ad4e7af-5119-4fad-a317-4f50cd8594ca
+
+== PLAN
+  r1s1 [filings, direct]: Compare Intel's risk factors between its last two 10‑K filings
+      -> compare_risk_factors({"ticker":"INTC"})
+  > r1s1 started (filings, direct)
+    . r1s1 compare_risk_factors({'ticker': 'INTC'}) ok=True sources=26
+  < r1s1 done (direct)
+
+== CRITIC: gaps | gaps: ['list of risk factors that were removed between 2024 and 2025 10‑K', 'list of risk factors that changed (with brief description of how they changed) between 2024 and 2025 10‑K', 'full headings for the new risk factors (the current output is truncated)'] -> replanning
+
+== REPLAN (round 2)
+  r2s1 [filings, direct]: Retrieve the full list of risk factor headings from Intel's 2025 10‑K filing
+      -> get_risk_factors({"ticker":"INTC","fiscal_year":2025})
+  r2s2 [filings, direct]: Retrieve the full list of risk factor headings from Intel's 2024 10‑K filing
+      -> get_risk_factors({"ticker":"INTC","fiscal_year":2024})
+  r2s3 [filings, agentic] after r2s1, r2s2: From the 2024 and 2025 risk factor lists, produce (1) risk factors removed in 2025, (2) risk factors that changed with a brief description of the change, and (3) full headings for the new risk factors introduced in 2025
+  > r2s1 started (filings, direct)
+  > r2s2 started (filings, direct)
+    . r2s1 get_risk_factors({'ticker': 'INTC', 'fiscal_year': 2025}) ok=True sources=22
+  < r2s1 done (direct)
+    . r2s2 get_risk_factors({'ticker': 'INTC', 'fiscal_year': 2024}) ok=True sources=17
+  < r2s2 done (direct)
+  > r2s3 started (filings, agentic)
+    . r2s3 compare_risk_factors({'ticker': 'INTC', 'year_a': 2024, 'year_b': 2025}) ok=True sources=26
+  < r2s3 done (agentic)
+
+== CRITIC: ok
+
+== ANSWER
+
+**Intel’s risk‑factor landscape shifted noticeably from FY 2024 (ended 2024‑12‑28) to FY 2025 (ended 2025‑12‑27).**  
+
+* The 2025 filing contains **22 risk factors**, up from **17** in 2024 – a net increase of **7 new** items, **2 removed** items, **8 materially changed** items, and **7 unchanged** items【1】.  
+
+|                     | FY 2024 (ended 2024‑12‑28) | FY 2025 (ended 2025‑12‑27) |
+|---------------------|---------------------------|---------------------------|
+| Total risk factors  | 17                        | 22                        |
+| New risk factors    | –                         | 7                         |
+| Removed risk factors| 2                         | –                         |
+| Changed risk factors| 8                         | –                         |
+| Unchanged risk factors| 7                       | –                         |
+
+### Risk factors removed in FY 2025
+| Heading (FY 2024) | Category |
+|-------------------|----------|
+| “We have ceased to return capital to stockholders.” | Financial Liquidity【18】 |
+| “Our initiatives and new legal requirements with respect to corporate responsibility matters present various risks.” | Climate ESG【21】 |
+
+### Risk factors that changed in FY 2025 (brief description)
+| Changed heading (example) | Nature of change |
+|----------------------------|------------------|
+| Cybersecurity and privacy risks | Re‑worded to expand the description, adding details about unauthorized physical facility access and other specifics【11】【24】 |
+| Other eight risk factors | Material wording adjustments or re‑categorisation (e.g., additions, deletions, or re‑phrasing) without a full text excerpt【1】 |
+
+### New risk‑factor headings introduced in FY 2025
+| New heading | Category |
+|-------------|----------|
+| “We are in a highly competitive and rapidly changing industry.” | Competition【2】 |
+| “We are making significant, long‑term and inherently risky investments in R&D and manufacturing facilities that may not realize a favorable return.” | Technology【4】 |
+| “If we are unable to secure a significant external foundry customer for Intel 14A, our next‑generation semiconductor manufacturing process technology, we may pause or discontinue our pursuit of next‑generation leading‑edge process technologies.” | Technology【6】 |
+| “Our alternative financing arrangements and pursuit of government grants involve risks and may not be successful.” | Financial Liquidity【8】 |
+| “There are a number of risks and uncertainties associated with the U.S. government’s acquisition of significant equity interests in us.” | Government Equity【10】 |
+| *Two additional new headings were added in FY 2025, but their full text is not included in the extracted excerpts.* |
+
+**Limits** – The complete wording of the two remaining new risk‑factor headings is not available in the provided sources.
+
+== ANSWER (citations checked)
+
+**Intel’s risk‑factor landscape shifted noticeably from FY 2024 (ended 2024‑12‑28) to FY 2025 (ended 2025‑12‑27).**  
+
+* The 2025 filing contains **22 risk factors**, up from **17** in 2024 – a net increase of **7 new** items, **2 removed** items, **8 materially changed** items, and **7 unchanged** items[1].  
+
+|                     | FY 2024 (ended 2024‑12‑28) | FY 2025 (ended 2025‑12‑27) |
+|---------------------|---------------------------|---------------------------|
+| Total risk factors  | 17                        | 22                        |
+| New risk factors    | –                         | 7                         |
+| Removed risk factors| 2                         | –                         |
+| Changed risk factors| 8                         | –                         |
+| Unchanged risk factors| 7                       | –                         |
+
+### Risk factors removed in FY 2025
+| Heading (FY 2024) | Category |
+|-------------------|----------|
+| “We have ceased to return capital to stockholders.” | Financial Liquidity[18] |
+| “Our initiatives and new legal requirements with respect to corporate responsibility matters present various risks.” | Climate ESG[21] |
+
+### Risk factors that changed in FY 2025 (brief description)
+| Changed heading (example) | Nature of change |
+|----------------------------|------------------|
+| Cybersecurity and privacy risks | Re‑worded to expand the description, adding details about unauthorized physical facility access and other specifics[unverified] |
+| Other eight risk factors | Material wording adjustments or re‑categorisation (e.g., additions, deletions, or re‑phrasing) without a full text excerpt[unverified] |
+
+### New risk‑factor headings introduced in FY 2025
+| New heading | Category |
+|-------------|----------|
+| “We are in a highly competitive and rapidly changing industry.” | Competition[2] |
+| “We are making significant, long‑term and inherently risky investments in R&D and manufacturing facilities that may not realize a favorable return.” | Technology[4] |
+| “If we are unable to secure a significant external foundry customer for Intel 14A, our next‑generation semiconductor manufacturing process technology, we may pause or discontinue our pursuit of next‑generation leading‑edge process technologies.” | Technology[6] |
+| “Our alternative financing arrangements and pursuit of government grants involve risks and may not be successful.” | Financial Liquidity[8] |
+| “There are a number of risks and uncertainties associated with the U.S. government’s acquisition of significant equity interests in us.” | Government Equity[10] |
+| *Two additional new headings were added in FY 2025, but their full text is not included in the extracted excerpts.* |
+
+**Limits** – The complete wording of the two remaining new risk‑factor headings is not available in the provided sources.
+
+---
+*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*
+*Claims marked [unverified] could not be matched to any retrieved source.*
+
+== STEPS
+  r1s1   filings    direct   done     tools: compare_risk_factors
+  r2s1   filings    direct   done     tools: get_risk_factors
+  r2s2   filings    direct   done     tools: get_risk_factors
+  r2s3   filings    agentic  done     tools: compare_risk_factors
+
+== TOKENS (counted = prompt - cached + completion)
+  synthesizer          6,273  calls=1 reasoning=1,107 cache_hits=0 (saved 0)
+  critic               4,504  calls=2 reasoning=547 cache_hits=0 (saved 0)
+  planner              3,734  calls=2 reasoning=819 cache_hits=0 (saved 0)
+  filings_agent        3,616  calls=2 reasoning=34 cache_hits=0 (saved 0)
+  query_analyzer       1,012  calls=1 reasoning=46 cache_hits=0 (saved 0)
+  TOTAL               19,139   run 4f3b5e98-b070-4715-87ba-2db0b5c8ec79 | thread 9ad4e7af-5119-4fad-a317-4f50cd8594ca
+
+== CITATION CHECK: precision 0.727 (8/11 supported; 0 re-attached, 3 dropped, 2 claims unverified)
+
+== SOURCES
+  [1] INTC risk factors, FY2024 vs FY2025 10-K (comparison) - https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm
+  [2] INTC 10-K FY2025 risk factor: We are in a highly competitive and rapidly changing industry. - https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm
+  [4] INTC 10-K FY2025 risk factor: We are making significant, long-term and inherently risky investments in R&D and manufacturing facilities that may not realize a favorable return. - https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm
+  [6] INTC 10-K FY2025 risk factor: If we are unable to secure a significant external foundry customer for Intel 14A, our next generation semiconductor manufacturing process technology, we may pause or discontinue our pursuit of next generation leading-edge process technologies. - https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm
+  [8] INTC 10-K FY2025 risk factor: Our alternative financing arrangements and pursuit of government grants involve risks and may not be successful. - https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm
+  [10] INTC 10-K FY2025 risk factor: There are a number of risks and uncertainties associated with the U.S. government’s acquisition of significant equity interests in us. - https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm
+  [18] INTC 10-K FY2024 risk factor: We have ceased to return capital to stockholders. - https://www.sec.gov/Archives/edgar/data/50863/000005086325000009/intc-20241228.htm
+  [21] INTC 10-K FY2024 risk factor: Our initiatives and new legal requirements with respect to corporate responsibility matters present various risks. - https://www.sec.gov/Archives/edgar/data/50863/000005086325000009/intc-20241228.htm
