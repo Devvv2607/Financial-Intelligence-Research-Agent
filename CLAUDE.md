@@ -5,6 +5,9 @@ filings and news (Groq LLMs, Weaviate hybrid search, Postgres). **`BUILD_SPEC.md
 source of truth**; approved deviations are logged in `docs/DECISIONS.md`.
 
 ## Working rules
+- **One-time per clone: `uv run pre-commit install`.** The hook (`.pre-commit-config.yaml`)
+  runs ruff, ruff format --check and the frontend ESLint on staged files and blocks the
+  commit on failure. Don't bypass it (`--no-verify`). mypy + full tests: `make check` / CI.
 - Build **phase by phase** (BUILD_SPEC §9). At the end of a phase: lint + typecheck + tests,
   a short summary with how to verify, then stop for approval.
 - One branch per phase (`phase-N-<name>`), merged to `main` after approval. Conventional

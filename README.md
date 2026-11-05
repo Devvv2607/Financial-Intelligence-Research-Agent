@@ -15,11 +15,15 @@ Prerequisites: Docker Desktop (WSL2 backend), [uv](https://docs.astral.sh/uv/), 
 ```powershell
 Copy-Item .env.example .env      # then set GROQ_API_KEY in .env
 .\make.ps1 install
+uv run pre-commit install        # one time: ruff + ESLint on staged files before each commit
 .\make.ps1 up                    # postgres, weaviate, api, web
 .\make.ps1 ready                 # expect "status":"ready" and HTTP 200
 ```
 
 On Linux/macOS/Git Bash, use `cp` and `make <target>` instead.
+
+The pre-commit hook runs only the fast checks (ruff, ruff format, frontend ESLint) on the
+files being committed; mypy and the full tests run in `make check` and CI.
 
 - Web: http://localhost:3000 (shows live dependency status)
 - API: http://localhost:8000/health · http://localhost:8000/ready · http://localhost:8000/docs
