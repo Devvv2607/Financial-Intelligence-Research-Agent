@@ -86,6 +86,7 @@ class ToolCallLog(BaseModel):
     error: str | None = None
     evidence: int = 0
     latency_ms: int = 0
+    reused: bool = False  # identical to an earlier call in the same step: not re-run
 
 
 class StepResult(BaseModel):
@@ -178,6 +179,8 @@ class SpecialistState(SpecialistInput, total=False):
     tool_log: Annotated[list[ToolCallLog], operator.add]
     evidence: Annotated[list[Evidence], evidence_reducer]
     digests: Annotated[list[str], operator.add]
+    # "tool:canonical-args" -> [result shown to the model, ok]: repeats are answered from here
+    call_cache: dict[str, list[Any]]
     llm_turns: int
     mode: Literal["direct", "agentic"]
     direct_failure: str | None

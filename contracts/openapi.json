@@ -1457,6 +1457,11 @@
             "title": "Ok",
             "type": "boolean"
           },
+          "reused": {
+            "default": false,
+            "title": "Reused",
+            "type": "boolean"
+          },
           "tool": {
             "title": "Tool",
             "type": "string"

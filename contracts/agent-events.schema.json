@@ -717,6 +717,11 @@
           "title": "Ok",
           "type": "boolean"
         },
+        "reused": {
+          "default": false,
+          "title": "Reused",
+          "type": "boolean"
+        },
         "step_id": {
           "title": "Step Id",
           "type": "string"
@@ -732,7 +737,8 @@
         "tool",
         "args",
         "ok",
-        "evidence"
+        "evidence",
+        "reused"
       ],
       "title": "ToolCalled",
       "type": "object"

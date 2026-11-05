@@ -45,6 +45,7 @@ export type StepId = string;
 export type Event4 = "tool_called";
 export type Evidence = number;
 export type Ok = boolean;
+export type Reused = boolean;
 export type StepId1 = string;
 export type Tool1 = string;
 export type Event5 = "evidence_added";
@@ -141,6 +142,7 @@ export interface ToolCalled {
   event: Event4;
   evidence: Evidence;
   ok: Ok;
+  reused: Reused;
   step_id: StepId1;
   tool: Tool1;
 }

@@ -505,3 +505,53 @@ async def test_planner_sees_categories_and_a_category_filter_reaches_the_tool() 
         (name, args) for name, args, *_ in tools.log
     ]
     assert out["plan"][1].tool_calls == []  # "regulation" is not a category: dropped
+
+
+async def test_identical_tool_calls_in_a_step_run_once() -> None:
+    """Demo 2 (2026-11-05): the same search_filings call three times in one step."""
+    q = "AAPL 10-Ks"
+    plan = planner_returns(step("a", "filings", entities=["AAPL"]))  # agentic
+    same = {"query": "Apple", "tickers": ["AAPL"], "form_types": ["10-K"]}
+
+    def call(i: int) -> AIMessage:
+        return AIMessage(
+            content="", tool_calls=[{"name": "search_filings", "args": same, "id": f"c{i}"}]
+        )
+
+    tools = FakeTools({"search_filings": ok("search_filings", {"hits": [1]}, [ev("f", "AAPL")])})
+    llm = FakeLLM(
+        {"query_analyzer": [analysis(q, ["Apple"])], "planner": [plan], "critic": [OK_CRITIQUE]},
+        {
+            "filings_agent": [call(1), call(2), call(3), "Two filings [1]."],
+            "synthesizer": ["ok [1]."],
+        },
+    )
+    out = await ask(build_graph(make_deps(llm, tools), memory_saver()), q)
+    assert [name for name, *_ in tools.log] == ["search_filings"]  # executed once
+    r = out["step_results"]["r1s1"]
+    assert [t.reused for t in r.tool_calls] == [False, True, True]
+    assert r.status == "done"
+    last_turn = [m for n, m in llm.calls if n == "filings_agent"][-1]
+    assert "result reused" in str(last_turn[-1].content)
+
+
+async def test_agentic_fallback_does_not_rerun_a_failed_direct_call() -> None:
+    q = "AMD risks"
+    args = '{"ticker": "AMD"}'
+    plan = planner_returns(
+        step("a", "filings", entities=["AMD"], tool_calls=[("get_risk_factors", args)])
+    )
+    retry = AIMessage(
+        content="",
+        tool_calls=[{"name": "get_risk_factors", "args": {"ticker": "AMD"}, "id": "c1"}],
+    )
+    tools = FakeTools({"get_risk_factors": failing("get_risk_factors")})
+    llm = FakeLLM(
+        {"query_analyzer": [analysis(q, ["AMD"])], "planner": [plan], "critic": [OK_CRITIQUE]},
+        {"filings_agent": [retry, "Could not retrieve them."], "synthesizer": ["None."]},
+    )
+    out = await ask(build_graph(make_deps(llm, tools), memory_saver()), q)
+    assert len(tools.log) == 1
+    r = out["step_results"]["r1s1"]
+    assert r.status == "failed"  # a reused failure doesn't make the step look ok
+    assert [t.reused for t in r.tool_calls] == [False, True]

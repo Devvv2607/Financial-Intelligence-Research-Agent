@@ -708,6 +708,11 @@ export interface components {
             latency_ms: number;
             /** Ok */
             ok: boolean;
+            /**
+             * Reused
+             * @default false
+             */
+            reused: boolean;
             /** Tool */
             tool: string;
         };

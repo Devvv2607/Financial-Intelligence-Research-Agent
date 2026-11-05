@@ -71,6 +71,7 @@ class ToolCalled(_Event):
     args: dict[str, Any]
     ok: bool
     evidence: int
+    reused: bool = False  # an identical call earlier in the step: result reused, not re-run
 
 
 class EvidenceAdded(_Event):

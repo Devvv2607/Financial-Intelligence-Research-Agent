@@ -35,6 +35,9 @@ from agent.tools import AGENT_TOOLS, REGISTRY, ToolResult
 from core.llm import DailyLimitError, LLMError
 
 MAX_TOOL_CALLS = 4
+REUSED_NOTE = (
+    "(Same call as earlier in this step: result reused. Use it, or call with different arguments.)"
+)
 TOOL_OUTPUT_FOR_LLM = 2_500  # chars of tool data the model sees per call
 DIGEST_PER_CALL = 1_200
 DIGEST_TOTAL = 3_500
@@ -152,9 +155,11 @@ def build_specialist(agent: AgentName, deps: AgentDeps) -> CompiledStateGraph:  
     async def direct(state: SpecialistState) -> dict[str, Any]:
         step = state["step"]
         logs, evidence, digests, failure = [], [], [], None
+        cache = dict(state.get("call_cache", {}))
         for call in step.tool_calls:
             args = json.loads(call.args_json or "{}")
             result, log = await run_tool(call.tool, args, step.id)
+            cache[_call_key(call.tool, args)] = [_compact(result, TOOL_OUTPUT_FOR_LLM), result.ok]
             logs.append(log)
             evidence.extend(result.evidence)
             if _has_content(result):
@@ -163,7 +168,12 @@ def build_specialist(agent: AgentName, deps: AgentDeps) -> CompiledStateGraph:  
                 failure = f"{call.tool}({call.args_json}) " + (
                     f"failed: {log.error}" if not result.ok else "returned nothing"
                 )
-        update: dict[str, Any] = {"tool_log": logs, "evidence": evidence, "digests": digests}
+        update: dict[str, Any] = {
+            "tool_log": logs,
+            "evidence": evidence,
+            "digests": digests,
+            "call_cache": cache,
+        }
         if failure:
             update["mode"] = "agentic"
             update["direct_failure"] = failure
@@ -194,6 +204,7 @@ def build_specialist(agent: AgentName, deps: AgentDeps) -> CompiledStateGraph:  
         budget = MAX_TOOL_CALLS - len(state.get("tool_log", []))
         messages = list(state["messages"])
         logs, evidence, digests = [], [], []
+        cache = dict(state.get("call_cache", {}))
         for i, tc in enumerate(last.tool_calls):
             if i >= budget:
                 messages.append(
@@ -202,17 +213,42 @@ def build_specialist(agent: AgentName, deps: AgentDeps) -> CompiledStateGraph:  
                     )
                 )
                 continue
+            key = _call_key(tc["name"], tc["args"])
+            if key in cache:
+                # Demo 2 (2026-11-05): the same search_filings call three times in one step.
+                # Answer repeats from the first result; they still count toward the cap.
+                content, was_ok = cache[key]
+                logs.append(ToolCallLog(tool=tc["name"], args=tc["args"], ok=was_ok, reused=True))
+                get_stream_writer()(
+                    {
+                        "event": "tool_called",
+                        "step_id": state["step"].id,
+                        "tool": tc["name"],
+                        "args": tc["args"],
+                        "ok": was_ok,
+                        "evidence": 0,
+                        "reused": True,
+                    }
+                )
+                messages.append(
+                    ToolMessage(content=f"{content}\n{REUSED_NOTE}", tool_call_id=tc["id"] or "")
+                )
+                continue
             result, log = await run_tool(tc["name"], tc["args"], state["step"].id)
+            content = _compact(result, TOOL_OUTPUT_FOR_LLM)
+            cache[key] = [content, result.ok]
             logs.append(log)
             evidence.extend(result.evidence)
             if _has_content(result):
                 digests.append(f"{tc['name']}: {_compact(result, DIGEST_PER_CALL)}")
-            messages.append(
-                ToolMessage(
-                    content=_compact(result, TOOL_OUTPUT_FOR_LLM), tool_call_id=tc["id"] or ""
-                )
-            )
-        return {"messages": messages, "tool_log": logs, "evidence": evidence, "digests": digests}
+            messages.append(ToolMessage(content=content, tool_call_id=tc["id"] or ""))
+        return {
+            "messages": messages,
+            "tool_log": logs,
+            "evidence": evidence,
+            "digests": digests,
+            "call_cache": cache,
+        }
 
     async def finish(state: SpecialistState) -> dict[str, Any]:
         step = state["step"]
@@ -294,3 +330,7 @@ def _duration_ms(r: StepResult) -> int | None:
     if r.started_at is None or r.finished_at is None:
         return None
     return int((r.finished_at - r.started_at).total_seconds() * 1000)
+
+
+def _call_key(tool: str, args: dict[str, Any]) -> str:
+    return f"{tool}:{json.dumps(args, sort_keys=True, default=str)}"
