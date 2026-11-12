@@ -106,6 +106,11 @@ $targets = [ordered]@{
             Invoke-Step uv @("run", "python", "-m", "api.contracts", "--check")
             Invoke-Step npm @("--prefix", "frontend", "run", "gen:types")
             Invoke-Step git @("diff", "--exit-code", "--", "frontend/lib/generated") } }
+    "eval-dry" = @{ Help = "Run the zero-token scripted evaluation harness"; Run = {
+            $env:AGENT_RUNTIME = "scripted"
+            Invoke-Step uv @("run", "python", "-m", "evals.runner", "--dry") } }
+    "eval-live" = @{ Help = "Run the live evaluation harness with its daily budget guard"; Run = {
+            Invoke-Step uv @("run", "python", "-m", "evals.runner", "--live") } }
     "migrate"   = @{ Help = "Apply database migrations"; Run = {
             Invoke-Step uv @("run", "alembic", "-c", "backend/alembic.ini", "upgrade", "head") } }
     "ingest-sample" = @{ Help = "Ingest the 10 agreed sample companies (+ headings-only experiment on 3)"; Run = {

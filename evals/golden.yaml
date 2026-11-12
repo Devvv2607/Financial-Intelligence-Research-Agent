@@ -1,0 +1,300 @@
+- id: demo-1-nvda-amd-news
+  question: "Compare NVIDIA and AMD's top 10-K risk factors with recent news."
+  category: comparison_news
+  expected_entities: [NVDA, AMD]
+  expected_agents: [filings, news]
+  expected_tools: [get_risk_factors, search_news]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [competition, manufacturing, recent news]
+  needs_full_data: false
+- id: demo-2-apple-risk-change
+  question: "How did Apple's risk factors change between its last two 10-Ks?"
+  category: yoy_risk_change
+  expected_entities: [AAPL]
+  expected_agents: [filings]
+  expected_tools: [compare_risk_factors]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [risk factors changed, prior filing, latest filing]
+  needs_full_data: false
+- id: demo-3-healthcare-growth
+  question: "Which healthcare company in the sample had the strongest revenue growth?"
+  category: financial_growth
+  expected_entities: [JNJ, UNH]
+  expected_agents: [financials]
+  expected_tools: [get_financial_metrics]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [revenue growth, healthcare]
+  needs_full_data: false
+- id: demo-4-boeing-8k
+  question: "What material events has Boeing reported in 8-Ks this year?"
+  category: eight_k_events
+  expected_entities: [BA]
+  expected_agents: [filings]
+  expected_tools: [get_8k_events]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [8-K, material events]
+  needs_full_data: false
+- id: demo-5-bank-clarification
+  question: "How risky is the bank?"
+  category: clarification
+  expected_entities: [JPM]
+  expected_agents: [filings]
+  expected_tools: [get_risk_factors]
+  expect_clarification: true
+  expect_refusal: false
+  key_facts: [clarification, JPM]
+  needs_full_data: false
+- id: demo-6-tesla-advice
+  question: "Should I buy Tesla?"
+  category: advice_refusal
+  expected_entities: [TSLA]
+  expected_agents: []
+  expected_tools: []
+  expect_clarification: false
+  expect_refusal: true
+  key_facts: [not investment advice, refusal]
+  needs_full_data: false
+- id: demo-7-intel-follow-up
+  question: "Now do the same for Intel."
+  category: multi_turn_follow_up
+  expected_entities: [INTC]
+  expected_agents: [filings]
+  expected_tools: [get_risk_factors]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [Intel, follow-up, prior context]
+  needs_full_data: false
+- id: single-nvda-risk
+  question: "What are NVIDIA's main supply-chain risk factors?"
+  category: single_company_risk
+  expected_entities: [NVDA]
+  expected_agents: [filings]
+  expected_tools: [get_risk_factors]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [supply chain, NVIDIA]
+  needs_full_data: false
+- id: single-amd-risk
+  question: "List AMD's top competitive risks."
+  category: single_company_risk
+  expected_entities: [AMD]
+  expected_agents: [filings]
+  expected_tools: [get_risk_factors]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [competition, AMD]
+  needs_full_data: false
+- id: single-jpm-risk
+  question: "What legal and regulatory risks does JPMorgan report?"
+  category: single_company_risk
+  expected_entities: [JPM]
+  expected_agents: [filings]
+  expected_tools: [get_risk_factors]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [legal, regulatory, JPM]
+  needs_full_data: false
+- id: single-jnj-risk
+  question: "What product liability risks does Johnson & Johnson disclose?"
+  category: single_company_risk
+  expected_entities: [JNJ]
+  expected_agents: [filings]
+  expected_tools: [get_risk_factors]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [product liability, JNJ]
+  needs_full_data: false
+- id: single-tsla-risk
+  question: "What are Tesla's principal operational risks?"
+  category: single_company_risk
+  expected_entities: [TSLA]
+  expected_agents: [filings]
+  expected_tools: [get_risk_factors]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [Tesla, operational risks]
+  needs_full_data: false
+- id: single-xom-risk
+  question: "What risks does Exxon Mobil disclose?"
+  category: single_company_risk
+  expected_entities: [XOM]
+  expected_agents: [filings]
+  expected_tools: [get_risk_factors]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [XOM, risk factors]
+  needs_full_data: false
+- id: compare-nvda-amd
+  question: "Compare NVIDIA and AMD's reliance on outside manufacturing."
+  category: comparison
+  expected_entities: [NVDA, AMD]
+  expected_agents: [filings]
+  expected_tools: [get_risk_factors]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [outside manufacturing, comparison]
+  needs_full_data: false
+- id: yoy-apple
+  question: "What changed in Apple's AI-related risk disclosures year over year?"
+  category: yoy_change
+  expected_entities: [AAPL]
+  expected_agents: [filings]
+  expected_tools: [compare_risk_factors]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [AI, year over year]
+  needs_full_data: false
+- id: yoy-intel
+  question: "How did Intel's risk headings change between its two latest 10-Ks?"
+  category: yoy_change
+  expected_entities: [INTC]
+  expected_agents: [filings]
+  expected_tools: [compare_risk_factors]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [Intel, headings, latest 10-Ks]
+  needs_full_data: false
+- id: eightk-boeing
+  question: "Show Boeing's recent 8-K events and item codes."
+  category: eight_k_events
+  expected_entities: [BA]
+  expected_agents: [filings]
+  expected_tools: [get_8k_events]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [Boeing, item codes]
+  needs_full_data: false
+- id: eightk-jpm
+  question: "What recent 8-K events did JPMorgan report?"
+  category: eight_k_events
+  expected_entities: [JPM]
+  expected_agents: [filings]
+  expected_tools: [get_8k_events]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [JPM, 8-K]
+  needs_full_data: false
+- id: financial-nvda-amd
+  question: "Compare NVIDIA and AMD revenue growth and net income."
+  category: financial_growth
+  expected_entities: [NVDA, AMD]
+  expected_agents: [financials]
+  expected_tools: [get_financial_metrics]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [revenue, net income, growth]
+  needs_full_data: false
+- id: financial-jpm
+  question: "What financial metrics should I inspect for JPMorgan's profitability?"
+  category: financial_ratios
+  expected_entities: [JPM]
+  expected_agents: [financials]
+  expected_tools: [get_financial_metrics]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [profitability, financial metrics]
+  needs_full_data: false
+- id: screener-tech-risk
+  question: "Which companies have the highest number of technology risk factors?"
+  category: screener
+  expected_entities: []
+  expected_agents: [screener]
+  expected_tools: [run_readonly]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [technology, risk factors, ranking]
+  needs_full_data: false
+- id: screener-cross-company
+  question: "Screen the sample for companies with more than 20 risk factors."
+  category: screener
+  expected_entities: []
+  expected_agents: [screener]
+  expected_tools: [run_readonly]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [cross-company, risk factors]
+  needs_full_data: false
+- id: news-nvda
+  question: "What recent news supports or challenges NVIDIA's risk profile?"
+  category: news_supported
+  expected_entities: [NVDA]
+  expected_agents: [news, filings]
+  expected_tools: [search_news, get_risk_factors]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [NVIDIA, news, risk profile]
+  needs_full_data: false
+- id: news-tsla
+  question: "What recent news is relevant to Tesla's business risks?"
+  category: news_supported
+  expected_entities: [TSLA]
+  expected_agents: [news]
+  expected_tools: [search_news]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [Tesla, news]
+  needs_full_data: false
+- id: clarification-johnson
+  question: "What are Johnson's main risks?"
+  category: clarification
+  expected_entities: [JNJ, JCI]
+  expected_agents: []
+  expected_tools: []
+  expect_clarification: true
+  expect_refusal: false
+  key_facts: [ambiguous, Johnson]
+  needs_full_data: false
+- id: clarification-bank
+  question: "How risky is the bank?"
+  category: clarification
+  expected_entities: [JPM]
+  expected_agents: []
+  expected_tools: []
+  expect_clarification: true
+  expect_refusal: false
+  key_facts: [ambiguous, bank]
+  needs_full_data: false
+- id: refusal-advice
+  question: "Should I sell Apple stock?"
+  category: advice_refusal
+  expected_entities: [AAPL]
+  expected_agents: []
+  expected_tools: []
+  expect_clarification: false
+  expect_refusal: true
+  key_facts: [not investment advice, refusal]
+  needs_full_data: false
+- id: uncovered-msft
+  question: "What are Microsoft's latest risk factors?"
+  category: uncovered_company
+  expected_entities: [MSFT]
+  expected_agents: []
+  expected_tools: []
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [Microsoft, uncovered]
+  needs_full_data: true
+- id: uncovered-orcl
+  question: "Compare Oracle's latest risk factors with IBM's."
+  category: uncovered_company
+  expected_entities: [ORCL, IBM]
+  expected_agents: []
+  expected_tools: []
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [Oracle, IBM, uncovered]
+  needs_full_data: true
+- id: follow-up-intel
+  question: "Now compare Intel with AMD on manufacturing risk."
+  category: multi_turn_follow_up
+  expected_entities: [INTC, AMD]
+  expected_agents: [filings]
+  expected_tools: [get_risk_factors]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [Intel, AMD, manufacturing]
+  needs_full_data: false
