@@ -81,48 +81,36 @@ def summarize_observations(
     questions: Sequence[GoldenQuestion], observations: Sequence[Mapping[str, Any]]
 ) -> dict[str, Any]:
     by_id = {str(item["id"]): item for item in observations}
-    scored = [by_id[q.id] for q in questions if q.id in by_id]
+    verified_questions = [q for q in questions if q.verified and q.id in by_id]
+    unverified_questions = [q for q in questions if not q.verified and q.id in by_id]
+    scored = [by_id[q.id] for q in verified_questions]
+
+    def average(metric: Any) -> float:
+        return (
+            round(sum(metric(q, by_id[q.id]) for q in verified_questions) / len(scored), 3)
+            if scored
+            else 0.0
+        )
+
     return {
         "question_count": len(scored),
-        "plan_validity": round(
-            sum(
-                plan_validity(q, item.get("agents", []))
-                for q, item in zip(questions, scored, strict=False)
-            )
-            / len(scored),
-            3,
-        )
-        if scored
-        else 0.0,
-        "tool_selection_accuracy": round(
-            sum(
-                tool_selection_accuracy(q, item.get("tools", []))
-                for q, item in zip(questions, scored, strict=False)
-            )
-            / len(scored),
-            3,
-        )
-        if scored
-        else 0.0,
-        "retrieval_hit_rate": round(
-            sum(
-                retrieval_hit_rate(q, item.get("evidence_keys", []))
-                for q, item in zip(questions, scored, strict=False)
-            )
-            / len(scored),
-            3,
-        )
-        if scored
-        else 0.0,
+        "unverified_question_count": len(unverified_questions),
+        "plan_validity": average(lambda q, item: plan_validity(q, item.get("agents", []))),
+        "tool_selection_accuracy": average(
+            lambda q, item: tool_selection_accuracy(q, item.get("tools", []))
+        ),
+        "retrieval_hit_rate": average(
+            lambda q, item: retrieval_hit_rate(q, item.get("evidence_keys", []))
+        ),
         "citation_precision": citation_precision(
             [score for item in scored for score in item.get("citation_similarities", [])]
         ),
         "clarification": clarification_precision_recall(
-            [q.expect_clarification for q in questions[: len(scored)]],
+            [q.expect_clarification for q in verified_questions],
             [bool(item.get("clarification")) for item in scored],
         ),
         "refusal_accuracy": refusal_accuracy(
-            [q.expect_refusal for q in questions[: len(scored)]],
+            [q.expect_refusal for q in verified_questions],
             [bool(item.get("refusal")) for item in scored],
         ),
         "latency": latency_percentiles([float(item.get("latency_ms", 0)) for item in scored]),

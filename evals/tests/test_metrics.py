@@ -5,6 +5,7 @@ from evals.metrics import (
     plan_validity,
     refusal_accuracy,
     retrieval_hit_rate,
+    summarize_observations,
     tool_selection_accuracy,
 )
 from evals.schema import GoldenQuestion
@@ -35,3 +36,33 @@ def test_pure_metrics() -> None:
     }
     assert refusal_accuracy([True, False], [True, True]) == 0.5
     assert latency_percentiles([10, 20, 100]) == {"p50_ms": 20, "p95_ms": 100}
+
+
+def test_summary_headline_excludes_unverified_questions() -> None:
+    unverified = QUESTION.model_copy(update={"id": "unverified", "verified": False})
+    observations = [
+        {
+            "id": "q",
+            "agents": ["filings"],
+            "tools": ["get_risk_factors"],
+            "evidence_keys": ["AAPL"],
+            "clarification": False,
+            "refusal": False,
+            "latency_ms": 10,
+            "tokens": 1,
+        },
+        {
+            "id": "unverified",
+            "agents": [],
+            "tools": [],
+            "evidence_keys": [],
+            "clarification": False,
+            "refusal": False,
+            "latency_ms": 20,
+            "tokens": 100,
+        },
+    ]
+    summary = summarize_observations([QUESTION, unverified], observations)
+    assert summary["question_count"] == 1
+    assert summary["unverified_question_count"] == 1
+    assert summary["average_tokens"] == 1

@@ -21,6 +21,7 @@ class GoldenQuestion(BaseModel):
     key_facts: list[str] = Field(min_length=1)
     needs_full_data: bool
     verified: bool
+    verified_by: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def normalize_tickers(self) -> "GoldenQuestion":
@@ -42,7 +43,13 @@ def load_golden(path: Path, universe_path: Path) -> list[GoldenQuestion]:
         if row.strip()
     }
     invalid = sorted(
-        {ticker for q in questions for ticker in q.expected_entities if ticker not in universe}
+        {
+            ticker
+            for q in questions
+            if not q.needs_full_data
+            for ticker in q.expected_entities
+            if ticker not in universe
+        }
     )
     if invalid:
         raise ValueError(f"golden questions contain unknown universe tickers: {', '.join(invalid)}")

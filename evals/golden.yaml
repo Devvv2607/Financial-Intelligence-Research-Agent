@@ -30,7 +30,9 @@
   expect_refusal: false
   key_facts: [revenue growth, healthcare]
   needs_full_data: false
-  verified: false
+  verified: true
+  verified_by:
+    - docs/demo-runs/2026-11-05/demo3-healthcare-growth.txt
 - id: demo-4-boeing-8k
   question: "What material events has Boeing reported in 8-Ks this year?"
   category: eight_k_events
@@ -129,7 +131,10 @@
   expect_refusal: false
   key_facts: [Tesla, operational risks]
   needs_full_data: false
-  verified: false
+  verified: true
+  verified_by:
+    - backend/src/agent/tools/filings.py
+    - "read-only SQL: SELECT ticker, category, count(*) FROM risk_factors JOIN companies USING (cik) WHERE ticker='TSLA' GROUP BY ticker, category"
 - id: single-xom-risk
   question: "What risks does Exxon Mobil disclose?"
   category: single_company_risk
@@ -140,7 +145,10 @@
   expect_refusal: false
   key_facts: [XOM, risk factors]
   needs_full_data: false
-  verified: false
+  verified: true
+  verified_by:
+    - backend/src/agent/tools/filings.py
+    - "read-only SQL: SELECT ticker, category, count(*) FROM risk_factors JOIN companies USING (cik) WHERE ticker='XOM' GROUP BY ticker, category"
 - id: compare-nvda-amd
   question: "Compare NVIDIA and AMD's reliance on outside manufacturing."
   category: comparison
@@ -206,7 +214,10 @@
   expect_refusal: false
   key_facts: [revenue, net income, growth]
   needs_full_data: false
-  verified: false
+  verified: true
+  verified_by:
+    - backend/src/agent/tools/financials.py
+    - "read-only SQL: SELECT ticker, metric, fiscal_year, value FROM financial_facts JOIN companies USING (cik) WHERE ticker IN ('NVDA','AMD') AND metric IN ('revenue','net_income')"
 - id: financial-jpm
   question: "What financial metrics should I inspect for JPMorgan's profitability?"
   category: financial_ratios
@@ -217,7 +228,10 @@
   expect_refusal: false
   key_facts: [profitability, financial metrics]
   needs_full_data: false
-  verified: false
+  verified: true
+  verified_by:
+    - backend/src/agent/tools/financials.py
+    - "read-only SQL: SELECT ticker, metric, fiscal_year, value FROM financial_facts JOIN companies USING (cik) WHERE ticker='JPM' AND metric IN ('revenue','net_income','eps_diluted')"
 - id: screener-tech-risk
   question: "Which companies have the highest number of technology risk factors?"
   category: screener
@@ -228,7 +242,10 @@
   expect_refusal: false
   key_facts: [technology, risk factors, ranking]
   needs_full_data: false
-  verified: false
+  verified: true
+  verified_by:
+    - backend/src/agent/tools/screener.py
+    - "read-only SQL: SELECT ticker, count(*) FROM risk_factors JOIN companies USING (cik) WHERE category='technology' GROUP BY ticker ORDER BY count(*) DESC"
 - id: screener-cross-company
   question: "Screen the sample for companies with more than 20 risk factors."
   category: screener
@@ -239,7 +256,10 @@
   expect_refusal: false
   key_facts: [cross-company, risk factors]
   needs_full_data: false
-  verified: false
+  verified: true
+  verified_by:
+    - backend/src/agent/tools/screener.py
+    - "read-only SQL: SELECT ticker, count(*) FROM risk_factors JOIN companies USING (cik) GROUP BY ticker HAVING count(*)>20 ORDER BY count(*) DESC"
 - id: news-nvda
   question: "What recent news supports or challenges NVIDIA's risk profile?"
   category: news_supported
@@ -261,7 +281,10 @@
   expect_refusal: false
   key_facts: [Tesla, news]
   needs_full_data: false
-  verified: false
+  verified: true
+  verified_by:
+    - backend/src/agent/tools/news.py
+    - "read-only SQL: SELECT title, source_name, published_at FROM news_articles JOIN companies USING (cik) WHERE ticker='TSLA' ORDER BY published_at DESC LIMIT 8"
 - id: clarification-johnson
   question: "What are Johnson's main risks?"
   category: clarification
@@ -295,26 +318,26 @@
   key_facts: [not investment advice, refusal]
   needs_full_data: false
   verified: true
-- id: uncovered-msft
-  question: "What are Microsoft's latest risk factors?"
+- id: uncovered-snow
+  question: "What are Snowflake's latest risk factors?"
   category: uncovered_company
-  expected_entities: [MSFT]
+  expected_entities: [SNOW]
   expected_agents: []
   expected_tools: []
   expect_clarification: false
   expect_refusal: false
-  key_facts: [Microsoft, uncovered]
+  key_facts: [Snowflake, uncovered]
   needs_full_data: true
   verified: false
-- id: uncovered-orcl
-  question: "Compare Oracle's latest risk factors with IBM's."
+- id: uncovered-palantir
+  question: "Compare Palantir's latest risk factors with Snowflake's."
   category: uncovered_company
-  expected_entities: [ORCL, IBM]
+  expected_entities: [PLTR, SNOW]
   expected_agents: []
   expected_tools: []
   expect_clarification: false
   expect_refusal: false
-  key_facts: [Oracle, IBM, uncovered]
+  key_facts: [Palantir, Snowflake, uncovered]
   needs_full_data: true
   verified: false
 - id: follow-up-intel

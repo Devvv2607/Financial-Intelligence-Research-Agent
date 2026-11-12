@@ -138,6 +138,12 @@ def write_results(
 ) -> Path:
     timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     summary = summarize_observations(questions, observations)
+    by_id = {str(item["id"]): item for item in observations}
+    unverified = [
+        by_id[question.id]
+        for question in questions
+        if not question.verified and question.id in by_id
+    ]
     payload = {
         "mode": mode,
         "label": (
@@ -150,6 +156,7 @@ def write_results(
             score for item in observations for score in item.get("citation_similarities", [])
         ],
         "summary": summary,
+        "unverified_questions": unverified,
         "questions": observations,
     }
     RESULTS.mkdir(parents=True, exist_ok=True)
@@ -160,6 +167,11 @@ def write_results(
         f"# Evaluation {timestamp}\n\n**{payload['label']}**\n\n"
         "| Metric | Value |\n|---|---:|\n"
         + "\n".join(f"| {key} | {value} |" for key, value in summary.items())
+        + "\n\n## Unverified question results\n\n"
+        + "\n".join(
+            f"- **{item['id']}** — unverified result; do not cite as a headline metric."
+            for item in unverified
+        )
         + "\n",
         encoding="utf-8",
     )
