@@ -11,6 +11,7 @@ python -m ingestion progress
 
 import argparse
 import logging
+import random
 import sys
 import uuid
 from datetime import UTC, datetime
@@ -19,7 +20,7 @@ from pathlib import Path
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, TextColumn, TimeElapsedColumn
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from core import aio
@@ -35,7 +36,8 @@ from core.vectorstore import create_client, ensure_ready
 from ingestion import experiments, prompts, review
 from ingestion import report as rpt
 from ingestion.edgar.client import EdgarClient
-from ingestion.enrich.tag_replay import replay_cached_tags
+from ingestion.enrich.tag_replay import load_cached_tag_plan, replay_cached_tags
+from ingestion.load import postgres as pg
 from ingestion.pipeline import SAMPLE_TICKERS, STAGES, Pipeline, Stage, UniverseRow, read_universe
 
 console = Console()
@@ -78,6 +80,27 @@ async def _run(args: argparse.Namespace, s: Settings) -> int:
                 ).scalars()
             )
         rows = [row for row in rows if row.ticker in flagged_tickers]
+        if args.from_cache:
+            cache_plan = await load_cached_tag_plan(engine)
+            sample = random.SystemRandom().sample(
+                cache_plan.samples, min(10, len(cache_plan.samples))
+            )
+            flagged_count = await _flagged_count(engine)
+            console.print(
+                f"cache rows to apply: {len(cache_plan.tags)}; "
+                f"rows going to LLM: {flagged_count - len(cache_plan.tags)}"
+            )
+            for ticker, heading, category in sample:
+                console.print(f"  {ticker} | {heading[:100]} | {category}")
+            if args.dry_run:
+                await _print_retag_plan(engine, s, {t.key for t in cache_plan.tags})
+                await engine.dispose()
+                return 0
+            await pg.save_tags(
+                engine,
+                cache_plan.tags,
+                f"{prompts.version('risk_tagging')}@{s.model_for('fast')}",
+            )
         if args.dry_run:
             await _print_retag_plan(engine, s)
             await engine.dispose()
@@ -129,7 +152,9 @@ async def _run(args: argparse.Namespace, s: Settings) -> int:
             needs_review_only=args.needs_review,
             on_progress=on_progress,
         )
-        outcomes = await pipeline.run(rows, stages, force=args.force, refresh=args.refresh)
+        outcomes = await pipeline.run(
+            rows, stages, force=args.force or args.needs_review, refresh=args.refresh
+        )
 
     failed = [o for o in outcomes if "failed" in o.stages.values()]
     paused = [o for o in outcomes if "paused" in o.stages.values() and o not in failed]
@@ -247,13 +272,31 @@ async def _replay_handler(_args: argparse.Namespace, s: Settings) -> int:
     return await _replay_tag_cache(s)
 
 
-async def _print_retag_plan(engine: AsyncEngine, s: Settings) -> None:
+async def _flagged_count(engine: AsyncEngine) -> int:
     async with engine.connect() as conn:
+        return int(
+            (
+                await conn.execute(
+                    select(func.count())
+                    .select_from(risk_factors)
+                    .where(risk_factors.c.needs_review.is_(True))
+                )
+            ).scalar_one()
+        )
+
+
+async def _print_retag_plan(
+    engine: AsyncEngine, s: Settings, excluded_ids: set[str] | None = None
+) -> None:
+    async with engine.connect() as conn:
+        query = select(risk_factors.c.id, risk_factors.c.heading, risk_factors.c.body).where(
+            risk_factors.c.needs_review.is_(True)
+        )
+        if excluded_ids:
+            query = query.where(risk_factors.c.id.not_in(excluded_ids))
         rows = (
             await conn.execute(
-                select(risk_factors.c.id, risk_factors.c.heading, risk_factors.c.body)
-                .where(risk_factors.c.needs_review.is_(True))
-                .order_by(
+                query.order_by(
                     risk_factors.c.cik, risk_factors.c.fiscal_year.desc(), risk_factors.c.ordinal
                 )
             )
@@ -310,6 +353,11 @@ def main() -> None:
         help="tag only risk factors currently marked needs_review",
     )
     run.add_argument(
+        "--from-cache",
+        action="store_true",
+        help="apply unambiguous cached tags before sending remaining rows to the LLM",
+    )
+    run.add_argument(
         "--dry-run",
         action="store_true",
         help="show the needs_review retag plan without creating clients or making calls",
@@ -349,6 +397,8 @@ def main() -> None:
     s = get_settings()
     if args.command == "run" and args.dry_run and not args.needs_review:
         parser.error("--dry-run requires --needs-review")
+    if args.command == "run" and args.from_cache and not args.needs_review:
+        parser.error("--from-cache requires --needs-review")
     overrides = {
         "groq_daily_token_budget": getattr(args, "daily_budget", None),
         "risk_tag_batch_size": getattr(args, "batch_size", None),

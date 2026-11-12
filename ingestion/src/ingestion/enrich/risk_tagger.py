@@ -59,7 +59,7 @@ class TagResult:
     key: str
     category: str
     summary: str
-    source: Literal["llm", "inherited"]
+    source: Literal["llm", "inherited", "cache"]
     inherited_from: str | None = None
     similarity: float | None = None
     # The model never produced a valid category for this risk (after the capped retries);

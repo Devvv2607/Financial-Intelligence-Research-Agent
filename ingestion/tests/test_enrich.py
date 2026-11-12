@@ -17,6 +17,7 @@ from ingestion.enrich.risk_tagger import (
     tag_with_llm,
 )
 from ingestion.enrich.sector_rules import sic_to_sector
+from ingestion.enrich.tag_replay import ReplayRow, build_cached_tag_plan
 
 
 @pytest.mark.parametrize(
@@ -174,6 +175,55 @@ def test_real_echo_prefixes_and_mismatch_are_distinguished() -> None:
     )
     assert not echo_matches("There is a risk that", 0, pending)
     assert batch_problem([], pending) is None
+
+
+def test_cached_plan_rejects_ambiguous_headings_and_invalid_categories() -> None:
+    flagged = [
+        ReplayRow("one", "Repeated risk heading", "AAA"),
+        ReplayRow("two", "Repeated risk heading", "AAA"),
+        ReplayRow("three", "Unique risk heading", "BBB"),
+    ]
+    responses = [
+        {
+            "tags": [
+                {
+                    "heading_start": "Repeated risk heading",
+                    "category": "regulatory",
+                    "summary": "ambiguous",
+                },
+                {
+                    "heading_start": "Unique risk heading",
+                    "category": "not-a-category",
+                    "summary": "invalid",
+                },
+            ]
+        }
+    ]
+    all_rows = [*flagged, ReplayRow("unflagged", "Another heading", "CCC")]
+    plan = build_cached_tag_plan(flagged, all_rows, responses)
+    assert plan.tags == []
+
+
+def test_cached_plan_applies_one_unique_valid_tag() -> None:
+    flagged = [ReplayRow("one", "Unique risk heading", "AAA")]
+    plan = build_cached_tag_plan(
+        flagged,
+        flagged,
+        [
+            {
+                "tags": [
+                    {
+                        "heading_start": "Unique risk heading",
+                        "category": "regulatory",
+                        "summary": "cached summary",
+                    }
+                ]
+            }
+        ],
+    )
+    assert [(tag.key, tag.category, tag.source, tag.summary) for tag in plan.tags] == [
+        ("one", "regulatory", "cache", "cached summary")
+    ]
 
 
 def test_prior_year_inherits_only_above_threshold() -> None:
