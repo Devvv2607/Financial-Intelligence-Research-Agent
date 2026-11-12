@@ -10,6 +10,8 @@ from core.llm import InvalidOutputError
 from ingestion.enrich.risk_tagger import (
     RiskInput,
     TagResult,
+    batch_problem,
+    echo_matches,
     inherit_tags,
     salvage_tags,
     tag_with_llm,
@@ -131,6 +133,49 @@ async def test_missing_ids_are_reasked_once() -> None:
     assert "[1]" in llm.prompts[1] and "[0]" not in llm.prompts[1]
 
 
+async def test_one_bad_echo_reasks_only_that_item() -> None:
+    class OneBadEcho(ScriptedTagger):
+        async def structured(
+            self, slot: str, schema: type, messages: list[dict[str, str]], **kw: Any
+        ) -> Any:
+            result = await super().structured(slot, schema, messages, **kw)
+            if len(self.prompts) == 1:
+                result.tags[3].heading_start = "A completely unrelated heading"
+            return result
+
+    risks = [
+        RiskInput(f"k{i}", f"Risk heading number {i} about topic {i}", "body") for i in range(12)
+    ]
+    llm = OneBadEcho()
+    out = await tag_with_llm(llm, risks, cik=1, stage="x", batch_size=12, body_words=10)  # type: ignore[arg-type]
+    assert sorted((int(t.key[1:]), t.key) for t in out) == [(i, f"k{i}") for i in range(12)]
+    assert all(not t.needs_review for t in out)
+    assert "[3]" in llm.prompts[1] and "[0]" not in llm.prompts[1]
+
+
+def test_real_echo_prefixes_and_mismatch_are_distinguished() -> None:
+    risk = RiskInput(
+        "k",
+        "We are exposed to fluctuations in currency exchange rates.",
+        "",
+    )
+    pending = {0: risk}
+    assert echo_matches("We are exposed to fluctuations in currency exchange rates", 0, pending)
+    assert echo_matches(
+        "We have previously",
+        0,
+        {
+            0: RiskInput(
+                "k",
+                "We have previously experienced and may in the future experience launch delays.",
+                "",
+            )
+        },
+    )
+    assert not echo_matches("There is a risk that", 0, pending)
+    assert batch_problem([], pending) is None
+
+
 def test_prior_year_inherits_only_above_threshold() -> None:
     latest = [
         TagResult("L0", "cybersecurity", "cyber", "llm"),
@@ -244,11 +289,14 @@ def test_review_scoring(tmp_path: Path) -> None:
 
 @pytest.mark.parametrize("bad", ["swap", "dup", "unknown"])
 async def test_misaligned_duplicate_or_unknown_ids_reject_the_batch(bad: str) -> None:
-    """Nothing from a confused output is kept; the re-ask gets the full batch again."""
+    """Valid items are kept; only malformed items are re-asked."""
     llm = ScriptedTagger(bad=bad)
     out = await tag_with_llm(llm, RISKS[:3], cik=1, stage="x", batch_size=5, body_words=10)  # type: ignore[arg-type]
     assert len(llm.prompts) == 2
-    assert all(f"[{i}]" in llm.prompts[1] for i in range(3))  # whole batch re-asked
+    if bad == "swap" or bad == "dup":
+        assert "[0]" in llm.prompts[1] and "[1]" in llm.prompts[1] and "[2]" not in llm.prompts[1]
+    else:
+        assert "[1]" in llm.prompts[1] and "[0]" not in llm.prompts[1]
     assert sorted((t.key, t.summary, t.needs_review) for t in out) == [
         ("k0", "s0", False),
         ("k1", "s1", False),
@@ -260,8 +308,11 @@ async def test_persistently_misaligned_batch_is_flagged_not_trusted() -> None:
     llm = ScriptedTagger(bad="swap", bad_every_time=True)
     out = await tag_with_llm(llm, RISKS[:3], cik=1, stage="x", batch_size=5, body_words=10)  # type: ignore[arg-type]
     assert len(llm.prompts) == 2  # capped
-    assert all(t.category == "other" and t.needs_review for t in out)
-    assert sorted(t.key for t in out) == ["k0", "k1", "k2"]  # no risk silently dropped
+    assert {(t.key, t.needs_review) for t in out} == {
+        ("k0", True),
+        ("k1", True),
+        ("k2", False),
+    }
 
 
 def test_salvage_keeps_only_tags_whose_heading_matches_their_id() -> None:
