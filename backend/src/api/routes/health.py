@@ -71,6 +71,7 @@ async def ready(request: Request, response: Response) -> ReadyResponse:
         _run_check("weaviate", vectorstore.ensure_ready(state.weaviate), timeout),
     )
     checks = {"postgres": postgres, "weaviate": weaviate_, "groq_key": _groq_key_check(settings)}
+    response.headers["X-Agent-Runtime"] = settings.agent_runtime
 
     all_ok = all(c.ok for c in checks.values())
     if not all_ok:

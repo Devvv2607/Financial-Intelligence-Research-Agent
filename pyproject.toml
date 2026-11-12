@@ -5,17 +5,18 @@ name = "fira"
 version = "0.1.0"
 description = "Financial Intelligence Research Agent (workspace root)"
 requires-python = ">=3.12,<3.13"
-dependencies = ["fira-backend", "fira-ingestion"]
+dependencies = ["fira-backend", "fira-ingestion", "fira-evals"]
 
 [tool.uv]
 package = false
 
 [tool.uv.workspace]
-members = ["backend", "ingestion"]
+members = ["backend", "ingestion", "evals"]
 
 [tool.uv.sources]
 fira-backend = { workspace = true }
 fira-ingestion = { workspace = true }
+fira-evals = { workspace = true }
 
 [dependency-groups]
 dev = [
@@ -48,8 +49,8 @@ known-first-party = ["core", "api", "agent", "ingestion", "evals"]
 python_version = "3.12"
 strict = true
 plugins = ["pydantic.mypy"]
-mypy_path = "backend/src:ingestion/src"
-packages = ["core", "api", "agent", "ingestion"]
+mypy_path = "backend/src:ingestion/src:evals/src"
+packages = ["core", "api", "agent", "ingestion", "evals"]
 
 [[tool.mypy.overrides]]
 # lxml ships no type information; its calls are confined to extract/html_clean.py.
@@ -62,7 +63,7 @@ module = ["authlib", "authlib.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-testpaths = ["backend/tests", "ingestion/tests"]
+testpaths = ["backend/tests", "ingestion/tests", "evals/tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 markers = [

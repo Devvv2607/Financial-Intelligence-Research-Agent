@@ -955,3 +955,13 @@ The `RunLog` interface (`append` / `close` / `wait_after`) is what would move be
 - **Windows reports `NUL` as a terminal (Phase 3).** `sys.stdin.isatty()` is true when
   stdin is redirected from `NUL`, so the CLI's clarification prompt hit EOF. EOF now
   means "no answer": the run stays paused, to be continued with `python -m agent resume`.
+## D-041 · Phase 6 eval harness uses API-driven scripted validation
+
+**Status:** Implemented (Phase 6)
+
+The evaluation harness drives the real FastAPI/SSE graph in scripted mode for zero-token
+validation, while live mode remains opt-in and guarded by the existing daily token budget.
+The golden set records expected entities, agents, tools, clarification/refusal behavior, and
+key facts. Citation precision reuses the existing local-embedding verifier at its unchanged
+0.585 threshold and stores raw similarities for later calibration; scripted results are
+explicitly labeled as harness validation, not agent quality.

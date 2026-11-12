@@ -3,7 +3,7 @@
 # Keep the two in sync — every target here has a twin in make.ps1.
 
 .DEFAULT_GOAL := help
-.PHONY: help install lint format typecheck test check up down logs ready dev-api dev-web web-check clean migrate ingest-sample ingest-full ingest-daily ingest-progress ingest-report review-export review-score tools-demo backup restore contracts contracts-check
+.PHONY: help install lint format typecheck test check up down logs ready dev-api dev-web web-check eval-dry eval-live clean migrate ingest-sample ingest-full ingest-daily ingest-progress ingest-report review-export review-score tools-demo backup restore contracts contracts-check
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-12s %s\n", $$1, $$2}'
@@ -74,6 +74,12 @@ contracts-check: ## Fail if contracts or generated frontend types are stale (CI)
 	uv run python -m api.contracts --check
 	npm --prefix frontend run gen:types
 	git diff --exit-code -- frontend/lib/generated
+
+eval-dry: ## Run the zero-token scripted evaluation harness
+	AGENT_RUNTIME=scripted uv run python -m evals.runner --dry
+
+eval-live: ## Run the live evaluation harness with its daily budget guard
+	uv run python -m evals.runner --live
 
 migrate: ## Apply database migrations
 	uv run alembic -c backend/alembic.ini upgrade head
