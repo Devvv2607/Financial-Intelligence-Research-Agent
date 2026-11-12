@@ -1,0 +1,1379 @@
+[
+ [
+  1,
+  {
+   "event": "run_started",
+   "run_id": "9278ddb6-a230-4ae2-89c4-19827d1418a9",
+   "thread_id": "023496ae-bb2f-4dfc-a422-e76689fb5872",
+   "resumed": false
+  }
+ ],
+ [
+  2,
+  {
+   "event": "node",
+   "node": "start_turn",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  3,
+  {
+   "event": "node",
+   "node": "start_turn",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  4,
+  {
+   "event": "node",
+   "node": "guardrail",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  5,
+  {
+   "event": "node",
+   "node": "guardrail",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  6,
+  {
+   "event": "node",
+   "node": "entity_resolver",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  7,
+  {
+   "event": "node",
+   "node": "entity_resolver",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  8,
+  {
+   "event": "node",
+   "node": "query_analyzer",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  9,
+  {
+   "event": "node",
+   "node": "query_analyzer",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  10,
+  {
+   "event": "node",
+   "node": "planner",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  11,
+  {
+   "event": "plan_created",
+   "round": 1,
+   "steps": [
+    {
+     "id": "r1s1",
+     "goal": "Compare Apple's last two 10-K risk factors",
+     "agent": "filings",
+     "entities": [
+      "AAPL"
+     ],
+     "depends_on": [],
+     "tool_calls": [
+      {
+       "tool": "compare_risk_factors",
+       "args_json": "{\"ticker\": \"AAPL\"}"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ [
+  12,
+  {
+   "event": "node",
+   "node": "planner",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  13,
+  {
+   "event": "node",
+   "node": "dispatcher",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  14,
+  {
+   "event": "step_started",
+   "step_id": "r1s1",
+   "agent": "filings",
+   "mode": "direct"
+  }
+ ],
+ [
+  15,
+  {
+   "event": "node",
+   "node": "dispatcher",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  16,
+  {
+   "event": "node",
+   "node": "filings_agent",
+   "phase": "start",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  17,
+  {
+   "event": "node",
+   "node": "filings_agent:prepare",
+   "phase": "start",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  18,
+  {
+   "event": "node",
+   "node": "filings_agent:prepare",
+   "phase": "end",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  19,
+  {
+   "event": "node",
+   "node": "filings_agent:direct",
+   "phase": "start",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  20,
+  {
+   "event": "tool_called",
+   "step_id": "r1s1",
+   "tool": "compare_risk_factors",
+   "args": {
+    "ticker": "AAPL"
+   },
+   "ok": true,
+   "evidence": 2,
+   "reused": false
+  }
+ ],
+ [
+  21,
+  {
+   "event": "evidence_added",
+   "step_id": "r1s1",
+   "sources": [
+    {
+     "source_id": "scripted:cmp-AAPL",
+     "source_type": "risk_factor",
+     "ticker": "AAPL",
+     "title": "AAPL risk factors, FY2025 vs FY2026 10-K (scripted)",
+     "snippet": "Comparing the FY2025 and FY2026 10-K: 1 new, 0 removed, 20 materially changed, 7 unchanged.",
+     "url": "https://example.com/scripted/cmp-AAPL",
+     "form_type": "10-K",
+     "fiscal_year": null,
+     "section": null,
+     "filed_or_published": null,
+     "score": null
+    },
+    {
+     "source_id": "scripted:rf-AAPL-ai",
+     "source_type": "risk_factor",
+     "ticker": "AAPL",
+     "title": "AAPL 10-K risk factor: Artificial intelligence may cause reputational harm (scripted)",
+     "snippet": "Artificial intelligence may cause reputational harm and regulatory action.",
+     "url": "https://example.com/scripted/rf-AAPL-ai",
+     "form_type": "10-K",
+     "fiscal_year": null,
+     "section": null,
+     "filed_or_published": null,
+     "score": null
+    }
+   ]
+  }
+ ],
+ [
+  22,
+  {
+   "event": "node",
+   "node": "filings_agent:direct",
+   "phase": "end",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  23,
+  {
+   "event": "node",
+   "node": "filings_agent:finish",
+   "phase": "start",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  24,
+  {
+   "event": "step_completed",
+   "step_id": "r1s1",
+   "status": "done",
+   "mode": "direct",
+   "summary": "compare_risk_factors: 2 sources (direct calls)",
+   "error": null,
+   "reason": null,
+   "duration_ms": 5
+  }
+ ],
+ [
+  25,
+  {
+   "event": "node",
+   "node": "filings_agent:finish",
+   "phase": "end",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  26,
+  {
+   "event": "node",
+   "node": "filings_agent",
+   "phase": "end",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  27,
+  {
+   "event": "node",
+   "node": "join",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  28,
+  {
+   "event": "node",
+   "node": "join",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  29,
+  {
+   "event": "node",
+   "node": "dispatcher",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  30,
+  {
+   "event": "node",
+   "node": "dispatcher",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  31,
+  {
+   "event": "node",
+   "node": "critic",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  32,
+  {
+   "event": "critique",
+   "verdict": "gaps",
+   "gaps": [
+    "Recent news on Apple's AI risk"
+   ],
+   "replanning": true
+  }
+ ],
+ [
+  33,
+  {
+   "event": "node",
+   "node": "critic",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  34,
+  {
+   "event": "node",
+   "node": "planner",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  35,
+  {
+   "event": "replan",
+   "round": 2,
+   "steps": [
+    {
+     "id": "r2s1",
+     "goal": "Recent news on Apple's AI risk",
+     "agent": "news",
+     "entities": [
+      "AAPL"
+     ],
+     "depends_on": [],
+     "tool_calls": []
+    }
+   ]
+  }
+ ],
+ [
+  36,
+  {
+   "event": "node",
+   "node": "planner",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  37,
+  {
+   "event": "node",
+   "node": "dispatcher",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  38,
+  {
+   "event": "step_started",
+   "step_id": "r2s1",
+   "agent": "news",
+   "mode": "agentic"
+  }
+ ],
+ [
+  39,
+  {
+   "event": "node",
+   "node": "dispatcher",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  40,
+  {
+   "event": "node",
+   "node": "news_agent",
+   "phase": "start",
+   "step_id": "r2s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  41,
+  {
+   "event": "node",
+   "node": "news_agent:prepare",
+   "phase": "start",
+   "step_id": "r2s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  42,
+  {
+   "event": "node",
+   "node": "news_agent:prepare",
+   "phase": "end",
+   "step_id": "r2s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  43,
+  {
+   "event": "node",
+   "node": "news_agent:llm",
+   "phase": "start",
+   "step_id": "r2s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  44,
+  {
+   "event": "node",
+   "node": "news_agent:llm",
+   "phase": "end",
+   "step_id": "r2s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  45,
+  {
+   "event": "node",
+   "node": "news_agent:tools",
+   "phase": "start",
+   "step_id": "r2s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  46,
+  {
+   "event": "tool_called",
+   "step_id": "r2s1",
+   "tool": "search_news",
+   "args": {
+    "query": "Apple artificial intelligence regulation",
+    "tickers": [
+     "AAPL"
+    ]
+   },
+   "ok": true,
+   "evidence": 2,
+   "reused": false
+  }
+ ],
+ [
+  47,
+  {
+   "event": "evidence_added",
+   "step_id": "r2s1",
+   "sources": [
+    {
+     "source_id": "scripted:news-AAPL-0",
+     "source_type": "news",
+     "ticker": "AAPL",
+     "title": "Regulators examine AI features in Apple devices (scripted)",
+     "snippet": "Regulators examine AI features in Apple devices and data use.",
+     "url": "https://example.com/scripted/news-AAPL-0",
+     "form_type": null,
+     "fiscal_year": null,
+     "section": null,
+     "filed_or_published": null,
+     "score": null
+    },
+    {
+     "source_id": "scripted:news-AAPL-1",
+     "source_type": "news",
+     "ticker": "AAPL",
+     "title": "Apple expands AI investment (scripted)",
+     "snippet": "Apple expands AI investment in compute capacity.",
+     "url": "https://example.com/scripted/news-AAPL-1",
+     "form_type": null,
+     "fiscal_year": null,
+     "section": null,
+     "filed_or_published": null,
+     "score": null
+    }
+   ]
+  }
+ ],
+ [
+  48,
+  {
+   "event": "node",
+   "node": "news_agent:tools",
+   "phase": "end",
+   "step_id": "r2s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  49,
+  {
+   "event": "node",
+   "node": "news_agent:llm",
+   "phase": "start",
+   "step_id": "r2s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  50,
+  {
+   "event": "node",
+   "node": "news_agent:llm",
+   "phase": "end",
+   "step_id": "r2s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  51,
+  {
+   "event": "node",
+   "node": "news_agent:finish",
+   "phase": "start",
+   "step_id": "r2s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  52,
+  {
+   "event": "step_completed",
+   "step_id": "r2s1",
+   "status": "done",
+   "mode": "agentic",
+   "summary": "Two recent headlines cover Apple's AI risk.",
+   "error": null,
+   "reason": null,
+   "duration_ms": 15
+  }
+ ],
+ [
+  53,
+  {
+   "event": "node",
+   "node": "news_agent:finish",
+   "phase": "end",
+   "step_id": "r2s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  54,
+  {
+   "event": "node",
+   "node": "news_agent",
+   "phase": "end",
+   "step_id": "r2s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  55,
+  {
+   "event": "node",
+   "node": "join",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  56,
+  {
+   "event": "node",
+   "node": "join",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  57,
+  {
+   "event": "node",
+   "node": "dispatcher",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  58,
+  {
+   "event": "node",
+   "node": "dispatcher",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  59,
+  {
+   "event": "node",
+   "node": "critic",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  60,
+  {
+   "event": "critique",
+   "verdict": "ok",
+   "gaps": [],
+   "replanning": false
+  }
+ ],
+ [
+  61,
+  {
+   "event": "node",
+   "node": "critic",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  62,
+  {
+   "event": "node",
+   "node": "synthesizer",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  63,
+  {
+   "event": "token",
+   "text": "Comparing"
+  }
+ ],
+ [
+  64,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  65,
+  {
+   "event": "token",
+   "text": "the"
+  }
+ ],
+ [
+  66,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  67,
+  {
+   "event": "token",
+   "text": "FY2025"
+  }
+ ],
+ [
+  68,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  69,
+  {
+   "event": "token",
+   "text": "and"
+  }
+ ],
+ [
+  70,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  71,
+  {
+   "event": "token",
+   "text": "FY2026"
+  }
+ ],
+ [
+  72,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  73,
+  {
+   "event": "token",
+   "text": "10-K"
+  }
+ ],
+ [
+  74,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  75,
+  {
+   "event": "token",
+   "text": "risk"
+  }
+ ],
+ [
+  76,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  77,
+  {
+   "event": "token",
+   "text": "factors:"
+  }
+ ],
+ [
+  78,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  79,
+  {
+   "event": "token",
+   "text": "1"
+  }
+ ],
+ [
+  80,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  81,
+  {
+   "event": "token",
+   "text": "new,"
+  }
+ ],
+ [
+  82,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  83,
+  {
+   "event": "token",
+   "text": "0"
+  }
+ ],
+ [
+  84,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  85,
+  {
+   "event": "token",
+   "text": "removed,"
+  }
+ ],
+ [
+  86,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  87,
+  {
+   "event": "token",
+   "text": "20"
+  }
+ ],
+ [
+  88,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  89,
+  {
+   "event": "token",
+   "text": "materially"
+  }
+ ],
+ [
+  90,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  91,
+  {
+   "event": "token",
+   "text": "changed"
+  }
+ ],
+ [
+  92,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  93,
+  {
+   "event": "token",
+   "text": "and"
+  }
+ ],
+ [
+  94,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  95,
+  {
+   "event": "token",
+   "text": "7"
+  }
+ ],
+ [
+  96,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  97,
+  {
+   "event": "token",
+   "text": "unchanged"
+  }
+ ],
+ [
+  98,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  99,
+  {
+   "event": "token",
+   "text": "[1]."
+  }
+ ],
+ [
+  100,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  101,
+  {
+   "event": "token",
+   "text": "The"
+  }
+ ],
+ [
+  102,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  103,
+  {
+   "event": "token",
+   "text": "new"
+  }
+ ],
+ [
+  104,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  105,
+  {
+   "event": "token",
+   "text": "risk:"
+  }
+ ],
+ [
+  106,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  107,
+  {
+   "event": "token",
+   "text": "artificial"
+  }
+ ],
+ [
+  108,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  109,
+  {
+   "event": "token",
+   "text": "intelligence"
+  }
+ ],
+ [
+  110,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  111,
+  {
+   "event": "token",
+   "text": "may"
+  }
+ ],
+ [
+  112,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  113,
+  {
+   "event": "token",
+   "text": "cause"
+  }
+ ],
+ [
+  114,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  115,
+  {
+   "event": "token",
+   "text": "reputational"
+  }
+ ],
+ [
+  116,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  117,
+  {
+   "event": "token",
+   "text": "harm"
+  }
+ ],
+ [
+  118,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  119,
+  {
+   "event": "token",
+   "text": "and"
+  }
+ ],
+ [
+  120,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  121,
+  {
+   "event": "token",
+   "text": "regulatory"
+  }
+ ],
+ [
+  122,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  123,
+  {
+   "event": "token",
+   "text": "action"
+  }
+ ],
+ [
+  124,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  125,
+  {
+   "event": "token",
+   "text": "[3]."
+  }
+ ],
+ [
+  126,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  127,
+  {
+   "event": "token",
+   "text": "Regulators"
+  }
+ ],
+ [
+  128,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  129,
+  {
+   "event": "token",
+   "text": "examine"
+  }
+ ],
+ [
+  130,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  131,
+  {
+   "event": "token",
+   "text": "AI"
+  }
+ ],
+ [
+  132,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  133,
+  {
+   "event": "token",
+   "text": "features"
+  }
+ ],
+ [
+  134,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  135,
+  {
+   "event": "token",
+   "text": "in"
+  }
+ ],
+ [
+  136,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  137,
+  {
+   "event": "token",
+   "text": "Apple"
+  }
+ ],
+ [
+  138,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  139,
+  {
+   "event": "token",
+   "text": "devices"
+  }
+ ],
+ [
+  140,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  141,
+  {
+   "event": "token",
+   "text": "[2]."
+  }
+ ],
+ [
+  142,
+  {
+   "event": "node",
+   "node": "synthesizer",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  143,
+  {
+   "event": "node",
+   "node": "finalize",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  144,
+  {
+   "event": "final",
+   "answer": "Comparing the FY2025 and FY2026 10-K risk factors: 1 new, 0 removed, 20 materially changed and 7 unchanged [1]. The new risk: artificial intelligence may cause reputational harm and regulatory action [3]. Regulators examine AI features in Apple devices [2].\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*",
+   "citations": [
+    {
+     "n": 1,
+     "source_id": "scripted:cmp-AAPL",
+     "title": "AAPL risk factors, FY2025 vs FY2026 10-K (scripted)",
+     "url": "https://example.com/scripted/cmp-AAPL"
+    },
+    {
+     "n": 2,
+     "source_id": "scripted:news-AAPL-0",
+     "title": "Regulators examine AI features in Apple devices (scripted)",
+     "url": "https://example.com/scripted/news-AAPL-0"
+    },
+    {
+     "n": 3,
+     "source_id": "scripted:rf-AAPL-ai",
+     "title": "AAPL 10-K risk factor: Artificial intelligence may cause reputational harm (scripted)",
+     "url": "https://example.com/scripted/rf-AAPL-ai"
+    }
+   ],
+   "citation_check": {
+    "checked": 3,
+    "supported": 3,
+    "reattached": 0,
+    "dropped": 0,
+    "unverified_claims": 0,
+    "precision": 1.0
+   }
+  }
+ ],
+ [
+  145,
+  {
+   "event": "node",
+   "node": "finalize",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ]
+]

@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated from contracts/ by `npm run gen:types`; checked for drift in CI instead.
+    "lib/generated/**",
   ]),
 ]);
 

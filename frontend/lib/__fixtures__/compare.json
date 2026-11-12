@@ -1,0 +1,2349 @@
+[
+ [
+  1,
+  {
+   "event": "run_started",
+   "run_id": "8943e4e9-cc35-49e3-a3cc-9a5278ee9077",
+   "thread_id": "77d5f589-24cb-4a9a-9f43-f70f6a01bc90",
+   "resumed": false
+  }
+ ],
+ [
+  2,
+  {
+   "event": "node",
+   "node": "start_turn",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  3,
+  {
+   "event": "node",
+   "node": "start_turn",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  4,
+  {
+   "event": "node",
+   "node": "guardrail",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  5,
+  {
+   "event": "node",
+   "node": "guardrail",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  6,
+  {
+   "event": "node",
+   "node": "entity_resolver",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  7,
+  {
+   "event": "node",
+   "node": "entity_resolver",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  8,
+  {
+   "event": "node",
+   "node": "query_analyzer",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  9,
+  {
+   "event": "node",
+   "node": "query_analyzer",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  10,
+  {
+   "event": "node",
+   "node": "planner",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  11,
+  {
+   "event": "plan_created",
+   "round": 1,
+   "steps": [
+    {
+     "id": "r1s1",
+     "goal": "NVIDIA's latest 10-K risk factors",
+     "agent": "filings",
+     "entities": [
+      "NVDA"
+     ],
+     "depends_on": [],
+     "tool_calls": [
+      {
+       "tool": "get_risk_factors",
+       "args_json": "{\"ticker\": \"NVDA\"}"
+      }
+     ]
+    },
+    {
+     "id": "r1s2",
+     "goal": "AMD's latest 10-K risk factors",
+     "agent": "filings",
+     "entities": [
+      "AMD"
+     ],
+     "depends_on": [],
+     "tool_calls": [
+      {
+       "tool": "get_risk_factors",
+       "args_json": "{\"ticker\": \"AMD\"}"
+      }
+     ]
+    },
+    {
+     "id": "r1s3",
+     "goal": "Recent NVIDIA news",
+     "agent": "news",
+     "entities": [
+      "NVDA"
+     ],
+     "depends_on": [],
+     "tool_calls": [
+      {
+       "tool": "search_news",
+       "args_json": "{\"query\": \"NVIDIA risks\", \"tickers\": [\"NVDA\"]}"
+      }
+     ]
+    },
+    {
+     "id": "r1s4",
+     "goal": "Recent AMD news",
+     "agent": "news",
+     "entities": [
+      "AMD"
+     ],
+     "depends_on": [],
+     "tool_calls": [
+      {
+       "tool": "search_news",
+       "args_json": "{\"query\": \"AMD risks\", \"tickers\": [\"AMD\"]}"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ [
+  12,
+  {
+   "event": "node",
+   "node": "planner",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  13,
+  {
+   "event": "node",
+   "node": "dispatcher",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  14,
+  {
+   "event": "step_started",
+   "step_id": "r1s1",
+   "agent": "filings",
+   "mode": "direct"
+  }
+ ],
+ [
+  15,
+  {
+   "event": "step_started",
+   "step_id": "r1s2",
+   "agent": "filings",
+   "mode": "direct"
+  }
+ ],
+ [
+  16,
+  {
+   "event": "step_started",
+   "step_id": "r1s3",
+   "agent": "news",
+   "mode": "direct"
+  }
+ ],
+ [
+  17,
+  {
+   "event": "step_started",
+   "step_id": "r1s4",
+   "agent": "news",
+   "mode": "direct"
+  }
+ ],
+ [
+  18,
+  {
+   "event": "node",
+   "node": "dispatcher",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  19,
+  {
+   "event": "node",
+   "node": "filings_agent",
+   "phase": "start",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  20,
+  {
+   "event": "node",
+   "node": "filings_agent",
+   "phase": "start",
+   "step_id": "r1s2",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  21,
+  {
+   "event": "node",
+   "node": "news_agent",
+   "phase": "start",
+   "step_id": "r1s3",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  22,
+  {
+   "event": "node",
+   "node": "news_agent",
+   "phase": "start",
+   "step_id": "r1s4",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  23,
+  {
+   "event": "node",
+   "node": "filings_agent:prepare",
+   "phase": "start",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  24,
+  {
+   "event": "node",
+   "node": "filings_agent:prepare",
+   "phase": "start",
+   "step_id": "r1s2",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  25,
+  {
+   "event": "node",
+   "node": "news_agent:prepare",
+   "phase": "start",
+   "step_id": "r1s3",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  26,
+  {
+   "event": "node",
+   "node": "news_agent:prepare",
+   "phase": "start",
+   "step_id": "r1s4",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  27,
+  {
+   "event": "node",
+   "node": "filings_agent:prepare",
+   "phase": "end",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  28,
+  {
+   "event": "node",
+   "node": "filings_agent:direct",
+   "phase": "start",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  29,
+  {
+   "event": "node",
+   "node": "filings_agent:prepare",
+   "phase": "end",
+   "step_id": "r1s2",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  30,
+  {
+   "event": "node",
+   "node": "filings_agent:direct",
+   "phase": "start",
+   "step_id": "r1s2",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  31,
+  {
+   "event": "tool_called",
+   "step_id": "r1s1",
+   "tool": "get_risk_factors",
+   "args": {
+    "ticker": "NVDA"
+   },
+   "ok": true,
+   "evidence": 3,
+   "reused": false
+  }
+ ],
+ [
+  32,
+  {
+   "event": "evidence_added",
+   "step_id": "r1s1",
+   "sources": [
+    {
+     "source_id": "scripted:rf-NVDA-0",
+     "source_type": "risk_factor",
+     "ticker": "NVDA",
+     "title": "NVDA 10-K risk factor: Export controls restrict sales of advanced chips to China (scripted)",
+     "snippet": "Export controls restrict sales of advanced chips to China and other regions.",
+     "url": "https://example.com/scripted/rf-NVDA-0",
+     "form_type": "10-K",
+     "fiscal_year": null,
+     "section": null,
+     "filed_or_published": null,
+     "score": null
+    },
+    {
+     "source_id": "scripted:rf-NVDA-1",
+     "source_type": "risk_factor",
+     "ticker": "NVDA",
+     "title": "NVDA 10-K risk factor: Competition could reduce market share (scripted)",
+     "snippet": "Competition could reduce market share in data center accelerators.",
+     "url": "https://example.com/scripted/rf-NVDA-1",
+     "form_type": "10-K",
+     "fiscal_year": null,
+     "section": null,
+     "filed_or_published": null,
+     "score": null
+    },
+    {
+     "source_id": "scripted:rf-NVDA-2",
+     "source_type": "risk_factor",
+     "ticker": "NVDA",
+     "title": "NVDA 10-K risk factor: Reliance on third-party foundries (scripted)",
+     "snippet": "Reliance on third-party foundries limits control over supply and lead times.",
+     "url": "https://example.com/scripted/rf-NVDA-2",
+     "form_type": "10-K",
+     "fiscal_year": null,
+     "section": null,
+     "filed_or_published": null,
+     "score": null
+    }
+   ]
+  }
+ ],
+ [
+  33,
+  {
+   "event": "tool_called",
+   "step_id": "r1s2",
+   "tool": "get_risk_factors",
+   "args": {
+    "ticker": "AMD"
+   },
+   "ok": true,
+   "evidence": 3,
+   "reused": false
+  }
+ ],
+ [
+  34,
+  {
+   "event": "evidence_added",
+   "step_id": "r1s2",
+   "sources": [
+    {
+     "source_id": "scripted:rf-AMD-0",
+     "source_type": "risk_factor",
+     "ticker": "AMD",
+     "title": "AMD 10-K risk factor: Highly competitive and rapidly evolving markets (scripted)",
+     "snippet": "Highly competitive and rapidly evolving markets for processors and accelerators.",
+     "url": "https://example.com/scripted/rf-AMD-0",
+     "form_type": "10-K",
+     "fiscal_year": null,
+     "section": null,
+     "filed_or_published": null,
+     "score": null
+    },
+    {
+     "source_id": "scripted:rf-AMD-1",
+     "source_type": "risk_factor",
+     "ticker": "AMD",
+     "title": "AMD 10-K risk factor: Reliance on third-party manufacturing (scripted)",
+     "snippet": "Reliance on third-party manufacturing for wafers, assembly and test.",
+     "url": "https://example.com/scripted/rf-AMD-1",
+     "form_type": "10-K",
+     "fiscal_year": null,
+     "section": null,
+     "filed_or_published": null,
+     "score": null
+    },
+    {
+     "source_id": "scripted:rf-AMD-2",
+     "source_type": "risk_factor",
+     "ticker": "AMD",
+     "title": "AMD 10-K risk factor: Cyclical semiconductor industry (scripted)",
+     "snippet": "The cyclical semiconductor industry has had severe downturns.",
+     "url": "https://example.com/scripted/rf-AMD-2",
+     "form_type": "10-K",
+     "fiscal_year": null,
+     "section": null,
+     "filed_or_published": null,
+     "score": null
+    }
+   ]
+  }
+ ],
+ [
+  35,
+  {
+   "event": "node",
+   "node": "news_agent:prepare",
+   "phase": "end",
+   "step_id": "r1s3",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  36,
+  {
+   "event": "node",
+   "node": "news_agent:direct",
+   "phase": "start",
+   "step_id": "r1s3",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  37,
+  {
+   "event": "node",
+   "node": "news_agent:prepare",
+   "phase": "end",
+   "step_id": "r1s4",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  38,
+  {
+   "event": "node",
+   "node": "news_agent:direct",
+   "phase": "start",
+   "step_id": "r1s4",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  39,
+  {
+   "event": "tool_called",
+   "step_id": "r1s3",
+   "tool": "search_news",
+   "args": {
+    "query": "NVIDIA risks",
+    "tickers": [
+     "NVDA"
+    ]
+   },
+   "ok": true,
+   "evidence": 1,
+   "reused": false
+  }
+ ],
+ [
+  40,
+  {
+   "event": "evidence_added",
+   "step_id": "r1s3",
+   "sources": [
+    {
+     "source_id": "scripted:news-NVDA-0",
+     "source_type": "news",
+     "ticker": "NVDA",
+     "title": "NVIDIA tells cloud clients to limit China exposure (scripted)",
+     "snippet": "NVIDIA tells cloud clients to limit China exposure under export controls.",
+     "url": "https://example.com/scripted/news-NVDA-0",
+     "form_type": null,
+     "fiscal_year": null,
+     "section": null,
+     "filed_or_published": null,
+     "score": null
+    }
+   ]
+  }
+ ],
+ [
+  41,
+  {
+   "event": "tool_called",
+   "step_id": "r1s4",
+   "tool": "search_news",
+   "args": {
+    "query": "AMD risks",
+    "tickers": [
+     "AMD"
+    ]
+   },
+   "ok": true,
+   "evidence": 1,
+   "reused": false
+  }
+ ],
+ [
+  42,
+  {
+   "event": "evidence_added",
+   "step_id": "r1s4",
+   "sources": [
+    {
+     "source_id": "scripted:news-AMD-0",
+     "source_type": "news",
+     "ticker": "AMD",
+     "title": "AMD faces new competition in AI accelerators (scripted)",
+     "snippet": "AMD faces new competition in AI accelerators from custom chips.",
+     "url": "https://example.com/scripted/news-AMD-0",
+     "form_type": null,
+     "fiscal_year": null,
+     "section": null,
+     "filed_or_published": null,
+     "score": null
+    }
+   ]
+  }
+ ],
+ [
+  43,
+  {
+   "event": "node",
+   "node": "filings_agent:direct",
+   "phase": "end",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  44,
+  {
+   "event": "node",
+   "node": "filings_agent:finish",
+   "phase": "start",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  45,
+  {
+   "event": "node",
+   "node": "filings_agent:direct",
+   "phase": "end",
+   "step_id": "r1s2",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  46,
+  {
+   "event": "node",
+   "node": "filings_agent:finish",
+   "phase": "start",
+   "step_id": "r1s2",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  47,
+  {
+   "event": "step_completed",
+   "step_id": "r1s1",
+   "status": "done",
+   "mode": "direct",
+   "summary": "get_risk_factors: 3 sources (direct calls)",
+   "error": null,
+   "reason": null,
+   "duration_ms": 26
+  }
+ ],
+ [
+  48,
+  {
+   "event": "step_completed",
+   "step_id": "r1s2",
+   "status": "done",
+   "mode": "direct",
+   "summary": "get_risk_factors: 3 sources (direct calls)",
+   "error": null,
+   "reason": null,
+   "duration_ms": 26
+  }
+ ],
+ [
+  49,
+  {
+   "event": "node",
+   "node": "news_agent:direct",
+   "phase": "end",
+   "step_id": "r1s3",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  50,
+  {
+   "event": "node",
+   "node": "news_agent:finish",
+   "phase": "start",
+   "step_id": "r1s3",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  51,
+  {
+   "event": "node",
+   "node": "news_agent:direct",
+   "phase": "end",
+   "step_id": "r1s4",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  52,
+  {
+   "event": "node",
+   "node": "news_agent:finish",
+   "phase": "start",
+   "step_id": "r1s4",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  53,
+  {
+   "event": "step_completed",
+   "step_id": "r1s3",
+   "status": "done",
+   "mode": "direct",
+   "summary": "search_news: 1 sources (direct calls)",
+   "error": null,
+   "reason": null,
+   "duration_ms": 30
+  }
+ ],
+ [
+  54,
+  {
+   "event": "step_completed",
+   "step_id": "r1s4",
+   "status": "done",
+   "mode": "direct",
+   "summary": "search_news: 1 sources (direct calls)",
+   "error": null,
+   "reason": null,
+   "duration_ms": 30
+  }
+ ],
+ [
+  55,
+  {
+   "event": "node",
+   "node": "filings_agent:finish",
+   "phase": "end",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  56,
+  {
+   "event": "node",
+   "node": "filings_agent:finish",
+   "phase": "end",
+   "step_id": "r1s2",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  57,
+  {
+   "event": "node",
+   "node": "news_agent:finish",
+   "phase": "end",
+   "step_id": "r1s3",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  58,
+  {
+   "event": "node",
+   "node": "news_agent:finish",
+   "phase": "end",
+   "step_id": "r1s4",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  59,
+  {
+   "event": "node",
+   "node": "filings_agent",
+   "phase": "end",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  60,
+  {
+   "event": "node",
+   "node": "filings_agent",
+   "phase": "end",
+   "step_id": "r1s2",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  61,
+  {
+   "event": "node",
+   "node": "news_agent",
+   "phase": "end",
+   "step_id": "r1s3",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  62,
+  {
+   "event": "node",
+   "node": "news_agent",
+   "phase": "end",
+   "step_id": "r1s4",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  63,
+  {
+   "event": "node",
+   "node": "join",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  64,
+  {
+   "event": "node",
+   "node": "join",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  65,
+  {
+   "event": "node",
+   "node": "dispatcher",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  66,
+  {
+   "event": "node",
+   "node": "dispatcher",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  67,
+  {
+   "event": "node",
+   "node": "critic",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  68,
+  {
+   "event": "critique",
+   "verdict": "ok",
+   "gaps": [],
+   "replanning": false
+  }
+ ],
+ [
+  69,
+  {
+   "event": "node",
+   "node": "critic",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  70,
+  {
+   "event": "node",
+   "node": "synthesizer",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  71,
+  {
+   "event": "token",
+   "text": "**NVIDIA"
+  }
+ ],
+ [
+  72,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  73,
+  {
+   "event": "token",
+   "text": "and"
+  }
+ ],
+ [
+  74,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  75,
+  {
+   "event": "token",
+   "text": "AMD"
+  }
+ ],
+ [
+  76,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  77,
+  {
+   "event": "token",
+   "text": "both"
+  }
+ ],
+ [
+  78,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  79,
+  {
+   "event": "token",
+   "text": "flag"
+  }
+ ],
+ [
+  80,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  81,
+  {
+   "event": "token",
+   "text": "competition"
+  }
+ ],
+ [
+  82,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  83,
+  {
+   "event": "token",
+   "text": "and"
+  }
+ ],
+ [
+  84,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  85,
+  {
+   "event": "token",
+   "text": "reliance"
+  }
+ ],
+ [
+  86,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  87,
+  {
+   "event": "token",
+   "text": "on"
+  }
+ ],
+ [
+  88,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  89,
+  {
+   "event": "token",
+   "text": "outside"
+  }
+ ],
+ [
+  90,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  91,
+  {
+   "event": "token",
+   "text": "manufacturing;"
+  }
+ ],
+ [
+  92,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  93,
+  {
+   "event": "token",
+   "text": "only"
+  }
+ ],
+ [
+  94,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  95,
+  {
+   "event": "token",
+   "text": "NVIDIA's"
+  }
+ ],
+ [
+  96,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  97,
+  {
+   "event": "token",
+   "text": "export-control"
+  }
+ ],
+ [
+  98,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  99,
+  {
+   "event": "token",
+   "text": "risk"
+  }
+ ],
+ [
+  100,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  101,
+  {
+   "event": "token",
+   "text": "has"
+  }
+ ],
+ [
+  102,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  103,
+  {
+   "event": "token",
+   "text": "direct"
+  }
+ ],
+ [
+  104,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  105,
+  {
+   "event": "token",
+   "text": "news"
+  }
+ ],
+ [
+  106,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  107,
+  {
+   "event": "token",
+   "text": "support.**"
+  }
+ ],
+ [
+  108,
+  {
+   "event": "token",
+   "text": "\n"
+  }
+ ],
+ [
+  109,
+  {
+   "event": "token",
+   "text": "\n"
+  }
+ ],
+ [
+  110,
+  {
+   "event": "token",
+   "text": "|"
+  }
+ ],
+ [
+  111,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  112,
+  {
+   "event": "token",
+   "text": "Risk"
+  }
+ ],
+ [
+  113,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  114,
+  {
+   "event": "token",
+   "text": "|"
+  }
+ ],
+ [
+  115,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  116,
+  {
+   "event": "token",
+   "text": "NVIDIA"
+  }
+ ],
+ [
+  117,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  118,
+  {
+   "event": "token",
+   "text": "|"
+  }
+ ],
+ [
+  119,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  120,
+  {
+   "event": "token",
+   "text": "AMD"
+  }
+ ],
+ [
+  121,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  122,
+  {
+   "event": "token",
+   "text": "|"
+  }
+ ],
+ [
+  123,
+  {
+   "event": "token",
+   "text": "\n"
+  }
+ ],
+ [
+  124,
+  {
+   "event": "token",
+   "text": "|---|---|---|"
+  }
+ ],
+ [
+  125,
+  {
+   "event": "token",
+   "text": "\n"
+  }
+ ],
+ [
+  126,
+  {
+   "event": "token",
+   "text": "|"
+  }
+ ],
+ [
+  127,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  128,
+  {
+   "event": "token",
+   "text": "Competition"
+  }
+ ],
+ [
+  129,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  130,
+  {
+   "event": "token",
+   "text": "|"
+  }
+ ],
+ [
+  131,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  132,
+  {
+   "event": "token",
+   "text": "Competition"
+  }
+ ],
+ [
+  133,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  134,
+  {
+   "event": "token",
+   "text": "could"
+  }
+ ],
+ [
+  135,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  136,
+  {
+   "event": "token",
+   "text": "reduce"
+  }
+ ],
+ [
+  137,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  138,
+  {
+   "event": "token",
+   "text": "market"
+  }
+ ],
+ [
+  139,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  140,
+  {
+   "event": "token",
+   "text": "share"
+  }
+ ],
+ [
+  141,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  142,
+  {
+   "event": "token",
+   "text": "[5]"
+  }
+ ],
+ [
+  143,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  144,
+  {
+   "event": "token",
+   "text": "|"
+  }
+ ],
+ [
+  145,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  146,
+  {
+   "event": "token",
+   "text": "Highly"
+  }
+ ],
+ [
+  147,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  148,
+  {
+   "event": "token",
+   "text": "competitive"
+  }
+ ],
+ [
+  149,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  150,
+  {
+   "event": "token",
+   "text": "and"
+  }
+ ],
+ [
+  151,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  152,
+  {
+   "event": "token",
+   "text": "rapidly"
+  }
+ ],
+ [
+  153,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  154,
+  {
+   "event": "token",
+   "text": "evolving"
+  }
+ ],
+ [
+  155,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  156,
+  {
+   "event": "token",
+   "text": "markets"
+  }
+ ],
+ [
+  157,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  158,
+  {
+   "event": "token",
+   "text": "[2]"
+  }
+ ],
+ [
+  159,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  160,
+  {
+   "event": "token",
+   "text": "|"
+  }
+ ],
+ [
+  161,
+  {
+   "event": "token",
+   "text": "\n"
+  }
+ ],
+ [
+  162,
+  {
+   "event": "token",
+   "text": "|"
+  }
+ ],
+ [
+  163,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  164,
+  {
+   "event": "token",
+   "text": "Manufacturing"
+  }
+ ],
+ [
+  165,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  166,
+  {
+   "event": "token",
+   "text": "|"
+  }
+ ],
+ [
+  167,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  168,
+  {
+   "event": "token",
+   "text": "Reliance"
+  }
+ ],
+ [
+  169,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  170,
+  {
+   "event": "token",
+   "text": "on"
+  }
+ ],
+ [
+  171,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  172,
+  {
+   "event": "token",
+   "text": "third-party"
+  }
+ ],
+ [
+  173,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  174,
+  {
+   "event": "token",
+   "text": "foundries"
+  }
+ ],
+ [
+  175,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  176,
+  {
+   "event": "token",
+   "text": "[7]"
+  }
+ ],
+ [
+  177,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  178,
+  {
+   "event": "token",
+   "text": "|"
+  }
+ ],
+ [
+  179,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  180,
+  {
+   "event": "token",
+   "text": "Reliance"
+  }
+ ],
+ [
+  181,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  182,
+  {
+   "event": "token",
+   "text": "on"
+  }
+ ],
+ [
+  183,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  184,
+  {
+   "event": "token",
+   "text": "third-party"
+  }
+ ],
+ [
+  185,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  186,
+  {
+   "event": "token",
+   "text": "manufacturing"
+  }
+ ],
+ [
+  187,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  188,
+  {
+   "event": "token",
+   "text": "[6]"
+  }
+ ],
+ [
+  189,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  190,
+  {
+   "event": "token",
+   "text": "|"
+  }
+ ],
+ [
+  191,
+  {
+   "event": "token",
+   "text": "\n"
+  }
+ ],
+ [
+  192,
+  {
+   "event": "token",
+   "text": "\n"
+  }
+ ],
+ [
+  193,
+  {
+   "event": "token",
+   "text": "NVIDIA"
+  }
+ ],
+ [
+  194,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  195,
+  {
+   "event": "token",
+   "text": "tells"
+  }
+ ],
+ [
+  196,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  197,
+  {
+   "event": "token",
+   "text": "cloud"
+  }
+ ],
+ [
+  198,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  199,
+  {
+   "event": "token",
+   "text": "clients"
+  }
+ ],
+ [
+  200,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  201,
+  {
+   "event": "token",
+   "text": "to"
+  }
+ ],
+ [
+  202,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  203,
+  {
+   "event": "token",
+   "text": "limit"
+  }
+ ],
+ [
+  204,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  205,
+  {
+   "event": "token",
+   "text": "China"
+  }
+ ],
+ [
+  206,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  207,
+  {
+   "event": "token",
+   "text": "exposure"
+  }
+ ],
+ [
+  208,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  209,
+  {
+   "event": "token",
+   "text": "under"
+  }
+ ],
+ [
+  210,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  211,
+  {
+   "event": "token",
+   "text": "export"
+  }
+ ],
+ [
+  212,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  213,
+  {
+   "event": "token",
+   "text": "controls"
+  }
+ ],
+ [
+  214,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  215,
+  {
+   "event": "token",
+   "text": "[3]."
+  }
+ ],
+ [
+  216,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  217,
+  {
+   "event": "token",
+   "text": "Its"
+  }
+ ],
+ [
+  218,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  219,
+  {
+   "event": "token",
+   "text": "10-K"
+  }
+ ],
+ [
+  220,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  221,
+  {
+   "event": "token",
+   "text": "says"
+  }
+ ],
+ [
+  222,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  223,
+  {
+   "event": "token",
+   "text": "export"
+  }
+ ],
+ [
+  224,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  225,
+  {
+   "event": "token",
+   "text": "controls"
+  }
+ ],
+ [
+  226,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  227,
+  {
+   "event": "token",
+   "text": "restrict"
+  }
+ ],
+ [
+  228,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  229,
+  {
+   "event": "token",
+   "text": "sales"
+  }
+ ],
+ [
+  230,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  231,
+  {
+   "event": "token",
+   "text": "of"
+  }
+ ],
+ [
+  232,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  233,
+  {
+   "event": "token",
+   "text": "advanced"
+  }
+ ],
+ [
+  234,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  235,
+  {
+   "event": "token",
+   "text": "chips"
+  }
+ ],
+ [
+  236,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  237,
+  {
+   "event": "token",
+   "text": "to"
+  }
+ ],
+ [
+  238,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  239,
+  {
+   "event": "token",
+   "text": "China"
+  }
+ ],
+ [
+  240,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  241,
+  {
+   "event": "token",
+   "text": "[1]."
+  }
+ ],
+ [
+  242,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  243,
+  {
+   "event": "token",
+   "text": "Quarterly"
+  }
+ ],
+ [
+  244,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  245,
+  {
+   "event": "token",
+   "text": "gaming"
+  }
+ ],
+ [
+  246,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  247,
+  {
+   "event": "token",
+   "text": "revenue"
+  }
+ ],
+ [
+  248,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  249,
+  {
+   "event": "token",
+   "text": "doubled"
+  }
+ ],
+ [
+  250,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  251,
+  {
+   "event": "token",
+   "text": "on"
+  }
+ ],
+ [
+  252,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  253,
+  {
+   "event": "token",
+   "text": "record"
+  }
+ ],
+ [
+  254,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  255,
+  {
+   "event": "token",
+   "text": "console"
+  }
+ ],
+ [
+  256,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  257,
+  {
+   "event": "token",
+   "text": "demand"
+  }
+ ],
+ [
+  258,
+  {
+   "event": "token",
+   "text": " "
+  }
+ ],
+ [
+  259,
+  {
+   "event": "token",
+   "text": "[1]."
+  }
+ ],
+ [
+  260,
+  {
+   "event": "node",
+   "node": "synthesizer",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  261,
+  {
+   "event": "node",
+   "node": "finalize",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  262,
+  {
+   "event": "final",
+   "answer": "**NVIDIA and AMD both flag competition and reliance on outside manufacturing; only NVIDIA's export-control risk has direct news support.**\n\n| Risk | NVIDIA | AMD |\n|---|---|---|\n| Competition | Competition could reduce market share [5] | Highly competitive and rapidly evolving markets [2] |\n| Manufacturing | Reliance on third-party foundries [7] | Reliance on third-party manufacturing [6] |\n\nNVIDIA tells cloud clients to limit China exposure under export controls [3]. Its 10-K says export controls restrict sales of advanced chips to China [1]. Quarterly gaming revenue doubled on record console demand [unverified].\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*\n*Claims marked [unverified] could not be matched to any retrieved source.*",
+   "citations": [
+    {
+     "n": 1,
+     "source_id": "scripted:rf-NVDA-0",
+     "title": "NVDA 10-K risk factor: Export controls restrict sales of advanced chips to China (scripted)",
+     "url": "https://example.com/scripted/rf-NVDA-0"
+    },
+    {
+     "n": 2,
+     "source_id": "scripted:rf-AMD-0",
+     "title": "AMD 10-K risk factor: Highly competitive and rapidly evolving markets (scripted)",
+     "url": "https://example.com/scripted/rf-AMD-0"
+    },
+    {
+     "n": 3,
+     "source_id": "scripted:news-NVDA-0",
+     "title": "NVIDIA tells cloud clients to limit China exposure (scripted)",
+     "url": "https://example.com/scripted/news-NVDA-0"
+    },
+    {
+     "n": 5,
+     "source_id": "scripted:rf-NVDA-1",
+     "title": "NVDA 10-K risk factor: Competition could reduce market share (scripted)",
+     "url": "https://example.com/scripted/rf-NVDA-1"
+    },
+    {
+     "n": 6,
+     "source_id": "scripted:rf-AMD-1",
+     "title": "AMD 10-K risk factor: Reliance on third-party manufacturing (scripted)",
+     "url": "https://example.com/scripted/rf-AMD-1"
+    },
+    {
+     "n": 7,
+     "source_id": "scripted:rf-NVDA-2",
+     "title": "NVDA 10-K risk factor: Reliance on third-party foundries (scripted)",
+     "url": "https://example.com/scripted/rf-NVDA-2"
+    }
+   ],
+   "citation_check": {
+    "checked": 7,
+    "supported": 6,
+    "reattached": 0,
+    "dropped": 1,
+    "unverified_claims": 1,
+    "precision": 0.857
+   }
+  }
+ ],
+ [
+  263,
+  {
+   "event": "node",
+   "node": "finalize",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ]
+]

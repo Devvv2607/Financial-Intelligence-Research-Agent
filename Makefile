@@ -3,7 +3,7 @@
 # Keep the two in sync — every target here has a twin in make.ps1.
 
 .DEFAULT_GOAL := help
-.PHONY: help install lint format typecheck test check up down logs ready dev-api dev-web web-check clean migrate ingest-sample ingest-full ingest-daily ingest-progress ingest-report review-export review-score tools-demo
+.PHONY: help install lint format typecheck test check up down logs ready dev-api dev-web web-check clean migrate ingest-sample ingest-full ingest-daily ingest-progress ingest-report review-export review-score tools-demo backup restore contracts contracts-check
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-12s %s\n", $$1, $$2}'
@@ -43,6 +43,37 @@ logs: ## Tail stack logs
 
 ready: ## Query the API readiness probe
 	curl -s -w "\nHTTP %{http_code}\n" http://localhost:8000/ready
+
+backup: ## pg_dump the whole database to data/backups/<db>-<timestamp>.dump
+	@mkdir -p data/backups
+	@db=$$(docker compose exec -T postgres printenv POSTGRES_DB | tr -d '\r'); \
+	out=data/backups/$$db-$$(date +%Y%m%d-%H%M%S).dump; \
+	docker compose exec -T postgres sh -c 'pg_dump -U $$POSTGRES_USER -d $$POSTGRES_DB -Fc' > $$out && \
+	echo "Backup written: $$out ($$(du -h $$out | cut -f1))"
+
+restore: ## Restore a backup: make restore FILE=<dump> [DB=name] (default: the live DB, asks first)
+	@test -f "$(FILE)" || { echo 'Usage: make restore FILE=<file.dump> [DB=name]'; exit 1; }
+	@live=$$(docker compose exec -T postgres printenv POSTGRES_DB | tr -d '\r'); \
+	target=$${DB:-$$live}; \
+	echo "$$target" | grep -Eq '^[a-z_][a-z0-9_]*$$' || { echo 'DB must be lowercase letters, digits and _'; exit 1; }; \
+	if [ "$$target" = "$$live" ]; then \
+	  echo "This REPLACES every table in the live database '$$live'. Stop the api first."; \
+	  read -p 'Type the database name to confirm: ' ans; [ "$$ans" = "$$live" ] || { echo Cancelled.; exit 1; }; \
+	  clean='--clean --if-exists'; \
+	else \
+	  docker compose exec -T postgres sh -c "createdb -U \$$POSTGRES_USER $$target" || exit 1; clean=''; \
+	fi; \
+	docker compose exec -T postgres sh -c "pg_restore -U \$$POSTGRES_USER -d $$target $$clean --no-owner --exit-on-error" < "$(FILE)" && \
+	echo "Restored $(FILE) into '$$target'."
+
+contracts: ## Export API contracts (contracts/*.json) and regenerate frontend types
+	uv run python -m api.contracts
+	npm --prefix frontend run gen:types
+
+contracts-check: ## Fail if contracts or generated frontend types are stale (CI)
+	uv run python -m api.contracts --check
+	npm --prefix frontend run gen:types
+	git diff --exit-code -- frontend/lib/generated
 
 migrate: ## Apply database migrations
 	uv run alembic -c backend/alembic.ini upgrade head

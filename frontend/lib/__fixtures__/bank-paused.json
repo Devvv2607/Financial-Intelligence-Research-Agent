@@ -1,0 +1,133 @@
+[
+ [
+  1,
+  {
+   "event": "run_started",
+   "run_id": "5fe066c8-9faf-4177-9a59-238da5a4cccd",
+   "thread_id": "06ec1ee8-4e33-4c16-aa57-337205ded704",
+   "resumed": false
+  }
+ ],
+ [
+  2,
+  {
+   "event": "node",
+   "node": "start_turn",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  3,
+  {
+   "event": "node",
+   "node": "start_turn",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  4,
+  {
+   "event": "node",
+   "node": "guardrail",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  5,
+  {
+   "event": "node",
+   "node": "guardrail",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  6,
+  {
+   "event": "node",
+   "node": "entity_resolver",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  7,
+  {
+   "event": "node",
+   "node": "entity_resolver",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  8,
+  {
+   "event": "node",
+   "node": "query_analyzer",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  9,
+  {
+   "event": "clarification_needed",
+   "question": "Which bank do you mean?",
+   "options": [
+    "JPMorgan Chase (JPM)",
+    "Another bank (not covered)"
+   ],
+   "source": "query_analyzer"
+  }
+ ],
+ [
+  10,
+  {
+   "event": "node",
+   "node": "query_analyzer",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  11,
+  {
+   "event": "node",
+   "node": "ask_clarification",
+   "phase": "start",
+   "step_id": null,
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  12,
+  {
+   "event": "node",
+   "node": "ask_clarification",
+   "phase": "end",
+   "step_id": null,
+   "error": false,
+   "interrupted": true
+  }
+ ]
+]

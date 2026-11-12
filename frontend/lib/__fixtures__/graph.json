@@ -1,0 +1,446 @@
+{
+ "nodes": [
+  {
+   "id": "__start__",
+   "label": "__start__",
+   "subgraph": null
+  },
+  {
+   "id": "start_turn",
+   "label": "start_turn",
+   "subgraph": null
+  },
+  {
+   "id": "guardrail",
+   "label": "guardrail",
+   "subgraph": null
+  },
+  {
+   "id": "entity_resolver",
+   "label": "entity_resolver",
+   "subgraph": null
+  },
+  {
+   "id": "query_analyzer",
+   "label": "query_analyzer",
+   "subgraph": null
+  },
+  {
+   "id": "ask_clarification",
+   "label": "ask_clarification",
+   "subgraph": null
+  },
+  {
+   "id": "planner",
+   "label": "planner",
+   "subgraph": null
+  },
+  {
+   "id": "dispatcher",
+   "label": "dispatcher",
+   "subgraph": null
+  },
+  {
+   "id": "join",
+   "label": "join",
+   "subgraph": null
+  },
+  {
+   "id": "critic",
+   "label": "critic",
+   "subgraph": null
+  },
+  {
+   "id": "synthesizer",
+   "label": "synthesizer",
+   "subgraph": null
+  },
+  {
+   "id": "finalize",
+   "label": "finalize",
+   "subgraph": null
+  },
+  {
+   "id": "__end__",
+   "label": "__end__",
+   "subgraph": null
+  },
+  {
+   "id": "filings_agent:prepare",
+   "label": "prepare",
+   "subgraph": "filings_agent"
+  },
+  {
+   "id": "filings_agent:direct",
+   "label": "direct",
+   "subgraph": "filings_agent"
+  },
+  {
+   "id": "filings_agent:llm",
+   "label": "llm",
+   "subgraph": "filings_agent"
+  },
+  {
+   "id": "filings_agent:tools",
+   "label": "tools",
+   "subgraph": "filings_agent"
+  },
+  {
+   "id": "filings_agent:finish",
+   "label": "finish",
+   "subgraph": "filings_agent"
+  },
+  {
+   "id": "financials_agent:prepare",
+   "label": "prepare",
+   "subgraph": "financials_agent"
+  },
+  {
+   "id": "financials_agent:direct",
+   "label": "direct",
+   "subgraph": "financials_agent"
+  },
+  {
+   "id": "financials_agent:llm",
+   "label": "llm",
+   "subgraph": "financials_agent"
+  },
+  {
+   "id": "financials_agent:tools",
+   "label": "tools",
+   "subgraph": "financials_agent"
+  },
+  {
+   "id": "financials_agent:finish",
+   "label": "finish",
+   "subgraph": "financials_agent"
+  },
+  {
+   "id": "news_agent:prepare",
+   "label": "prepare",
+   "subgraph": "news_agent"
+  },
+  {
+   "id": "news_agent:direct",
+   "label": "direct",
+   "subgraph": "news_agent"
+  },
+  {
+   "id": "news_agent:llm",
+   "label": "llm",
+   "subgraph": "news_agent"
+  },
+  {
+   "id": "news_agent:tools",
+   "label": "tools",
+   "subgraph": "news_agent"
+  },
+  {
+   "id": "news_agent:finish",
+   "label": "finish",
+   "subgraph": "news_agent"
+  },
+  {
+   "id": "screener_agent:prepare",
+   "label": "prepare",
+   "subgraph": "screener_agent"
+  },
+  {
+   "id": "screener_agent:direct",
+   "label": "direct",
+   "subgraph": "screener_agent"
+  },
+  {
+   "id": "screener_agent:llm",
+   "label": "llm",
+   "subgraph": "screener_agent"
+  },
+  {
+   "id": "screener_agent:tools",
+   "label": "tools",
+   "subgraph": "screener_agent"
+  },
+  {
+   "id": "screener_agent:finish",
+   "label": "finish",
+   "subgraph": "screener_agent"
+  }
+ ],
+ "edges": [
+  {
+   "source": "__start__",
+   "target": "start_turn",
+   "conditional": false
+  },
+  {
+   "source": "ask_clarification",
+   "target": "entity_resolver",
+   "conditional": true
+  },
+  {
+   "source": "ask_clarification",
+   "target": "query_analyzer",
+   "conditional": true
+  },
+  {
+   "source": "critic",
+   "target": "planner",
+   "conditional": true
+  },
+  {
+   "source": "critic",
+   "target": "synthesizer",
+   "conditional": true
+  },
+  {
+   "source": "dispatcher",
+   "target": "critic",
+   "conditional": true
+  },
+  {
+   "source": "dispatcher",
+   "target": "filings_agent:prepare",
+   "conditional": true
+  },
+  {
+   "source": "dispatcher",
+   "target": "financials_agent:prepare",
+   "conditional": true
+  },
+  {
+   "source": "dispatcher",
+   "target": "news_agent:prepare",
+   "conditional": true
+  },
+  {
+   "source": "dispatcher",
+   "target": "screener_agent:prepare",
+   "conditional": true
+  },
+  {
+   "source": "entity_resolver",
+   "target": "ask_clarification",
+   "conditional": true
+  },
+  {
+   "source": "entity_resolver",
+   "target": "query_analyzer",
+   "conditional": true
+  },
+  {
+   "source": "filings_agent:finish",
+   "target": "join",
+   "conditional": false
+  },
+  {
+   "source": "financials_agent:finish",
+   "target": "join",
+   "conditional": false
+  },
+  {
+   "source": "guardrail",
+   "target": "entity_resolver",
+   "conditional": true
+  },
+  {
+   "source": "guardrail",
+   "target": "finalize",
+   "conditional": true
+  },
+  {
+   "source": "join",
+   "target": "dispatcher",
+   "conditional": false
+  },
+  {
+   "source": "news_agent:finish",
+   "target": "join",
+   "conditional": false
+  },
+  {
+   "source": "planner",
+   "target": "dispatcher",
+   "conditional": true
+  },
+  {
+   "source": "planner",
+   "target": "finalize",
+   "conditional": true
+  },
+  {
+   "source": "query_analyzer",
+   "target": "ask_clarification",
+   "conditional": true
+  },
+  {
+   "source": "query_analyzer",
+   "target": "finalize",
+   "conditional": true
+  },
+  {
+   "source": "query_analyzer",
+   "target": "planner",
+   "conditional": true
+  },
+  {
+   "source": "screener_agent:finish",
+   "target": "join",
+   "conditional": false
+  },
+  {
+   "source": "start_turn",
+   "target": "guardrail",
+   "conditional": false
+  },
+  {
+   "source": "synthesizer",
+   "target": "finalize",
+   "conditional": false
+  },
+  {
+   "source": "finalize",
+   "target": "__end__",
+   "conditional": false
+  },
+  {
+   "source": "filings_agent:direct",
+   "target": "filings_agent:finish",
+   "conditional": true
+  },
+  {
+   "source": "filings_agent:direct",
+   "target": "filings_agent:llm",
+   "conditional": true
+  },
+  {
+   "source": "filings_agent:llm",
+   "target": "filings_agent:finish",
+   "conditional": true
+  },
+  {
+   "source": "filings_agent:llm",
+   "target": "filings_agent:tools",
+   "conditional": true
+  },
+  {
+   "source": "filings_agent:prepare",
+   "target": "filings_agent:direct",
+   "conditional": true
+  },
+  {
+   "source": "filings_agent:prepare",
+   "target": "filings_agent:llm",
+   "conditional": true
+  },
+  {
+   "source": "filings_agent:tools",
+   "target": "filings_agent:llm",
+   "conditional": false
+  },
+  {
+   "source": "financials_agent:direct",
+   "target": "financials_agent:finish",
+   "conditional": true
+  },
+  {
+   "source": "financials_agent:direct",
+   "target": "financials_agent:llm",
+   "conditional": true
+  },
+  {
+   "source": "financials_agent:llm",
+   "target": "financials_agent:finish",
+   "conditional": true
+  },
+  {
+   "source": "financials_agent:llm",
+   "target": "financials_agent:tools",
+   "conditional": true
+  },
+  {
+   "source": "financials_agent:prepare",
+   "target": "financials_agent:direct",
+   "conditional": true
+  },
+  {
+   "source": "financials_agent:prepare",
+   "target": "financials_agent:llm",
+   "conditional": true
+  },
+  {
+   "source": "financials_agent:tools",
+   "target": "financials_agent:llm",
+   "conditional": false
+  },
+  {
+   "source": "news_agent:direct",
+   "target": "news_agent:finish",
+   "conditional": true
+  },
+  {
+   "source": "news_agent:direct",
+   "target": "news_agent:llm",
+   "conditional": true
+  },
+  {
+   "source": "news_agent:llm",
+   "target": "news_agent:finish",
+   "conditional": true
+  },
+  {
+   "source": "news_agent:llm",
+   "target": "news_agent:tools",
+   "conditional": true
+  },
+  {
+   "source": "news_agent:prepare",
+   "target": "news_agent:direct",
+   "conditional": true
+  },
+  {
+   "source": "news_agent:prepare",
+   "target": "news_agent:llm",
+   "conditional": true
+  },
+  {
+   "source": "news_agent:tools",
+   "target": "news_agent:llm",
+   "conditional": false
+  },
+  {
+   "source": "screener_agent:direct",
+   "target": "screener_agent:finish",
+   "conditional": true
+  },
+  {
+   "source": "screener_agent:direct",
+   "target": "screener_agent:llm",
+   "conditional": true
+  },
+  {
+   "source": "screener_agent:llm",
+   "target": "screener_agent:finish",
+   "conditional": true
+  },
+  {
+   "source": "screener_agent:llm",
+   "target": "screener_agent:tools",
+   "conditional": true
+  },
+  {
+   "source": "screener_agent:prepare",
+   "target": "screener_agent:direct",
+   "conditional": true
+  },
+  {
+   "source": "screener_agent:prepare",
+   "target": "screener_agent:llm",
+   "conditional": true
+  },
+  {
+   "source": "screener_agent:tools",
+   "target": "screener_agent:llm",
+   "conditional": false
+  }
+ ]
+}

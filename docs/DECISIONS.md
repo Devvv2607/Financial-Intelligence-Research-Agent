@@ -523,6 +523,324 @@ of 50, because 50 covered only a few days for heavily covered companies.
 
 ---
 
+## D-033 · Agent LLM layer: one budget, a dev cache, tokens per node
+**Status:** Implemented (Phase 3, `agent/llm.py`, `agent/runlog.py`)
+
+The agent uses gpt-oss-120b only (`AGENT_MODEL_*`), whose daily quota is separate from the
+ingestion model's. Every agent call goes through `GroqAgentLLM`:
+- **Structured output** (analyzer, planner, critic) reuses Phase 1's `GroqClient` (strict
+  `json_schema`, at most 2 attempts). **Tool-calling and streaming** (specialists,
+  synthesizer) go through langchain-groq `ChatGroq` so LangGraph's `messages` stream mode
+  sees the tokens.
+- **Budget guard:** before each call, the 24-hour total for the agent model is checked
+  against `AGENT_DAILY_TOKEN_BUDGET` (150K). Over budget, nodes degrade instead of failing
+  (the critic answers "ok", a failed replan answers from what was collected).
+- **Dev response cache** (`AGENT_DEV_CACHE`), keyed by model, effort, messages and tools:
+  re-running a demo after changing one prompt only pays for the nodes whose input changed
+  (demo 1's re-run cost 6.7K instead of 11.8K).
+- **Ledger:** every call, including cache hits with the tokens they saved, is recorded
+  with the run id, so `node_usage(run_id)` gives tokens per node; the CLI prints it.
+- **Reasoning effort per node:** low for the analyzer and specialist loops, medium for the
+  planner, critic and synthesizer. Measured on the live demos: reasoning tokens were
+  26-114 per specialist step and 47-317 per analyzer turn (low), against 203-864 per
+  planner call (medium). There is no same-query comparison of the two effort levels yet.
+
+## D-034 · Tests make zero Groq calls
+**Status:** Implemented (Phase 3, `tests/agent/fakes.py`, `tests/conftest.py`)
+
+Every node reaches the outside world through `AgentDeps` (LLM, tool executor, company
+list, clock, run recorder, fiscal periods). The tests build the same compiled graph with a
+scripted `FakeLLM` and fake tools, and an autouse respx guard fails any test that tries to
+reach api.groq.com. The checkpoint test runs interrupt/resume against the real Postgres
+saver, over a fresh connection.
+
+## D-035 · Synthesis: shared source cap, exact fiscal periods, checked citations
+**Status:** Implemented (Phase 3, `agent/nodes/answer.py`; fixes from the live demos)
+
+- **Sources are numbered round-robin across steps** (cap 30, 300-character snippets).
+  In step order, AMD's 53 risk factors took every slot in demo 1 and left NVIDIA and the
+  news uncitable.
+- **Fiscal periods come from the database.** The synthesizer is given each company's stored
+  10-K fiscal years and period-end dates. Given only the MMDD fiscal-year end, it wrote
+  Apple's FY end as 09-30 (actual: 2026-09-26).
+- **Citations are checked deterministically.** gpt-oss often cites in its native style
+  (`【3†source】`) despite the prompt. `finalize` maps those to `[3]`, removes other bracket
+  references (step ids) and any number that isn't a source, then adds the footer.
+- **Prompt rules from the demos:** news supports a risk only when the headline is directly
+  about it; no verdicts of its own ("moderate-to-high risk", or "high" leverage for a bank
+  whose ratio is normal for banks).
+- **Wrong-but-existing sources** (demo 7 quoted one Intel risk factor and cited another)
+  are caught by the citation check in D-038.
+
+## D-036 · Replans: bounded, additive, and judged at the question's level
+**Status:** Implemented (Phase 3, `agent/nodes/planning.py`, critic prompt v2)
+
+Replans add steps with new ids (`r2s1`…), never touch completed results, and are capped
+at 2. In demo 7 the critic read the 1,200-character review digests as missing data and
+asked for full lists, so two rounds re-fetched the same comparison (27.7K tokens). Digests
+are now marked as shortened. Critic prompt v2 judges at the question's level of detail and
+never asks for a tool call that was already made. The planner (v2) also leaves optional
+years out unless the user names them, because guessing them produced a wrong comparison.
+`compare_risk_factors` now normalises the year order itself, so "new" always means
+"in the later filing".
+
+## D-037 · Entity resolution is deterministic; ambiguity asks
+**Status:** Implemented (Phase 3, `agent/nodes/intake.py`)
+
+Company mentions are matched against the ingested companies with names, aliases and
+uppercase tickers (a 1-letter ticker only as `$F`), using rapidfuzz's strict `ratio`. Its
+`WRatio` partial matching matched "Intel" to "Johnson Controls International". A shared
+short name ("Johnson": JNJ and JCI) interrupts with the candidates. On resume only an exact
+full-name or ticker match is kept, and the run returns to the node that asked. Companies
+the dataset doesn't cover are named in the answer with close matches. They are never
+answered from model knowledge.
+
+## D-038 · Citation verification with the local embedding model
+**Status:** Implemented (Phase 3, `agent/citecheck.py`, used in `finalize`; zero LLM tokens)
+
+`resolve_citations` only guarantees that each `[n]` exists. Demo 7 showed that a real
+source can still be the wrong one: a quote ("We have ceased to return capital to
+stockholders") was cited to a different risk factor. `finalize` now checks every citation
+before the footer is added:
+
+- **Claim:** each citation group closes a claim, which is the text since the previous group
+  or sentence/table-cell boundary. When that is under 4 words, the claim is the cell or the
+  line, and for a citation alone in a table's "Source" column it is the rest of the row.
+  Claims still under 4 words ("None [1]") are not checked.
+- **Score:** the cosine similarity of claim and source (title + full snippet) with the local
+  bge-small model, the one already loaded for news relevance. No tokens are spent.
+- **Action:**
+  - A source scoring ≥ **0.585** supports the claim.
+  - A citation below that is moved only if another source clearly matches (≥ **0.75**).
+  - Otherwise the citation is dropped. A claim left with no citation is marked
+    `[unverified]`, and the footer explains the marker.
+- **Logged per run:** checked / supported / re-attached / dropped / unverified claims and
+  precision (supported ÷ checked). These go to `runs.citation_check`, a JSON log line, the
+  final stream event and the CLI.
+
+**Calibration** used the 68 (claim, cited source) pairs in the 2026-11-04 demo answers,
+rebuilt from saved run state and labelled by hand:
+- The one confirmed wrong citation (demo 7 [15]) scored **0.567**. The lowest correct one
+  was 0.604, a "Removed: None" row citing the comparison summary. 0.585 is the midpoint.
+- Correct quote-to-source pairs scored 0.745-0.915. Short aggregate claims citing a summary
+  or an XBRL fact scored 0.60-0.72.
+- The wrong citation's best alternative (0.614) was an unrelated business-overview chunk;
+  the right risk factor wasn't among the numbered sources. That is why re-attaching needs
+  0.75 and the claim is marked unverified instead.
+
+Replayed with the real model over the saved answers, the check flags exactly that citation:
+precision 1.0 on five runs and 0.933 on demo 7 (14/15). A run with no checkable
+citations has no precision.
+
+**Limits.**
+- The margin rests on one known error and is thin (0.567 vs 0.604), so this is a
+  calibrated heuristic, not a measured error rate. The Phase 6 citation-accuracy eval
+  should re-calibrate it on a labelled set.
+- Similarity shows that a source is about the claim, not that the claim's reasoning holds.
+  Demo 1's loose news-to-risk links cite the right articles and pass.
+
+**Incident while adding `runs.citation_check`.** `alembic revision --autogenerate` compared
+the database with our metadata. LangGraph's checkpoint tables aren't in that metadata, so it
+proposed dropping all four. The migration was applied before that was caught, and the
+saved thread state of the 2026-11-04 demo runs was lost (no backup or WAL archive was
+configured).
+- **Not affected:** the `runs` log (plans, steps, answers, tokens), all ingested data, the LLM
+  ledger and the transcripts in `docs/demo-runs/`.
+- **Effect:** the demo 7 follow-up needs demo 2's thread, so both are re-run.
+- **Fix:** the migration now only adds the column, and the saver recreated empty tables.
+  `alembic/env.py` passes `include_object` so autogenerate ignores tables that exist in the
+  database but not in our metadata; `alembic check` is clean with them present.
+- **Practice:** autogenerated migrations are applied in a separate step after review, never
+  in the same command.
+
+## D-039 · Synthesizer input: tool-ranked top 12 per step, shorter snippets
+**Status:** Implemented (Phase 3, `agent/nodes/answer.py`; measured without LLM calls)
+
+The synthesizer was the largest or second-largest node in every run (25-63% of its tokens). Its prompts were
+rebuilt from the saved state of the 2026-11-04 runs and counted with `o200k_base`; the
+rebuilt sizes match the ledger's prompt tokens within 1-5%.
+- **Where the tokens go:** evidence text (the numbered sources) was **70%** of the user
+  message and step results 28%. The answers cited only 4-15 of the 30 sources each.
+- **Which items to keep:** ranking each step's items by embedding similarity to the
+  question kept fewer of the actually cited sources than the tools' own order (58% vs 88%
+  at 10 per step). Tools already rank: news by relevance, comparisons summary-first.
+- **What changed:**
+  - Each step contributes its first **12** items, still round-robin and capped at 30.
+  - Snippets are cut to **200** characters at a word boundary, without the heading that
+    risk factors and news repeat from the title. The citation check still uses the full
+    snippet.
+  - `compare_risk_factors` lists each changed risk's later and earlier wording side by
+    side. It used to list all later versions first, so a cap kept a change's new wording
+    without its old wording.
+
+Replay result: 26,735 -> 22,256 synthesizer prompt tokens over 6 runs (**-17%**). Apple
+fell 54% and the multi-step runs 5-13%. All 52 citations of runs on current code still
+had their source. The only 3 not kept come from demo 1's first run, whose numbering was
+the bug fixed in D-035. The next lever is the step-results section (28%).
+
+## D-040 · Backups: pg_dump of Postgres, restore proven, data-safety rules
+**Status:** Implemented (`make.ps1` / `Makefile` targets `backup`, `restore`; CLAUDE.md)
+
+This follows the checkpoint-table loss (D-038). The ingested data costs days of Groq and
+NewsAPI quota to rebuild, so the owner set hard rules in CLAUDE.md:
+- back up before any migration, re-extraction, re-tag or bulk delete;
+- generate and apply migrations in separate steps, with the owner's OK in between;
+- no destructive command without asking, in any mode.
+
+- **What is backed up:** Postgres only, as a full `pg_dump -Fc` into
+  `data/backups/<db>-<timestamp>.dump` (gitignored). Weaviate is derived: the `index`
+  stage reads only Postgres and embeds locally, so `ingestion run --only index --force`
+  rebuilds it without quota. Raw EDGAR/NewsAPI downloads in `data/raw/` are a cache.
+- **Restore:** `restore <file> -Database <new>` creates a new database and never
+  overwrites one. Restoring into the live database asks for its name to be typed, and
+  uses `--clean --if-exists`.
+- **Proof:** the first backup (`fira-20261105-131536.dump`, 1.4 MB, 17 tables with data)
+  was restored into the scratch database `fira_restore_test`. Every table's row count
+  matched the live database, the Alembic revision matched, and an md5 over all
+  `risk_factors` rows was identical.
+- **Windows pitfall:** in PowerShell 5.1, piping a native command's binary output
+  (`pg_dump > file`) re-encodes it as text and corrupts the dump. The PowerShell target
+  dumps inside the container and copies the file out with `docker compose cp`. PS 5.1
+  also doesn't escape embedded double quotes in native arguments, so the container
+  commands avoid them. In Git Bash and on Linux the plain pipe works (checked: the piped
+  dump lists the same 17 tables).
+
+## D-041 · API: native FastAPI SSE, runs in background tasks, typed events
+**Status:** Implemented (Phase 4, `backend/src/api/`)
+
+- **SSE without a new dependency.** FastAPI 0.162 ships SSE (`fastapi.sse`:
+  `EventSourceResponse`, `format_sse_event`, keep-alive comments), so `sse-starlette`
+  isn't needed. Its generator-style routes start the response before the handler body
+  runs, so a 404/409/422/429 can't be raised there. The run endpoints therefore validate
+  first and then return an `EventSourceResponse` over our own generator, which sends a
+  keep-alive comment every 15 s.
+- **Runs are background tasks.** A run is driven by a task that pushes events into a
+  queue, and the SSE response only drains that queue. A closed tab or dropped connection
+  doesn't cancel a run that is spending tokens: it finishes, is recorded, and its thread
+  can be read back. A thread allows one active run (409 otherwise). A new question on a
+  thread waiting for a clarification is refused with 409 until `/resume` answers it.
+- **Typed events.** Every graph event is validated against a Pydantic discriminated
+  union (`api/schemas.AgentEvent`) before it's sent: the spec's types plus `run_started`,
+  `event:` = type, `id:` = a gapless sequence. Tokens come from LangGraph's `messages`
+  stream mode for the synthesizer node. An unexpected exception ends the stream with an
+  `error` event whose message doesn't leak internals.
+- **Graph event fixes found while building the API:**
+  - `clarification_needed` used to be emitted before `interrupt()` in
+    `ask_clarification`. LangGraph re-runs the interrupted node on resume, so every
+    resume repeated the question. It's now emitted by the node that creates the question
+    (resolver or analyzer), which doesn't re-run.
+  - `evidence_added` carries full source cards (the UI's Sources tab), not just ids.
+  - `step_completed` carries summary, error and duration.
+- **Threads table.** The conversation lives in the checkpointer. A small `threads` table
+  (id, title, status, last run) lists threads for the UI and tracks
+  `running` / `awaiting_clarification` / `error`. `GET /api/threads/{id}` combines it with
+  the checkpointer's state (messages, pending question, latest plan, evidence and
+  citations) and the run ids from `runs`.
+  - A CHECK constraint (`ck_threads_status`) limits `status` to those four values; a
+    test keeps the code's `ThreadStatus` in sync with it.
+  - `updated_at`'s server default fires only on INSERT, so every update in
+    `core/threads.py` goes through one helper that sets it, from the database clock
+    (D-042). Tests run against both the in-memory and the Postgres store.
+  - The agent CLI registers its threads too (`ensure()` + status around each run), so
+    CLI demo conversations appear in the UI's thread list.
+- **Public-demo protection.** Agent runs and resumes are limited per client IP
+  (`API_RUNS_PER_MINUTE`, default 6, in-memory sliding window) and questions are capped
+  at `API_MAX_QUESTION_CHARS`. CORS is locked to the frontend origin.
+- **Tests.** The real app and lifespan with a scripted runtime cover: a full SSE run
+  (event order, schema, gapless ids, live tokens), interrupt -> history -> resume over
+  HTTP, 404/409/422/429, busy threads, a run with no listener, the error event and the
+  graph endpoint. The fake LLM streams through LangChain's `GenericFakeChatModel`, so
+  token events are exercised without Groq. The data endpoints have integration tests
+  against the local stack.
+
+## D-042 · Single source of truth for time: the database clock
+**Status:** Implemented (Phase 4; `core/threads.py`, `core/db/llm_store.py`, `ingestion/report.py`)
+
+**Rule:** any timestamp stored in Postgres, and any time window compared against stored
+timestamps, comes from the database's clock (`now()` / server defaults). The host's
+clock is used only within one process: step durations, recency scoring against
+external publish dates, and file names.
+
+**Why:** the new thread-store test caught `threads.updated_at` going *backwards*. Inserts
+took it from Postgres (`server_default=now()`), updates from Python (`datetime.now()`),
+and the Docker VM's clock ran about 9 ms ahead of the Windows host. Two writers with two
+clocks cannot keep an order. In production the API host and the managed database are
+different machines, so the skew would be larger and not under our control.
+
+**Applied:**
+- **Thread store:** sets `updated_at = now()` in SQL on every update. The in-memory test
+  store uses the process clock, its only clock.
+- **Token-budget window:** the daily guard (`tokens_last_24h`) and the ingestion report's
+  "last 24 h" figure are now `created_at >= now() - interval '24 hours'`. Before, they
+  compared host time with database-set `created_at`. Same totals at today's skew,
+  correct at any skew.
+- **Reviewed, unchanged:**
+  - `started_at` / `finished_at` of agent steps: one process, durations only.
+  - News recency scoring: compared with external publish times.
+  - Ingestion run ids and file stamps.
+
+## D-043 · Replayable event log: in memory with a TTL; Redis Streams to scale out
+**Status:** Implemented (Phase 4, `api/events.py`, `GET /api/threads/{id}/events`)
+
+Each run's typed events go to an in-memory `RunLog`, where event *n* has SSE id *n*.
+- **Start:** the POST that starts a run streams the log from the beginning.
+- **Reconnect:** `GET /api/threads/{id}/events` replays everything after `?after=n` (or the
+  browser's `Last-Event-ID`) and then follows live. A reload mid-run uses `after=0` and
+  rebuilds the whole run, tokens included.
+- **Lifetime:** a log is kept 10 minutes (`EVENT_LOG_TTL_S`) after its run ends. A thread's
+  next run replaces it.
+- **`run_id` guard:** a client can pass `run_id`, so it never replays a newer run by
+  mistake.
+
+**Trade-off (owner decision).** The log is in memory, not a table.
+- **API restart:** the logs are lost, but the runs aren't. Their state is in Postgres (the
+  checkpointer and `runs`), so the endpoint returns 404 and the client falls back to
+  polling `GET /api/threads/{id}`. The client loses the token-by-token replay for that one
+  run; it doesn't lose content.
+- **Why not a table:** it would mean about a hundred rows per run (tokens, node events)
+  that matter only for minutes.
+
+**Scale-up path.** With more than one API instance a reconnect can land on an instance
+that doesn't hold the log. The shared version is Redis Streams:
+- one stream per run, `XADD` per event, with the SSE id as the stream position;
+- replay with `XREAD` from the last id;
+- expire with `EXPIRE`.
+
+The `RunLog` interface (`append` / `close` / `wait_after`) is what would move behind it.
+
+## D-044 · Node events, generated contract types, scripted E2E runtime
+**Status:** Implemented (Phase 4, owner-approved Phase 5 prerequisites)
+
+- **`node` events.** LangGraph's `tasks` stream mode reports every node's start and end,
+  including inside specialist subgraphs (namespace `"<agent>:<task id>"`).
+  - `NodeTracker` maps them to the node ids `/api/graph` uses (`"filings_agent:direct"`)
+    and attaches the plan `step_id`, so parallel runs of one specialist can be told apart.
+  - `interrupted` marks the node that paused for a clarification.
+  - The graph view can now light up exactly what runs, including intake nodes and `join`.
+- **Contract types.**
+  - `python -m api.contracts` writes `contracts/openapi.json` and
+    `contracts/agent-events.schema.json` (deterministic, sorted). The event union isn't in
+    OpenAPI because the SSE routes return a response object.
+  - `npm run gen:types` generates `frontend/lib/generated/{api,events}.ts`
+    (openapi-typescript 7.13.0, json-schema-to-typescript 16.0.0, pinned).
+  - Event fields with defaults are marked required, because they are always sent.
+  - The CI job `contracts` (`make contracts-check`) fails if either step's output differs
+    from what's committed.
+- **Scripted runtime** (`AGENT_RUNTIME=scripted`; settings refuse it with
+  `APP_ENV=production`).
+  - It's the real graph, API, SSE, event log and citation check. The LLM and tools are
+    canned (`agent/scripted.py`, also used by the tests), with an in-memory checkpointer
+    and thread store, so nothing is written to the database.
+  - Scenarios cover parallel steps with one deliberately unsupported claim (exercises
+    `[unverified]` and the UI's verify-swap), a critic gap leading to a replan with an
+    agentic step, the analyzer and resolver clarifications with resume, the advice
+    refusal, and unknown questions.
+  - Every scripted source is titled "(scripted)" and links to example.com.
+  - Small delays (300 ms per tool, 15 ms per token) let the UI's live states be seen.
+    Tests set them to 0.
+  - Checked over `curl` against a real uvicorn process: clarification, then resume, then
+    replay, with zero LLM calls.
+
 ## Adaptations: where libraries or tools differed from the spec's assumptions
 
 - **Postgres 18 image data path (Phase 0).** From v18 the official image sets
@@ -593,6 +911,16 @@ of 50, because 50 covered only a few days for heavily covered companies.
   are now dropped regardless of styling. Per-filing risk counts fell accordingly (e.g.
   NVIDIA 38 -> 23, AMD 53 -> 44) and none of these headings remain; a regression test covers
   it. The stored sample is re-extracted (no LLM cost) before the 20b re-tag.
+  **Re-extracted 2026-11-05:**
+  - 111 -> 0 navigation rows; 701 -> 583 risk factors.
+  - Every filing matches its expected count (old rows minus navigation rows) except
+    **Intel FY2024, 24 -> 17**. Its first 7 risk factors were lost, starting with "We are
+    in a highly competitive and rapidly changing industry".
+  - Intel styles its repeated section title as emphasized text, which the old filter
+    kept on purpose. Dropping navigation links regardless of styling evidently cuts the
+    start of that section.
+  - Open: fix plus a regression test on Intel's FY2024 fixture, then re-extract and
+    re-tag Intel.
 - **SQLAlchemy array column named `items` (Phase 2).** `eight_k_events.c.items` resolves to
   the column collection's `.items()` method, not the column (mypy caught it), so it is
   indexed as `c["items"]`. The generic `sqlalchemy.ARRAY` also has no `.overlap()`; the
@@ -611,3 +939,19 @@ of 50, because 50 covered only a few days for heavily covered companies.
   `core` first. pytest re-enables DeprecationWarnings per test, so the same single message
   is also listed in its `filterwarnings`. Pinning authlib < 1.8 would have silenced it too,
   but holds back an auth library's releases just to hide a notice.
+- **LangGraph reserves `configurable.run_id` (Phase 3).** We first passed our run id as
+  `configurable.run_id`. LangGraph also reads that key as the run's own id, and a second
+  turn in the same thread with a new value ran as a no-op (no new checkpoint, the old
+  answer returned). Our id is now `configurable.agent_run_id`; resumes reuse the paused
+  run's id.
+- **Checkpoint serializer allow-list (Phase 3).** langgraph-checkpoint 3.x warns
+  "Deserializing unregistered type" for Pydantic objects in state that aren't on its
+  allow-list. `agent/checkpoint.py` registers our state models with
+  `JsonPlusSerializer(allowed_msgpack_modules=...)` for both the Postgres and in-memory
+  savers.
+- **ChatGroq's HTTP client (Phase 3).** `ChatGroq` creates its own async client and
+  nothing closes it, so the CLI ended with an "unclosed transport" warning. The agent
+  now passes one `http_async_client` it owns and closes it in `aclose()`.
+- **Windows reports `NUL` as a terminal (Phase 3).** `sys.stdin.isatty()` is true when
+  stdin is redirected from `NUL`, so the CLI's clarification prompt hit EOF. EOF now
+  means "no answer": the run stays paused, to be continued with `python -m agent resume`.

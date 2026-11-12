@@ -1,6 +1,6 @@
 """Postgres implementation of `core.llm.LLMStore` (response cache + call ledger)."""
 
-from datetime import UTC, datetime, timedelta
+from datetime import timedelta
 from typing import Any
 
 from sqlalchemy import func, select
@@ -61,9 +61,10 @@ class PostgresLLMStore:
             )
 
     async def tokens_last_24h(self, model: str) -> int:
-        since = datetime.now(UTC) - timedelta(hours=24)
+        # The database's clock, like created_at itself (D-042).
         stmt = select(func.coalesce(func.sum(COUNTED_TOKENS), 0)).where(
-            llm_calls.c.model == model, llm_calls.c.created_at >= since
+            llm_calls.c.model == model,
+            llm_calls.c.created_at >= func.now() - timedelta(hours=24),
         )
         async with self._engine.connect() as conn:
             return int((await conn.execute(stmt)).scalar_one())

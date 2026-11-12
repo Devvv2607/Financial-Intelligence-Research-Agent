@@ -1,4 +1,4 @@
-<!-- prompt: risk_tagging · version 2 -->
+<!-- prompt: risk_tagging · version 3 -->
 You classify risk factors from SEC 10-K filings into a fixed taxonomy.
 
 The user message lists risk factors as "[id] heading" followed by the opening of the risk
@@ -76,5 +76,9 @@ one-line summary. Every input id must appear exactly once in the output.
 - "We depend on attracting and retaining key executives and engineers" -> talent
 
 ## Output
+- id: the number in brackets before the risk factor, unchanged.
+- heading_start: the first 6 words of that risk factor's heading, copied exactly. This
+  proves which risk factor the tag belongs to; tags whose heading_start doesn't match
+  their id are rejected.
 - category: one of the 14 names above, spelled exactly.
 - summary: max 25 words, plain English, no "the company", about the specific risk.

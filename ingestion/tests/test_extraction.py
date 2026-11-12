@@ -21,6 +21,7 @@ from ingestion.extract.html_clean import Block, html_to_blocks
 from ingestion.extract.risk_splitter import split_risk_factors
 from ingestion.extract.sections import (
     fallback_candidates,
+    find_risk_factors_titled,
     find_section_llm,
     find_section_regex,
 )
@@ -246,3 +247,56 @@ def test_whitespace_between_inline_elements_is_kept() -> None:
         "<span> financial</span> <b>results</b>.</p>"
     )
     assert html_to_blocks(html)[0].text == "We seek to ensure accurate financial results."
+
+
+@pytest.mark.parametrize(
+    ("doc", "count"),
+    [("intc-20241228", 24), ("intc-20251227", 22)],
+)
+def test_intel_risk_factors_found_by_title_with_none_lost(doc: str, count: int) -> None:
+    """Intel has no "Item 1A" heading. Its section was left to the LLM fallback, which on
+    FY2024 started at a sub-heading and lost the first 7 risk factors (2026-11-05)."""
+    b = blocks(doc)
+    assert find_section_regex(b, "item_1a") is None
+    section = find_risk_factors_titled(b)
+    assert section is not None
+    rfs = split_risk_factors(section.body(b))
+    assert len(rfs) == count
+    assert rfs[0].heading.startswith("We are in a highly competitive and rapidly changing")
+
+
+@pytest.mark.parametrize("doc", ["aapl-20260926", "xom-20251231", "jpm-20251231"])
+def test_title_finder_leaves_item_headed_filings_alone(doc: str) -> None:
+    assert find_risk_factors_titled(blocks(doc)) is None
+
+
+def test_notices_and_preambles_are_not_risk_factors() -> None:
+    """UNH files its forward-looking-statements notice under Item 1A; AMD and Tesla open it
+    with an introductory sentence styled like a heading (2026-11-05 sample)."""
+    long_body = "We have experienced and may experience launch and production ramp delays. " * 8
+    rfs = split_risk_factors(
+        [
+            B("CAUTIONARY STATEMENTS", bold=True),
+            B("The statements contained in this Annual Report include forward-looking " + BODY),
+            B(
+                "The risks and uncertainties described below are not the only ones we face.",
+                bold=True,
+            ),
+            B("The following is a summary of the principal risks that could affect us. " * 2),
+            B(
+                "You should carefully consider the risks described below together with the other "
+                "information set forth in this report.",
+                bold=True,
+            ),
+            B(long_body),
+            B("We face intense competition in all of our markets.", bold=True),
+            B(BODY),
+        ]
+    )
+    assert [r.heading for r in rfs] == [
+        # Tesla case: a real risk whose heading was absorbed -> its first sentence
+        "We have experienced and may experience launch and production ramp delays.",
+        "We face intense competition in all of our markets.",
+    ]
+    assert rfs[0].body == long_body.strip()
+    assert [r.ordinal for r in rfs] == [0, 1]

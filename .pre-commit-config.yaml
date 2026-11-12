@@ -1,0 +1,28 @@
+# Fast checks on staged files, before every commit (one-time setup: see README / CLAUDE.md:
+#   uv run pre-commit install
+# ). mypy and the full test suite run in `make check` and CI, not here.
+#
+# Local hooks, not the ruff-pre-commit mirror: they use the project's own ruff (uv.lock)
+# and the frontend's own ESLint (package-lock.json), so the hook can never disagree with CI.
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check
+        entry: uv run ruff check --force-exclude
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+      - id: ruff-format
+        name: ruff format --check
+        entry: uv run ruff format --check --force-exclude
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+      - id: eslint-frontend
+        name: eslint (frontend)
+        entry: uv run python scripts/hooks/eslint_staged.py
+        language: system
+        files: ^frontend/.*\.(ts|tsx|js|jsx|mjs|cjs)$
+        exclude: ^frontend/(lib/generated/|\.next/|node_modules/)
+        require_serial: true

@@ -1,0 +1,11 @@
+thread 45ca316b-9fd7-4bdf-b227-dc4815361153
+
+== ANSWER
+
+I can't give investment advice, so I won't say whether to buy, sell or hold Tesla, Inc. What I can do is research it from SEC filings and recent news: its main risk factors, how they changed year over year, recent 8-K events, and reported financials. For example, ask: "What are TSLA's main risk factors and how did its revenue change last year?"
+
+---
+*Not investment advice.*
+
+== TOKENS (counted = prompt - cached + completion)
+  TOTAL                    0   run ddc70a86-3cbd-431e-8c1e-eed6681ab213 | thread 45ca316b-9fd7-4bdf-b227-dc4815361153

@@ -1,0 +1,83 @@
+thread 9ad4e7af-5119-4fad-a317-4f50cd8594ca
+
+== PLAN
+  r1s1 [filings, agentic]: Find Apple’s two most recent 10‑K filings and their fiscal years
+  r1s2 [filings, agentic] after r1s1: Compare Apple’s risk factors between the two most recent 10‑K filings
+  > r1s1 started (filings, agentic)
+    . r1s1 search_filings({'alpha': 0.5, 'fiscal_years': None, 'form_types': ['10-K'], 'limit': 2, 'query': 'Apple', 'sections': None, 'tickers': ['AAPL']}) ok=True sources=2
+    . r1s1 search_filings({'alpha': 0.5, 'fiscal_years': None, 'form_types': ['10-K'], 'limit': 2, 'query': 'Apple', 'sections': None, 'tickers': ['AAPL']}) ok=True sources=2
+    . r1s1 search_filings({'alpha': 0.5, 'fiscal_years': None, 'form_types': ['10-K'], 'limit': 5, 'query': 'Apple', 'sections': None, 'tickers': ['AAPL']}) ok=True sources=5
+  < r1s1 done (agentic)
+  > r1s2 started (filings, agentic)
+    . r1s2 compare_risk_factors({'ticker': 'AAPL', 'year_a': 2025, 'year_b': 2026}) ok=True sources=42
+  < r1s2 done (agentic)
+
+== CRITIC: ok
+
+== ANSWER
+
+**Change in Apple’s risk‑factor profile (FY 2025 vs. FY 2026)**  
+
+| Fiscal year (ended) | Total risk factors | New | Removed | Unchanged | Materially changed |
+|---------------------|-------------------|-----|---------|-----------|--------------------|
+| FY 2025 (ended 2025‑09‑27) | 27 | – | – | – | – |
+| FY 2026 (ended 2026‑09‑26) | 28 | 1 | 0 | 7 | 20 |
+
+* The FY 2026 filing adds **one new risk** – a regulatory‑category item on “issues related to artificial intelligence may result in reputational, competitive and financial harm …”【4】.  
+* No risks were removed.  
+* Seven risk headings remain unchanged between the two filings【2】.  
+* Twenty risk headings were materially re‑worded or expanded. Notable examples:  
+
+  * **Supply‑chain risk** – the FY 2025 wording (“obtain components in sufficient quantities…”) was expanded in FY 2026 to include “compute capacity and storage resources” and a reliance on third‑party cloud providers, adding 434 words【6】.  
+  * **Technology/design risk** – the FY 2025 description of design and manufacturing defects was broadened in FY 2026 to explicitly cover “artificial intelligence technologies and features”【10】.  
+
+* Other risk categories (legal proceedings, cybersecurity, dependence on third‑party developers, etc.) retain the same substance, with only minor textual updates【12】【14】【16】.
+
+**Summary** – Between FY 2025 (ended 2025‑09‑27) and FY 2026 (ended 2026‑09‑26), Apple’s risk‑factor section grew from 27 to 28 items, introduced a new AI‑related regulatory risk, left no risk removed, kept seven headings unchanged, and substantially revised twenty headings, most prominently the supply‑chain and technology‑risk disclosures.  
+
+== ANSWER (citations checked)
+
+**Change in Apple’s risk‑factor profile (FY 2025 vs. FY 2026)**  
+
+| Fiscal year (ended) | Total risk factors | New | Removed | Unchanged | Materially changed |
+|---------------------|-------------------|-----|---------|-----------|--------------------|
+| FY 2025 (ended 2025‑09‑27) | 27 | – | – | – | – |
+| FY 2026 (ended 2026‑09‑26) | 28 | 1 | 0 | 7 | 20 |
+
+* The FY 2026 filing adds **one new risk** – a regulatory‑category item on “issues related to artificial intelligence may result in reputational, competitive and financial harm …”[4].  
+* No risks were removed.  
+* Seven risk headings remain unchanged between the two filings[2].  
+* Twenty risk headings were materially re‑worded or expanded. Notable examples:  
+
+  * **Supply‑chain risk** – the FY 2025 wording (“obtain components in sufficient quantities…”) was expanded in FY 2026 to include “compute capacity and storage resources” and a reliance on third‑party cloud providers, adding 434 words[6].  
+  * **Technology/design risk** – the FY 2025 description of design and manufacturing defects was broadened in FY 2026 to explicitly cover “artificial intelligence technologies and features”[10].  
+
+* Other risk categories (legal proceedings, cybersecurity, dependence on third‑party developers, etc.) retain the same substance, with only minor textual updates[12][14][16].
+
+**Summary** – Between FY 2025 (ended 2025‑09‑27) and FY 2026 (ended 2026‑09‑26), Apple’s risk‑factor section grew from 27 to 28 items, introduced a new AI‑related regulatory risk, left no risk removed, kept seven headings unchanged, and substantially revised twenty headings, most prominently the supply‑chain and technology‑risk disclosures.
+
+---
+*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*
+
+== STEPS
+  r1s1   filings    agentic  done     tools: search_filings, search_filings, search_filings
+  r1s2   filings    agentic  done     tools: compare_risk_factors
+
+== TOKENS (counted = prompt - cached + completion)
+  filings_agent       10,924  calls=6 reasoning=138 cache_hits=0 (saved 0)
+  synthesizer          3,413  calls=1 reasoning=215 cache_hits=0 (saved 0)
+  planner              1,954  calls=1 reasoning=567 cache_hits=0 (saved 0)
+  critic               1,903  calls=1 reasoning=135 cache_hits=0 (saved 0)
+  query_analyzer         849  calls=1 reasoning=66 cache_hits=0 (saved 0)
+  TOTAL               19,043   run 0fdc6905-9643-4e9d-a1ef-544f3a9ee50c | thread 9ad4e7af-5119-4fad-a317-4f50cd8594ca
+
+== CITATION CHECK: precision 1.0 (7/7 supported; 0 re-attached, 0 dropped, 0 claims unverified)
+
+== SOURCES
+  [2] AAPL risk factors, FY2025 vs FY2026 10-K (comparison) - https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm
+  [4] AAPL 10-K FY2026 risk factor: Issues related to artificial intelligence may result in reputational, competitive and financial harm to the Company, regulatory action, legal liability, and other adverse effects to the Company’s business. - https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm
+  [6] AAPL 10-K FY2026 risk factor: Future operating results depend upon the Company’s ability to obtain components, compute capacity and storage resources in sufficient quantities and on commercially reasonable terms. - https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm
+  [10] AAPL 10-K FY2026 risk factor: The Company’s products, services and technologies, including artificial intelligence technologies and features, may be affected from time to time by design and manufacturing defects. - https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm
+  [12] AAPL 10-K FY2026 risk factor: The Company is subject to the risks of adverse impacts from legal proceedings and government investigations. - https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm
+  [14] AAPL 10-K FY2026 risk factor: The Company experiences cybersecurity incidents and inadvertent losses and unauthorized access to or releases of confidential information, including personal information. - https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm
+  [16] AAPL 10-K FY2026 risk factor: The Company’s future performance depends in part on support from third-party software developers. - https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm

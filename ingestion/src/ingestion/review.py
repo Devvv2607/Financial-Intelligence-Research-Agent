@@ -17,7 +17,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from core.db.schema import companies, risk_factors
-from ingestion.enrich.risk_tagger import RiskCategory
+from core.taxonomy import RiskCategory
 
 CATEGORIES: tuple[str, ...] = get_args(RiskCategory)
 COLUMNS = [
@@ -109,13 +109,11 @@ class ReviewScore:
         return self.correct / self.labelled if self.labelled else 0.0
 
 
-def score_review_sheet(path: Path) -> ReviewScore:
+def read_labels(path: Path) -> tuple[list[dict[str, str]], list[str]]:
+    """Labelled sheet rows (your_category set and valid) and the invalid labels."""
     with path.open(encoding="utf-8-sig", newline="") as f:
         rows = list(csv.DictReader(f))
-    labelled = correct = 0
-    invalid: list[str] = []
-    confusions: Counter[tuple[str, str]] = Counter()
-    per_cat: dict[str, list[int]] = defaultdict(lambda: [0, 0])
+    labelled, invalid = [], []
     for r in rows:
         mine = (r.get("your_category") or "").strip().lower()
         if not mine:
@@ -123,20 +121,105 @@ def score_review_sheet(path: Path) -> ReviewScore:
         if mine not in CATEGORIES:
             invalid.append(f"{r['risk_id']}: {mine!r}")
             continue
+        labelled.append(r | {"your_category": mine})
+    return labelled, invalid
+
+
+def score_labels(
+    rows: list[dict[str, str]], model_of: dict[str, str], invalid: list[str] | None = None
+) -> ReviewScore:
+    """Owner labels vs a model's category per risk id (rows without one are skipped)."""
+    labelled = correct = 0
+    confusions: Counter[tuple[str, str]] = Counter()
+    per_cat: dict[str, list[int]] = defaultdict(lambda: [0, 0])
+    for r in rows:
+        mine, model = r["your_category"], model_of.get(r["risk_id"])
+        if model is None:
+            continue
         labelled += 1
         per_cat[mine][1] += 1
-        if r["model_category"] == mine:
+        if model == mine:
             correct += 1
             per_cat[mine][0] += 1
         else:
-            confusions[(mine, r["model_category"])] += 1
+            confusions[(mine, model)] += 1
     return ReviewScore(
         labelled,
         correct,
-        invalid,
+        invalid or [],
         confusions.most_common(),
         {k: (v[0], v[1]) for k, v in sorted(per_cat.items())},
     )
+
+
+def score_review_sheet(path: Path) -> ReviewScore:
+    """Owner labels vs the tags frozen in the sheet when it was exported."""
+    rows, invalid = read_labels(path)
+    return score_labels(rows, {r["risk_id"]: r["model_category"] for r in rows}, invalid)
+
+
+async def current_tags(engine: AsyncEngine, ids: list[str]) -> dict[str, tuple[str, str]]:
+    """risk id -> (category, tag_version) as stored now. Ids are content hashes, so a
+    risk whose text changed or that was removed by a re-extraction is simply absent."""
+    stmt = select(risk_factors.c.id, risk_factors.c.category, risk_factors.c.tag_version).where(
+        risk_factors.c.id.in_(ids)
+    )
+    async with engine.connect() as conn:
+        return {
+            r.id: (r.category or "", r.tag_version or "") for r in (await conn.execute(stmt)).all()
+        }
+
+
+@dataclass(frozen=True)
+class ComparedScore:
+    sheet_version: str
+    current_version: str
+    sheet: ReviewScore  # the exported (frozen) tags, on the rows that still exist
+    current: ReviewScore  # today's stored tags, same rows
+    gone: list[str]  # "TICKER FYyyyy: heading" of labelled rows no longer stored
+
+
+async def score_sheet_and_current(
+    engine: AsyncEngine, path: Path, sheet_version: str
+) -> ComparedScore:
+    rows, invalid = read_labels(path)
+    now = await current_tags(engine, [r["risk_id"] for r in rows])
+    kept = [r for r in rows if r["risk_id"] in now]
+    gone = [
+        f"{r['ticker']} FY{r['fiscal_year']}: {r['heading'][:80]}"
+        for r in rows
+        if r["risk_id"] not in now
+    ]
+    versions = sorted({v for _, v in now.values()})
+    return ComparedScore(
+        sheet_version,
+        ", ".join(versions) or "none",
+        score_labels(kept, {r["risk_id"]: r["model_category"] for r in kept}, invalid),
+        score_labels(kept, {k: c for k, (c, _) in now.items()}),
+        gone,
+    )
+
+
+def compared_markdown(c: ComparedScore) -> str:
+    lines = [
+        "## Risk-tag review score: exported vs current tags\n",
+        "Same labelled risk factors, scored against both tag sets.\n",
+        "| Tags | Accuracy vs owner labels |\n|---|---|",
+        f"| exported ({c.sheet_version}) | {_pct(c.sheet)} |",
+        f"| current ({c.current_version}) | {_pct(c.current)} |",
+    ]
+    if c.gone:
+        lines.append(
+            f"\nExcluded, risk text changed or removed since export ({len(c.gone)}):\n"
+            + "\n".join(f"- {g}" for g in c.gone)
+        )
+    lines.append("\n### Current tags in detail\n")
+    lines.append(score_markdown(c.current).split("\n", 2)[2])
+    return "\n".join(lines)
+
+
+def _pct(s: ReviewScore) -> str:
+    return f"**{100 * s.accuracy:.0f}%** ({s.correct}/{s.labelled})"
 
 
 def score_markdown(s: ReviewScore) -> str:

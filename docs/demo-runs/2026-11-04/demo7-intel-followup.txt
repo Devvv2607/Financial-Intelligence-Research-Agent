@@ -1,0 +1,122 @@
+thread 4685a2e7-0589-490e-b38e-9b25ed9c42f5
+
+== PLAN
+  r1s1 [filings, direct]: Compare Intel's risk factors between its last two 10-K filings
+      -> compare_risk_factors({"ticker": "INTC"})
+  > r1s1 started (filings, direct)
+    . r1s1 compare_risk_factors({'ticker': 'INTC'}) ok=True sources=50
+  < r1s1 done (direct)
+
+== CRITIC: gaps | gaps: ['Full list and details of the 16 changed risk factors between the 2024 and 2025 10‑K filings', 'Complete removed risk factors list (the current output is truncated)', 'Confirmation of the exact filing years for the last two 10‑Ks (e.g., FY2024 filed early 2025 and FY2025 filed early 2026)'] -> replanning
+
+== REPLAN (round 2)
+  r2s1 [filings, direct]: Obtain filing dates and fiscal years for Intel's two most recent 10-K filings
+      -> search_filings({"query":"Intel 10-K","tickers":["INTC"],"form_types":["10-K"],"limit":2})
+  r2s2 [filings, direct]: Retrieve the complete set of risk factors for Intel FY2025 10-K
+      -> get_risk_factors({"ticker":"INTC","fiscal_year":2025})
+  r2s3 [filings, direct]: Retrieve the complete set of risk factors for Intel FY2024 10-K
+      -> get_risk_factors({"ticker":"INTC","fiscal_year":2024})
+  r2s4 [filings, agentic] after r2s2, r2s3: Identify and detail all changed (including the 16 changed) and removed risk factors between Intel FY2024 and FY2025 10-Ks
+  > r2s1 started (filings, direct)
+  > r2s2 started (filings, direct)
+  > r2s3 started (filings, direct)
+    . r2s3 get_risk_factors({'ticker': 'INTC', 'fiscal_year': 2024}) ok=True sources=35
+  < r2s3 done (direct)
+    . r2s1 search_filings({'query': 'Intel 10-K', 'tickers': ['INTC'], 'form_types': ['10-K'], 'limit': 2}) ok=True sources=2
+  < r2s1 done (direct)
+    . r2s2 get_risk_factors({'ticker': 'INTC', 'fiscal_year': 2025}) ok=True sources=22
+  < r2s2 done (direct)
+  > r2s4 started (filings, agentic)
+    . r2s4 compare_risk_factors({'ticker': 'INTC', 'year_a': 2024, 'year_b': 2025}) ok=True sources=50
+  < r2s4 done (agentic)
+
+== CRITIC: gaps | gaps: ['Detailed information on each of the 16 changed risk factors (original wording vs. updated wording, category changes, and any material alterations)', 'Complete list of all 15 removed risk factor headings with their full descriptions and categories (the current list is truncated)', 'List of the 4 unchanged risk factors for completeness'] -> replanning
+
+== REPLAN (round 3)
+  r3s1 [filings, agentic] after r2s2, r2s3, r2s4: Provide detailed information on the 16 changed risk factors (original wording vs updated wording, category changes, and material alterations), the complete list of the 15 removed risk factor headings with their full descriptions and categories, and the list of the 4 unchanged risk factor headings with categories for Intel (INTC) between FY2024 and FY2025 10‑K filings
+  > r3s1 started (filings, agentic)
+  < r3s1 failed (agentic)
+
+== CRITIC: gaps | gaps: ['Full original wording, updated wording, category changes, and material alterations for each of the 16 changed risk factors between Intel FY2024 and FY2025 10‑K filings', 'Complete descriptions (full text) and categories for each of the 15 risk factors removed in the FY2025 10‑K (as listed in the comparison)', 'Verification and listing of the 4 unchanged risk factor headings with their categories for Intel FY2024 and FY2025 10‑K filings']
+
+== ANSWER
+
+**Intel (INTC) – Change in Risk‑Factor Disclosures between FY 2024 (ended 2024‑12‑28) and FY 2025 (ended 2025‑12‑27)**  
+
+| Category of change | FY 2024 → FY 2025 | Details (headings) |
+|--------------------|-------------------|--------------------|
+| **New risk factors** | 2 | • “If we are unable to secure a significant external foundry customer for Intel 14A, our next‑generation semiconductor manufacturing process technology, we may pause or discontinue our pursuit of next‑generation leading‑edge process technologies.” (category *customer_concentration*)【5】<br>• “There are a number of risks and uncertainties associated with the U.S. government’s acquisition of significant equity interests in us.” (category *regulatory*)【9】 |
+| **Removed risk factors** | 15 | Examples include “Table of Contents” (financial‑liquidity)【8】, “The development and implementation of new semiconductor products and manufacturing technologies are subject to many risks and uncertainties.” (technology)【12】, “Our implementation of new business strategies and investments in new businesses, products, and technologies are inherently risky and do not always succeed.” (technology)【13】, “We have ceased to return capital to stockholders.” (financial‑liquidity)【15】, “Table of Contents” (climate ESG)【16】. (Full list not available.) |
+| **Materially changed risk factors** | 16 | The comparison indicates 16 risk factors appear in both filings but were re‑worded or re‑categorized. Specific wording changes are not provided in the available sources. |
+| **Unchanged risk factors** | 4 | • “We are in a highly competitive and rapidly changing industry.” (competition) – FY 2024【4】 & FY 2025【3】<br>• “We are making significant, long‑term and inherently risky investments in R&D and manufacturing facilities that may not realize a favorable return.” (technology) – FY 2024【10】 & FY 2025【7】<br>• “We are subject to the risks of product defects, errata or other product issues.” (technology) – FY 2024【24】 & FY 2025【25】<br>• “We are subject to increasing and evolving cybersecurity threats and privacy risks.” (cybersecurity) – FY 2024【26】 & FY 2025【30】 |
+
+**Key take‑aways**
+
+* Intel added two new risk disclosures focused on external‑foundry customer dependence and U.S. government equity‑interest risks.  
+* Fifteen risk‑factor headings present in FY 2024 were removed in FY 2025, many of which were generic “Table of Contents” entries or earlier technology‑implementation risks.  
+* Sixteen existing risk factors were materially revised (e.g., wording or category changes), though the precise revisions are not detailed in the retrieved data.  
+* Four risk factors remained unchanged in wording and category across the two filings.
+
+**Limits**
+
+* The detailed list of the 16 materially changed risk factors (original vs. updated wording) is not available from the retrieved sources.  
+* The complete set of 15 removed headings with full descriptions is not fully enumerated; only representative examples are provided.  
+
+== ANSWER (citations checked)
+
+**Intel (INTC) – Change in Risk‑Factor Disclosures between FY 2024 (ended 2024‑12‑28) and FY 2025 (ended 2025‑12‑27)**  
+
+| Category of change | FY 2024 → FY 2025 | Details (headings) |
+|--------------------|-------------------|--------------------|
+| **New risk factors** | 2 | • “If we are unable to secure a significant external foundry customer for Intel 14A, our next‑generation semiconductor manufacturing process technology, we may pause or discontinue our pursuit of next‑generation leading‑edge process technologies.” (category *customer_concentration*)[5]<br>• “There are a number of risks and uncertainties associated with the U.S. government’s acquisition of significant equity interests in us.” (category *regulatory*)[9] |
+| **Removed risk factors** | 15 | Examples include “Table of Contents” (financial‑liquidity)[8], “The development and implementation of new semiconductor products and manufacturing technologies are subject to many risks and uncertainties.” (technology)[12], “Our implementation of new business strategies and investments in new businesses, products, and technologies are inherently risky and do not always succeed.” (technology)[13], “We have ceased to return capital to stockholders.” (financial‑liquidity)[15], “Table of Contents” (climate ESG)[16]. (Full list not available.) |
+| **Materially changed risk factors** | 16 | The comparison indicates 16 risk factors appear in both filings but were re‑worded or re‑categorized. Specific wording changes are not provided in the available sources. |
+| **Unchanged risk factors** | 4 | • “We are in a highly competitive and rapidly changing industry.” (competition) – FY 2024[4] & FY 2025[3]<br>• “We are making significant, long‑term and inherently risky investments in R&D and manufacturing facilities that may not realize a favorable return.” (technology) – FY 2024[10] & FY 2025[7]<br>• “We are subject to the risks of product defects, errata or other product issues.” (technology) – FY 2024[24] & FY 2025[25]<br>• “We are subject to increasing and evolving cybersecurity threats and privacy risks.” (cybersecurity) – FY 2024[26] & FY 2025[30] |
+
+**Key take‑aways**
+
+* Intel added two new risk disclosures focused on external‑foundry customer dependence and U.S. government equity‑interest risks.  
+* Fifteen risk‑factor headings present in FY 2024 were removed in FY 2025, many of which were generic “Table of Contents” entries or earlier technology‑implementation risks.  
+* Sixteen existing risk factors were materially revised (e.g., wording or category changes), though the precise revisions are not detailed in the retrieved data.  
+* Four risk factors remained unchanged in wording and category across the two filings.
+
+**Limits**
+
+* The detailed list of the 16 materially changed risk factors (original vs. updated wording) is not available from the retrieved sources.  
+* The complete set of 15 removed headings with full descriptions is not fully enumerated; only representative examples are provided.
+
+---
+*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*
+
+== STEPS
+  r1s1   filings    direct   done     tools: compare_risk_factors
+  r2s1   filings    direct   done     tools: search_filings
+  r2s2   filings    direct   done     tools: get_risk_factors
+  r2s3   filings    direct   done     tools: get_risk_factors
+  r2s4   filings    agentic  done     tools: compare_risk_factors
+  r3s1   filings    agentic  failed   tools: - | no successful tool result
+
+== TOKENS (counted = prompt - cached + completion)
+  critic               7,736  calls=3 reasoning=866 cache_hits=0 (saved 0)
+  synthesizer          6,833  calls=1 reasoning=403 cache_hits=0 (saved 0)
+  filings_agent        6,735  calls=3 reasoning=114 cache_hits=0 (saved 0)
+  planner              5,334  calls=3 reasoning=1,617 cache_hits=0 (saved 0)
+  query_analyzer       1,014  calls=1 reasoning=47 cache_hits=0 (saved 0)
+  TOTAL               27,652   run ad7df449-e429-404c-a9f7-2c0e3f0d266d | thread 4685a2e7-0589-490e-b38e-9b25ed9c42f5
+
+== SOURCES
+  [3] INTC 10-K FY2025 risk factor: We are in a highly competitive and rapidly changing industry. - https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm
+  [4] INTC 10-K FY2024 risk factor: We are in a highly competitive and rapidly changing industry. - https://www.sec.gov/Archives/edgar/data/50863/000005086325000009/intc-20241228.htm
+  [5] INTC 10-K FY2025 risk factor: If we are unable to secure a significant external foundry customer for Intel 14A, our next generation semiconductor manufacturing process technology, we may pause or discontinue our pursuit of next generation leading-edge process technologies. - https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm
+  [7] INTC 10-K FY2025 risk factor: We are making significant, long-term and inherently risky investments in R&D and manufacturing facilities that may not realize a favorable return. - https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm
+  [8] INTC 10-K FY2024 risk factor: Table of Contents - https://www.sec.gov/Archives/edgar/data/50863/000005086325000009/intc-20241228.htm
+  [9] INTC 10-K FY2025 risk factor: There are a number of risks and uncertainties associated with the U.S. government’s acquisition of significant equity interests in us. - https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm
+  [10] INTC 10-K FY2024 risk factor: We are making significant, long-term and inherently risky investments in R&D and manufacturing facilities that may not realize a favorable return. - https://www.sec.gov/Archives/edgar/data/50863/000005086325000009/intc-20241228.htm
+  [12] INTC 10-K FY2024 risk factor: The development and implementation of new semiconductor products and manufacturing technologies are subject to many risks and uncertainties. - https://www.sec.gov/Archives/edgar/data/50863/000005086325000009/intc-20241228.htm
+  [13] INTC 10-K FY2024 risk factor: Our implementation of new business strategies and investments in new businesses, products, and technologies are inherently risky and do not always succeed. - https://www.sec.gov/Archives/edgar/data/50863/000005086325000009/intc-20241228.htm
+  [15] INTC 10-K FY2024 risk factor: Our Smart Capital approach to capital spending, alternative financing arrangements, and pursuit of government grants involves risks and may not be successful. - https://www.sec.gov/Archives/edgar/data/50863/000005086325000009/intc-20241228.htm
+  [16] INTC 10-K FY2024 risk factor: Table of Contents - https://www.sec.gov/Archives/edgar/data/50863/000005086325000009/intc-20241228.htm
+  [24] INTC 10-K FY2024 risk factor: We are subject to the risks of product defects, errata, or other product issues. - https://www.sec.gov/Archives/edgar/data/50863/000005086325000009/intc-20241228.htm
+  [25] INTC 10-K FY2025 risk factor: We are subject to the risks of product defects, errata or other product issues. - https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm
+  [26] INTC 10-K FY2024 risk factor: Table of Contents - https://www.sec.gov/Archives/edgar/data/50863/000005086325000009/intc-20241228.htm
+  [30] INTC 10-K FY2025 risk factor: We are subject to increasing and evolving cybersecurity threats and privacy risks. - https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm
