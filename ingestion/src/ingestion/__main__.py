@@ -20,20 +20,22 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, TextColumn, TimeElapsedColumn
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncEngine
 
 from core import aio
 from core.config import Settings, get_settings
 from core.db import create_engine
 from core.db.llm_store import PostgresLLMStore
-from core.db.schema import companies
+from core.db.schema import companies, risk_factors
 from core.embeddings import Embedder
-from core.llm import GroqClient
+from core.llm import GroqClient, estimate_tokens
 from core.logging import configure_logging
 from core.newsapi import NewsApiClient
 from core.vectorstore import create_client, ensure_ready
 from ingestion import experiments, prompts, review
 from ingestion import report as rpt
 from ingestion.edgar.client import EdgarClient
+from ingestion.enrich.tag_replay import replay_cached_tags
 from ingestion.pipeline import SAMPLE_TICKERS, STAGES, Pipeline, Stage, UniverseRow, read_universe
 
 console = Console()
@@ -63,6 +65,23 @@ async def _run(args: argparse.Namespace, s: Settings) -> int:
     rows = _select_rows(universe, args)
     stages: tuple[Stage, ...] = (args.only,) if args.only else STAGES
     engine = create_engine(s.database_url)
+    if args.needs_review:
+        async with engine.connect() as conn:
+            flagged_tickers = set(
+                (
+                    await conn.execute(
+                        select(companies.c.ticker)
+                        .join(risk_factors, risk_factors.c.cik == companies.c.cik)
+                        .where(risk_factors.c.needs_review.is_(True))
+                        .distinct()
+                    )
+                ).scalars()
+            )
+        rows = [row for row in rows if row.ticker in flagged_tickers]
+        if args.dry_run:
+            await _print_retag_plan(engine, s)
+            await engine.dispose()
+            return 0
     if args.daily:
         console.print("[bold]Before:[/] " + await rpt.progress_line(engine, s, len(universe)))
     run_id = _new_run_id()
@@ -107,6 +126,7 @@ async def _run(args: argparse.Namespace, s: Settings) -> int:
             experiment_tickers=frozenset(
                 t.strip().upper() for t in (args.experiment_tickers or "").split(",") if t.strip()
             ),
+            needs_review_only=args.needs_review,
             on_progress=on_progress,
         )
         outcomes = await pipeline.run(rows, stages, force=args.force, refresh=args.refresh)
@@ -210,6 +230,53 @@ async def _progress(args: argparse.Namespace, s: Settings) -> int:
     return 0
 
 
+async def _replay_tag_cache(s: Settings) -> int:
+    engine = create_engine(s.database_url)
+    result = await replay_cached_tags(engine)
+    await engine.dispose()
+    console.print(
+        f"Cached tag replay (read-only): {result['flagged_rows']} flagged rows, "
+        f"{result['cached_echoes']} cached echoes, "
+        f"{result['would_validate']} would validate, "
+        f"{result['not_creditable']} not creditable"
+    )
+    return 0
+
+
+async def _replay_handler(_args: argparse.Namespace, s: Settings) -> int:
+    return await _replay_tag_cache(s)
+
+
+async def _print_retag_plan(engine: AsyncEngine, s: Settings) -> None:
+    async with engine.connect() as conn:
+        rows = (
+            await conn.execute(
+                select(risk_factors.c.id, risk_factors.c.heading, risk_factors.c.body)
+                .where(risk_factors.c.needs_review.is_(True))
+                .order_by(
+                    risk_factors.c.cik, risk_factors.c.fiscal_year.desc(), risk_factors.c.ordinal
+                )
+            )
+        ).all()
+    count = len(rows)
+    batches = (count + s.risk_tag_batch_size - 1) // s.risk_tag_batch_size
+    estimated_tokens = sum(
+        estimate_tokens(
+            prompts.load("risk_tagging")
+            + "\n\n".join(
+                f"[{i}] {row.heading}\n{row.body}"
+                for i, row in enumerate(rows[start : start + s.risk_tag_batch_size])
+            )
+        )
+        + 1024
+        for start in range(0, count, s.risk_tag_batch_size)
+    )
+    console.print(
+        f"needs_review rows: {count}; batches: {batches}; "
+        f"estimated counted tokens: {estimated_tokens:,}"
+    )
+
+
 def _save(s: Settings, name: str, text: str) -> None:
     s.reports_dir.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
@@ -237,6 +304,16 @@ def main() -> None:
         help="companies processed at once (each holds a parsed 10-K in memory)",
     )
     run.add_argument("--force", action="store_true", help="re-run stages already done")
+    run.add_argument(
+        "--needs-review",
+        action="store_true",
+        help="tag only risk factors currently marked needs_review",
+    )
+    run.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="show the needs_review retag plan without creating clients or making calls",
+    )
     run.add_argument("--refresh", action="store_true", help="re-download SEC submissions")
     run.add_argument(
         "--daily",
@@ -266,9 +343,12 @@ def main() -> None:
     rev.add_argument("--path", default=str(REVIEW_SHEET))
     rev.add_argument("--n", type=int, default=30)
     rev.add_argument("--sheet-version", help="label for the tags in the sheet, e.g. v2")
+    sub.add_parser("replay-tag-cache", help="replay cached tag echoes without database writes")
     args = parser.parse_args()
 
     s = get_settings()
+    if args.command == "run" and args.dry_run and not args.needs_review:
+        parser.error("--dry-run requires --needs-review")
     overrides = {
         "groq_daily_token_budget": getattr(args, "daily_budget", None),
         "risk_tag_batch_size": getattr(args, "batch_size", None),
@@ -283,6 +363,7 @@ def main() -> None:
         "experiment": _experiment,
         "review": _review,
         "progress": _progress,
+        "replay-tag-cache": _replay_handler,
     }[args.command]
     sys.exit(aio.run(handler(args, s)))
 

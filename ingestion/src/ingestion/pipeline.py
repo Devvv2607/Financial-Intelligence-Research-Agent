@@ -133,6 +133,7 @@ class Pipeline:
         run_id: str,
         concurrency: int = 2,
         experiment_tickers: frozenset[str] = frozenset(),
+        needs_review_only: bool = False,
         on_progress: Callable[[str, str], None] | None = None,
     ) -> None:
         self.s = settings
@@ -148,6 +149,7 @@ class Pipeline:
         # model) count as stale and are redone by the production model.
         self._tag_version = f"{prompts.version('risk_tagging')}@{settings.model_for('fast')}"
         self._experiment_tickers = experiment_tickers
+        self._needs_review_only = needs_review_only
         self._on_progress = on_progress or (lambda ticker, msg: None)
         self._ticker_map: dict[str, int] = {}
 
@@ -423,6 +425,8 @@ class Pipeline:
 
     def _needs_tag(self, r: dict[str, Any]) -> bool:
         """Untagged, or tagged by an older version of the taxonomy prompt."""
+        if self._needs_review_only:
+            return bool(r["needs_review"])
         return r["category"] is None or r["tag_version"] != self._tag_version
 
     async def _sector_llm(self, cik: int, details: dict[str, Any]) -> None:

@@ -65,6 +65,7 @@ class TagResult:
     # The model never produced a valid category for this risk (after the capped retries);
     # it is tagged "other" so the run can continue, and flagged for a human to check.
     needs_review: bool = False
+    review_reason: str | None = None
 
 
 VALID_CATEGORIES: frozenset[str] = frozenset(get_args(RiskCategory))
@@ -125,7 +126,7 @@ async def tag_with_llm(
     for start in range(0, len(risks), batch_size):
         batch = list(risks[start : start + batch_size])
         pending = dict(enumerate(batch))
-        # A model can occasionally drop an id; re-ask once for just the missing ones.
+        # A model can occasionally drop or misattach an id; re-ask only those items.
         for _ in range(2):
             if not pending:
                 break
@@ -157,17 +158,37 @@ async def tag_with_llm(
                     )
                 pending = {}
                 break
-            problem = batch_problem(out.tags, pending)
-            if problem is not None:
-                # Reject the whole output (nothing from a confused batch is trusted) and
-                # re-ask; after the last attempt the risks fall through to needs_review.
-                logger.warning("tag batch rejected", extra={"cik": cik, "problem": problem})
-                continue
-            for tag in out.tags:
+            valid, failures = validate_items(out.tags, pending)
+            for tag in valid:
                 r = pending.pop(tag.id)
                 results.append(TagResult(r.key, tag.category, tag.summary.strip(), "llm"))
+            if failures:
+                logger.warning(
+                    "tag items rejected",
+                    extra={"cik": cik, "stage": stage, "causes": failures},
+                )
+                if _ == 1:
+                    for rid, cause in failures.items():
+                        r = pending.pop(rid)
+                        results.append(
+                            TagResult(
+                                r.key,
+                                "other",
+                                "",
+                                "llm",
+                                needs_review=True,
+                                review_reason=cause,
+                            )
+                        )
         for r in pending.values():  # attempts spent: keep the run going, flag for a human
-            results.append(TagResult(r.key, "other", "", "llm", needs_review=True))
+            reason = "missing after item-level retry"
+            logger.warning(
+                "tag item needs review",
+                extra={"cik": cik, "stage": stage, "risk_key": r.key, "cause": reason},
+            )
+            results.append(
+                TagResult(r.key, "other", "", "llm", needs_review=True, review_reason=reason)
+            )
     return results
 
 
@@ -191,13 +212,61 @@ def batch_problem(tags: Sequence[RiskTag], pending: dict[int, RiskInput]) -> str
     return None
 
 
+def validate_items(
+    tags: Sequence[RiskTag], pending: dict[int, RiskInput]
+) -> tuple[list[RiskTag], dict[int, str]]:
+    """Split one model response into trusted items and item-level retry causes."""
+    counts: dict[int, int] = {}
+    for tag in tags:
+        counts[tag.id] = counts.get(tag.id, 0) + 1
+    valid: list[RiskTag] = []
+    failures: dict[int, str] = {}
+    for rid in pending:
+        count = counts.get(rid, 0)
+        if count == 0:
+            failures[rid] = "missing id"
+            continue
+        if count > 1:
+            failures[rid] = "duplicate id"
+            continue
+        tag = next(tag for tag in tags if tag.id == rid)
+        cause = echo_problem(tag.heading_start, rid, pending)
+        if cause is not None:
+            failures[rid] = cause
+        else:
+            valid.append(tag)
+    for tag in tags:
+        if tag.id not in pending:
+            failures.setdefault(tag.id, "unknown id")
+    return valid, failures
+
+
+def echo_problem(heading_start: str, rid: int, pending: dict[int, RiskInput]) -> str | None:
+    echo = _words(heading_start, ECHO_WORDS)
+    if not echo:
+        return "missing heading_start"
+    own = _words(pending[rid].heading, ECHO_WORDS)
+    if own.split()[: len(echo.split())] == echo.split():
+        return None
+    score = fuzz.ratio(echo, own)
+    if score < ECHO_MIN_RATIO:
+        return f"heading echo below threshold ({score:.1f})"
+    scores = {
+        other_id: fuzz.ratio(echo, _words(risk.heading, ECHO_WORDS))
+        for other_id, risk in pending.items()
+        if other_id != rid
+    }
+    if scores and max(scores.values()) > score:
+        other_id = max(scores, key=lambda item: scores[item])
+        return f"heading echo matches id {other_id} better ({score:.1f})"
+    return None
+
+
 def echo_matches(heading_start: str, rid: int, pending: dict[int, RiskInput]) -> bool:
     """The echo must resemble its own risk's heading, and no other risk's more: headings
     often share long prefixes ("We are subject to the risks of ..."), so a threshold alone
     would let a tag attached to a sibling risk through."""
-    echo = _words(heading_start, ECHO_WORDS)
-    scores = {i: fuzz.ratio(echo, _words(r.heading, ECHO_WORDS)) for i, r in pending.items()}
-    return scores[rid] >= ECHO_MIN_RATIO and scores[rid] >= max(scores.values())
+    return echo_problem(heading_start, rid, pending) is None
 
 
 def best_matches(
