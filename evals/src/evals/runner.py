@@ -11,6 +11,11 @@ from typing import Any
 
 import httpx
 
+from agent.llm import CHAT_OUTPUT_ESTIMATE
+from core.config import get_settings
+from core.db.engine import create_engine
+from core.db.llm_store import PostgresLLMStore
+from core.llm import estimate_tokens
 from evals.metrics import summarize_observations
 from evals.schema import GoldenQuestion, load_golden
 
@@ -18,6 +23,7 @@ ROOT = Path(__file__).resolve().parents[2]
 GOLDEN = ROOT / "golden.yaml"
 UNIVERSE = ROOT.parent / "data" / "universe.csv"
 RESULTS = ROOT / "results"
+DEFAULT_ESTIMATE_PER_QUESTION = 6_000
 
 
 def _parse_events(body: str) -> list[dict[str, Any]]:
@@ -84,6 +90,49 @@ async def run_api(questions: list[GoldenQuestion], base_url: str) -> list[dict[s
         return [await run_question(client, question) for question in questions]
 
 
+async def verify_scripted_api(client: httpx.AsyncClient) -> None:
+    response = await client.get("/ready")
+    runtime = response.headers.get("X-Agent-Runtime")
+    if runtime != "scripted":
+        raise RuntimeError(
+            "eval-dry requires the target API to advertise X-Agent-Runtime: scripted; "
+            f"received {runtime or 'no runtime header'}"
+        )
+
+
+def estimate_question_tokens(question: GoldenQuestion) -> int:
+    return max(
+        DEFAULT_ESTIMATE_PER_QUESTION, estimate_tokens(question.question) + CHAT_OUTPUT_ESTIMATE
+    )
+
+
+async def check_live_budget(questions: list[GoldenQuestion]) -> dict[str, int | str]:
+    settings = get_settings()
+    model = settings.model_for("reasoning", agent=True)
+    estimated_per_question = max(estimate_question_tokens(question) for question in questions)
+    estimate = estimated_per_question * len(questions)
+    engine = create_engine(settings.database_url)
+    try:
+        used = await PostgresLLMStore(engine).tokens_last_24h(model)
+    finally:
+        await engine.dispose()
+    remaining = settings.agent_daily_token_budget - used
+    print(
+        f"Live eval budget estimate: {estimated_per_question:,} tokens/question "
+        f"({estimate:,} selected); {used:,} used, {remaining:,} remaining for {model}."
+    )
+    if remaining < estimate:
+        raise RuntimeError(
+            f"live eval refused: estimate {estimate:,} exceeds remaining agent budget "
+            f"{remaining:,}; no live calls were started"
+        )
+    return {
+        "model": model,
+        "estimated_per_question": estimated_per_question,
+        "estimated_total": estimate,
+    }
+
+
 def write_results(
     questions: list[GoldenQuestion], observations: list[dict[str, Any]], *, mode: str
 ) -> Path:
@@ -117,17 +166,6 @@ def write_results(
     return json_path
 
 
-def _guard_live(limit: int, estimated_tokens: int) -> None:
-    if os.getenv("AGENT_RUNTIME") == "scripted":
-        raise RuntimeError("live mode refuses AGENT_RUNTIME=scripted")
-    remaining = os.getenv("EVAL_REMAINING_TOKENS")
-    if remaining is None or int(remaining) < limit * estimated_tokens:
-        raise RuntimeError(
-            "live mode requires EVAL_REMAINING_TOKENS at least "
-            f"{limit * estimated_tokens:,}; no live calls were started"
-        )
-
-
 def _resume_ids() -> set[str]:
     candidates = sorted(RESULTS.glob("*.json"), reverse=True)
     if not candidates:
@@ -157,7 +195,14 @@ def main() -> None:
     if not questions:
         raise SystemExit("no golden questions selected")
     if args.live:
-        _guard_live(len(questions), int(os.getenv("EVAL_ESTIMATED_TOKENS", "2000")))
+        asyncio.run(check_live_budget(questions))
+    elif args.dry:
+
+        async def verify() -> None:
+            async with httpx.AsyncClient(base_url=args.base_url, timeout=30) as client:
+                await verify_scripted_api(client)
+
+        asyncio.run(verify())
     observations = asyncio.run(run_api(questions, args.base_url))
     path = write_results(questions, observations, mode="scripted" if args.dry else "live")
     print(f"Wrote {path}")

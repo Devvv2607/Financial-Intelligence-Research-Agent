@@ -1,9 +1,12 @@
+import asyncio
 import json
 from pathlib import Path
 
+import httpx
+import pytest
 from pytest import MonkeyPatch
 
-from evals.runner import _parse_events, write_results
+from evals.runner import _parse_events, verify_scripted_api, write_results
 from evals.schema import load_golden
 
 
@@ -34,3 +37,16 @@ def test_sse_parser_reads_data_events() -> None:
     assert _parse_events('event: plan_created\ndata: {"event":"plan_created"}\n') == [
         {"event": "plan_created"}
     ]
+
+
+def test_dry_run_rejects_non_scripted_api() -> None:
+    transport = httpx.MockTransport(
+        lambda request: httpx.Response(200, headers={"X-Agent-Runtime": "live"})
+    )
+
+    async def check() -> None:
+        async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+            await verify_scripted_api(client)
+
+    with pytest.raises(RuntimeError, match=r"requires.*scripted"):
+        asyncio.run(check())

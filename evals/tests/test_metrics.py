@@ -20,6 +20,7 @@ QUESTION = GoldenQuestion(
     expect_refusal=False,
     key_facts=["risk"],
     needs_full_data=False,
+    verified=True,
 )
 
 

@@ -20,6 +20,7 @@ class GoldenQuestion(BaseModel):
     expect_refusal: bool
     key_facts: list[str] = Field(min_length=1)
     needs_full_data: bool
+    verified: bool
 
     @model_validator(mode="after")
     def normalize_tickers(self) -> "GoldenQuestion":
