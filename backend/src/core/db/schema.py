@@ -110,7 +110,7 @@ risk_factors = Table(
     Column("body", Text, nullable=False),
     Column("category", String(32)),
     Column("summary", Text),
-    Column("tag_source", String(16)),  # llm | inherited
+    Column("tag_source", String(16)),  # llm | inherited | cache
     # Prompt version + model that produced the tag, e.g. risk_tagging:v2@openai/gpt-oss-20b
     Column("tag_version", String(96)),
     Column("inherited_from", String(32)),
