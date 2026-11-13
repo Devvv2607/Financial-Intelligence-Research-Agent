@@ -17,6 +17,7 @@ from typing import Any
 
 import pytest
 
+from ingestion.extract.glued_words_report import compare_filing
 from ingestion.extract.html_clean import Block, html_to_blocks
 from ingestion.extract.risk_splitter import split_risk_factors
 from ingestion.extract.sections import (
@@ -247,6 +248,46 @@ def test_whitespace_between_inline_elements_is_kept() -> None:
         "<span> financial</span> <b>results</b>.</p>"
     )
     assert html_to_blocks(html)[0].text == "We seek to ensure accurate financial results."
+
+
+def test_adjacent_inline_elements_restore_real_word_boundaries() -> None:
+    html = (
+        "<p><span>the</span><span>Company</span> "
+        "<span>risk</span><span>of</span> "
+        "<span>are</span><span>subject</span> "
+        "<span>to</span><span>ensure</span> "
+        "<span>financial</span><span>results</span></p>"
+    )
+    assert html_to_blocks(html)[0].text == (
+        "the Company risk of are subject to ensure financial results"
+    )
+
+
+def test_adjacent_inline_elements_keep_mid_word_splits_joined() -> None:
+    html = "<p><span>fin</span><span>ancial</span> <span>risk</span><span>of</span></p>"
+    assert html_to_blocks(html)[0].text == "financial risk of"
+
+
+def test_glued_word_report_compares_cached_filing_without_database(tmp_path: Path) -> None:
+    html = (
+        "<div><b>the</b><b>Company faces significant operational risks.</b></div>"
+        "<div>" + ("This body has enough text. " * 8) + "</div>"
+    )
+    raw_dir = tmp_path / "raw"
+    path = raw_dir / "sec" / "www.sec.gov" / "Archives" / "edgar" / "data" / "1" / "filing.htm"
+    path.parent.mkdir(parents=True)
+    path.write_text(html, encoding="utf-8")
+    comparison = compare_filing(
+        ticker="AAPL",
+        accession_no="0000000000-00-000000",
+        url="https://www.sec.gov/Archives/edgar/data/1/filing.htm",
+        raw_dir=raw_dir,
+        stored=[
+            ("theCompany faces significant operational risks.", "This body has enough text. " * 8)
+        ],
+    )
+    assert comparison.fixed_count == comparison.stored_count
+    assert comparison.heading_changes == 1
 
 
 @pytest.mark.parametrize(

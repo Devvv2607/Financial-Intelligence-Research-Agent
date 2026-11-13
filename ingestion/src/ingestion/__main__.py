@@ -37,6 +37,7 @@ from ingestion import experiments, prompts, review
 from ingestion import report as rpt
 from ingestion.edgar.client import EdgarClient
 from ingestion.enrich.tag_replay import load_cached_tag_plan, replay_cached_tags
+from ingestion.extract.glued_words_report import FilingComparison, compare_cached_filings
 from ingestion.load import postgres as pg
 from ingestion.pipeline import SAMPLE_TICKERS, STAGES, Pipeline, Stage, UniverseRow, read_universe
 
@@ -205,6 +206,34 @@ async def _report(args: argparse.Namespace, s: Settings) -> int:
         text = report.markdown()
     await engine.dispose()
     _save(s, f"ingest-{args.section}", text)
+    return 0
+
+
+async def _glued_words_report(_args: argparse.Namespace, s: Settings) -> int:
+    engine = create_engine(s.database_url)
+    comparisons = await compare_cached_filings(engine, s.raw_dir)
+    await engine.dispose()
+    by_company: dict[str, list[FilingComparison]] = {}
+    for comparison in comparisons:
+        by_company.setdefault(comparison.ticker, []).append(comparison)
+    for ticker, company_filings in by_company.items():
+        examples = [example for filing in company_filings for example in filing.examples][:10]
+        missing = sum(filing.raw_missing for filing in company_filings)
+        console.print(
+            f"{ticker}: headings changed={sum(f.heading_changes for f in company_filings)}, "
+            f"bodies changed={sum(f.body_changes for f in company_filings)}, "
+            f"filings={len(company_filings)}, raw files missing={missing}"
+        )
+        for example in examples:
+            console.print(f"  {example.field}: BEFORE {example.before[:180]!r}")
+            console.print(f"           AFTER  {example.after[:180]!r}")
+    changed_counts = [
+        c for c in comparisons if not c.raw_missing and c.stored_count != c.fixed_count
+    ]
+    console.print(
+        f"Summary: filings={len(comparisons)}, "
+        f"filings with risk-factor count changes={len(changed_counts)}"
+    )
     return 0
 
 
@@ -392,6 +421,10 @@ def main() -> None:
     rev.add_argument("--n", type=int, default=30)
     rev.add_argument("--sheet-version", help="label for the tags in the sheet, e.g. v2")
     sub.add_parser("replay-tag-cache", help="replay cached tag echoes without database writes")
+    sub.add_parser(
+        "report-glued-words",
+        help="compare cached filings with the extractor without database writes",
+    )
     args = parser.parse_args()
 
     s = get_settings()
@@ -414,6 +447,7 @@ def main() -> None:
         "review": _review,
         "progress": _progress,
         "replay-tag-cache": _replay_handler,
+        "report-glued-words": _glued_words_report,
     }[args.command]
     sys.exit(aio.run(handler(args, s)))
 

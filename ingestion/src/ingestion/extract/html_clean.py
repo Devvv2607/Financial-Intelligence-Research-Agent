@@ -26,6 +26,64 @@ _HIDDEN_RE = re.compile(r"display\s*:\s*none", re.I)
 _FONT_SIZE_RE = re.compile(r"font-size\s*:\s*([\d.]+)\s*(pt|px)", re.I)
 _XML_DECL_RE = re.compile(r"^\s*<\?xml[^>]*\?>", re.I)
 _WS_RE = re.compile(r"\s+")
+_WORD_RE = re.compile(r"^[a-z]+$")
+_WORD_BOUNDARIES = frozenset(
+    [
+        "a",
+        "an",
+        "are",
+        "and",
+        "as",
+        "at",
+        "be",
+        "by",
+        "company",
+        "ensure",
+        "financial",
+        "for",
+        "from",
+        "in",
+        "of",
+        "risk",
+        "results",
+        "subject",
+        "the",
+        "to",
+        "we",
+        "with",
+    ]
+)
+_WORD_CONTINUATIONS = frozenset(
+    [
+        "able",
+        "acial",
+        "al",
+        "ance",
+        "ancial",
+        "ary",
+        "cial",
+        "ed",
+        "ence",
+        "ent",
+        "er",
+        "es",
+        "ful",
+        "ial",
+        "ing",
+        "ion",
+        "ional",
+        "ity",
+        "less",
+        "ly",
+        "ment",
+        "ness",
+        "ous",
+        "s",
+        "t",
+        "tion",
+        "ual",
+    ]
+)
 
 
 @dataclass(frozen=True)
@@ -85,6 +143,25 @@ class _Builder:
         if text:
             self._runs.append((text, style))
 
+    @staticmethod
+    def _needs_space(previous: str, current: str) -> bool:
+        if not previous or not current or previous[-1].isspace() or current[0].isspace():
+            return False
+        if not (previous[-1].isalnum() and current[0].isalnum()):
+            return False
+        if previous[-1].islower() and current[0].isupper():
+            return True
+        left_match = re.search(r"[a-z]+$", previous.lower())
+        right_match = re.match(r"[a-z]+", current.lower())
+        if left_match is None or right_match is None:
+            return False
+        left, right = left_match.group(), right_match.group()
+        return (
+            bool(_WORD_RE.fullmatch(left) and _WORD_RE.fullmatch(right))
+            and left in _WORD_BOUNDARIES
+            and right not in _WORD_CONTINUATIONS
+        )
+
     def flush(self) -> None:
         if not self._runs:
             return
@@ -92,6 +169,8 @@ class _Builder:
         font_pt = 0.0
         for raw, style in self._runs:
             chunk = raw.replace("\xa0", " ")
+            if text and self._needs_space(text, chunk):
+                text += " "
             text += chunk
             visible = len(chunk.replace(" ", "").replace("\n", ""))
             bold += visible if style.bold else 0
