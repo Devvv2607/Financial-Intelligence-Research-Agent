@@ -219,9 +219,17 @@ async def _glued_words_report(_args: argparse.Namespace, s: Settings) -> int:
     for ticker, company_filings in by_company.items():
         examples = [example for filing in company_filings for example in filing.examples][:10]
         missing = sum(filing.raw_missing for filing in company_filings)
+        for filing in company_filings:
+            console.print(
+                f"  {filing.accession_no}: risk factors stored={filing.stored_count}, "
+                f"fixed={filing.fixed_count}, headings changed={filing.heading_changes}, "
+                f"bodies changed={filing.body_changes}"
+            )
         console.print(
             f"{ticker}: headings changed={sum(f.heading_changes for f in company_filings)}, "
             f"bodies changed={sum(f.body_changes for f in company_filings)}, "
+            f"glued headings before={sum(f.glued_before for f in company_filings)}, "
+            f"after={sum(f.glued_after for f in company_filings)}, "
             f"filings={len(company_filings)}, raw files missing={missing}"
         )
         for example in examples:

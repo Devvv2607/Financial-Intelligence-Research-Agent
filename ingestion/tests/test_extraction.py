@@ -17,7 +17,7 @@ from typing import Any
 
 import pytest
 
-from ingestion.extract.glued_words_report import compare_filing
+from ingestion.extract.glued_words_report import compare_filing, extract_risk_factors
 from ingestion.extract.html_clean import Block, html_to_blocks
 from ingestion.extract.risk_splitter import split_risk_factors
 from ingestion.extract.sections import (
@@ -270,8 +270,10 @@ def test_adjacent_inline_elements_keep_mid_word_splits_joined() -> None:
 
 def test_glued_word_report_compares_cached_filing_without_database(tmp_path: Path) -> None:
     html = (
+        "<div><b>Item 1A. Risk Factors</b></div>"
         "<div><b>the</b><b>Company faces significant operational risks.</b></div>"
-        "<div>" + ("This body has enough text. " * 8) + "</div>"
+        "<div>" + ("This body has enough text. " * 220) + "</div>"
+        "<div><b>Item 1B. Unresolved Staff Comments</b></div>"
     )
     raw_dir = tmp_path / "raw"
     path = raw_dir / "sec" / "www.sec.gov" / "Archives" / "edgar" / "data" / "1" / "filing.htm"
@@ -283,11 +285,55 @@ def test_glued_word_report_compares_cached_filing_without_database(tmp_path: Pat
         url="https://www.sec.gov/Archives/edgar/data/1/filing.htm",
         raw_dir=raw_dir,
         stored=[
-            ("theCompany faces significant operational risks.", "This body has enough text. " * 8)
+            ("theCompany faces significant operational risks.", "This body has enough text. " * 220)
         ],
     )
     assert comparison.fixed_count == comparison.stored_count
     assert comparison.heading_changes == 1
+    assert comparison.body_changes == 1
+
+
+def test_glued_word_report_does_not_pair_ambiguous_headings(tmp_path: Path) -> None:
+    html = (
+        "<div><b>Item 1A. Risk Factors</b></div>"
+        "<div><b>Repeated risk heading.</b></div>"
+        "<div>" + BODY * 20 + "</div>"
+        "<div><b>Repeated risk heading.</b></div>"
+        "<div>" + BODY * 20 + "</div>"
+        "<div><b>Item 1B. Unresolved Staff Comments</b></div>"
+    )
+    raw_dir = tmp_path / "raw"
+    path = raw_dir / "sec" / "www.sec.gov" / "Archives" / "edgar" / "data" / "1" / "filing.htm"
+    path.parent.mkdir(parents=True)
+    path.write_text(html, encoding="utf-8")
+    stored = [("Repeated risk heading.", BODY * 20)] * 2
+    comparison = compare_filing(
+        ticker="AAPL",
+        accession_no="0000000000-00-000000",
+        url="https://www.sec.gov/Archives/edgar/data/1/filing.htm",
+        raw_dir=raw_dir,
+        stored=stored,
+    )
+    assert comparison.fixed_count == comparison.stored_count
+    assert comparison.heading_changes == 0
+    assert comparison.body_changes == 0
+
+
+def test_report_uses_item_1a_after_cover_and_contents() -> None:
+    html = (
+        "<div>TRANSITION REPORT PURSUANT TO SECTION 15(d)</div>"
+        "<div>Cupertino, California</div>"
+        "<div>DOCUMENTS INCORPORATED BY REFERENCE</div>"
+        "<div><b>Table of Contents</b></div>"
+        "<div>Item 1A. Risk Factors</div>"
+        "<div><b>Item 1A. Risk Factors</b></div>"
+        "<div><b>Our business faces a material operational risk.</b></div>"
+        "<div>" + BODY * 20 + "</div>"
+        "<div><b>Item 1B. Unresolved Staff Comments</b></div>"
+    )
+    risks = extract_risk_factors(html.encode())
+    assert len(risks) == 1
+    assert risks[0][0] == "Our business faces a material operational risk."
 
 
 @pytest.mark.parametrize(
