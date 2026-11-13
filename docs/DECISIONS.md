@@ -965,3 +965,17 @@ The golden set records expected entities, agents, tools, clarification/refusal b
 key facts. Citation precision reuses the existing local-embedding verifier at its unchanged
 0.585 threshold and stores raw similarities for later calibration; scripted results are
 explicitly labeled as harness validation, not agent quality.
+
+## D-045 · Known issue: glued words in extracted HTML text
+
+**Status:** Open; extraction fix and sample re-extraction/re-tagging required before the
+full 205-company ingestion.
+
+**Problem.** Stored headings and bodies contain glued words where inline HTML tags meet,
+for example `theCompany`, `riskof`, and `aresubject`, visible in
+`GET /api/companies/AAPL`.
+
+**Root cause.** The HTML-to-text step drops a space between adjacent inline elements.
+
+**Decision.** This is not fixed yet. It requires an extraction fix, followed by a
+re-extract and re-tag, and must be completed before the full 205-company ingestion.
