@@ -979,3 +979,16 @@ for example `theCompany`, `riskof`, and `aresubject`, visible in
 
 **Decision.** This is not fixed yet. It requires an extraction fix, followed by a
 re-extract and re-tag, and must be completed before the full 205-company ingestion.
+
+## D-046 · Retract D-045: glued-word symptom was a terminal copy artifact
+
+**Status:** Retracted; no extraction change is needed.
+
+The AAPL FY2026 risk factor referenced by [D-045](#d-045) is not stored with glued
+text. It has the same risk-factor ID before and after the verification, the authorized
+raw HTML contains `risk of`, and the corrected read-only report found zero heading
+changes. The apparent `riskof` text came from copying wrapped console output, not from
+the filing data or the extraction pipeline.
+
+Therefore D-045 is retracted. No extraction fix, re-extraction, or re-tagging is
+required for this symptom.
