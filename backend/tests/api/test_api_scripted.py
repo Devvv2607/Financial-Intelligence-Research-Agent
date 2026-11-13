@@ -64,6 +64,16 @@ async def test_compare_runs_parallel_and_flags_the_unsupported_claim(
     types = {c["source_id"].split("-")[0] for c in final["citations"]}
     assert {"scripted:rf", "scripted:news"} <= types
     assert all("(scripted)" in c["title"] for c in final["citations"])
+    assert "Freshness warning" in final["answer"]
+
+
+async def test_recent_event_answer_discloses_stale_source_data(
+    client: httpx.AsyncClient,
+) -> None:
+    _, evs = await ask(client, "Did NVIDIA's CEO resign on 12 November 2026?")
+    final = first(evs, "final")
+    assert "data through 2026-11-08" in final["answer"]
+    assert "Freshness warning" in final["answer"]
 
 
 async def test_apple_replans_with_an_agentic_step(client: httpx.AsyncClient) -> None:

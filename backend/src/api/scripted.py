@@ -184,7 +184,26 @@ async def _tool(name: str, args: dict[str, Any]) -> ToolResult:
         ]
     else:
         ev = []
-    return ToolResult(tool=name, ok=True, data={"items": len(ev)}, evidence=ev)
+    if name == "search_news" or name == "get_8k_events":
+        data = {
+            "items": len(ev),
+            "freshness": {
+                ticker: {
+                    "latest_stored_date": "2026-11-08",
+                    "fetched_at": "2026-11-13T00:00:00+00:00",
+                }
+            },
+        }
+    else:
+        data = {"items": len(ev)}
+    warnings = []
+    if name == "search_news":
+        warnings.append("news stored through 2026-11-08; fetched at 2026-11-13T00:00:00+00:00")
+    elif name == "get_8k_events":
+        warnings.append(
+            "8-K filings stored through 2026-11-08; fetched at 2026-11-13T00:00:00+00:00"
+        )
+    return ToolResult(tool=name, ok=True, data=data, evidence=ev, warnings=warnings)
 
 
 # ---------------------------------------------------------------- scenario routing
@@ -201,6 +220,8 @@ def _scenario(messages: Sequence[Any]) -> str:
     q = (m.group(1) if m else "").lower()
     if "nvidia" in q and "amd" in q:
         return "compare"
+    if "resign" in q or "resigned" in q:
+        return "recent"
     if "apple" in q and "change" in q:
         return "apple"
     if "jpmorgan" in q or "bank" in q:
@@ -227,6 +248,8 @@ def _analyzer(messages: Sequence[Any]) -> dict[str, Any]:
         return _analysis(
             "Compare NVIDIA's and AMD's top 10-K risk factors with recent news.", ["NVIDIA", "AMD"]
         )
+    if s == "recent":
+        return _analysis("Did NVIDIA's CEO resign on 12 November 2026?", ["NVIDIA"])
     if s == "apple":
         return _analysis(
             "How did Apple's risk factors change between its last two 10-Ks?", ["Apple"]
@@ -291,6 +314,25 @@ def _planner(messages: Sequence[Any]) -> dict[str, Any]:
                     "Recent AMD news",
                     [("search_news", '{"query": "AMD risks", "tickers": ["AMD"]}')],
                     entities=["AMD"],
+                ),
+            ]
+        }
+    if s == "recent":
+        return {
+            "steps": [
+                _step(
+                    "a",
+                    "filings",
+                    "NVIDIA's recent 8-K events",
+                    [("get_8k_events", '{"ticker": "NVDA", "item_codes": ["5.02"]}')],
+                    entities=["NVDA"],
+                ),
+                _step(
+                    "b",
+                    "news",
+                    "Recent reports about NVIDIA's CEO",
+                    [("search_news", '{"query": "NVIDIA CEO resignation", "tickers": ["NVDA"]}')],
+                    entities=["NVDA"],
                 ),
             ]
         }
@@ -384,6 +426,11 @@ def _synthesizer(messages: Sequence[BaseMessage]) -> str:
             # Deliberately unsupported: the citation check must mark it [unverified], so the
             # UI's "Verifying citations..." swap is exercised end to end.
             "Quarterly gaming revenue doubled on record console demand [1]."
+        )
+    if s == "recent":
+        return (
+            "I found no report of NVIDIA's CEO resignation in the stored 8-K and news "
+            "data through 2026-11-08; this may not include very recent events."
         )
     if s == "apple":
         return (

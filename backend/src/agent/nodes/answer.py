@@ -8,6 +8,7 @@ footer, records the run, and appends the answer to the conversation memory.
 
 import logging
 import re
+from datetime import date, timedelta
 from typing import Any
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
@@ -34,6 +35,10 @@ FOOTER = (
 )
 UNVERIFIED_NOTE = "\n*Claims marked [unverified] could not be matched to any retrieved source.*"
 FOOTER_NO_SOURCES = "\n\n---\n*Not investment advice.*"
+FRESHNESS_RE = re.compile(
+    r"(?P<kind>news|8-K filings) (?:stored|filings) through "
+    r"(?P<date>\d{4}-\d{2}-\d{2}|no date); fetched at (?P<fetched>[^\s\]]+)"
+)
 logger = logging.getLogger(__name__)
 _CITE_RE = re.compile(r"\[(\d{1,3})\]")
 # gpt-oss often cites in its native style: 【3】 or 【3†source】. Normalise to [3].
@@ -182,6 +187,9 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
                 logger.exception("citation check failed", extra={"run_id": run_id_of(config)})
         answer, citations = resolve_citations(answer, state)
         footer = FOOTER if citations else FOOTER_NO_SOURCES
+        freshness = freshness_footer(state)
+        if freshness:
+            footer += "\n" + freshness
         if report and report.unverified_claims:
             footer += UNVERIFIED_NOTE
         answer = answer.rstrip() + footer
@@ -254,14 +262,49 @@ def synthesis_sections(
     ]
     limits = [f"- {u.mention}: not covered by the dataset" for u in state.get("uncovered", [])]
     limits += [f"- {g}" for g in (critique.unanswerable if critique else [])]
+    freshness = freshness_lines(state)
     return [
         ("header", f"Today's date: {state['today']}"),
         ("question", f"Question: {analysis.standalone_query if analysis else state['query']}"),
         ("fiscal_periods", "Fiscal periods:\n" + ("\n".join(fiscal_periods) or "n/a")),
         ("step_results", f"Step results:\n{_step_details(state)}"),
         ("limits", "Known limits:\n" + ("\n".join(limits) or "none")),
+        ("freshness", "Data freshness:\n" + ("\n".join(freshness) or "none")),
         ("sources", "Sources:\n" + ("\n\n".join(source_lines) or "(no sources were retrieved)")),
     ]
+
+
+def freshness_lines(state: ResearchState) -> list[str]:
+    lines: list[str] = []
+    for result in state.get("step_results", {}).values():
+        match = FRESHNESS_RE.search(result.data_digest)
+        if not match:
+            continue
+        source = match.group("kind")
+        lines.append(
+            f"{source} through {match.group('date')}; freshness checked at {match.group('fetched')}"
+        )
+    return list(dict.fromkeys(lines))
+
+
+def freshness_footer(state: ResearchState) -> str:
+    cutoff = date.fromisoformat(state["today"]) - timedelta(days=2)
+    stale: list[str] = []
+    for result in state.get("step_results", {}).values():
+        match = FRESHNESS_RE.search(result.data_digest)
+        if (
+            match
+            and match.group("date") != "no date"
+            and date.fromisoformat(match.group("date")) < cutoff
+        ):
+            stale.append(match.group("kind"))
+    if not stale:
+        return ""
+    kinds = ", ".join(dict.fromkeys(stale))
+    return (
+        f"*Freshness warning: stored {kinds} data is older than two days; "
+        "very recent events may be missing.*"
+    )
 
 
 def normalize_citation_style(answer: str) -> str:

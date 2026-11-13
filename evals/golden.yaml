@@ -9,6 +9,17 @@
   key_facts: [competition, manufacturing, recent news]
   needs_full_data: false
   verified: true
+- id: recent-nvda-ceo-event
+  question: "Did NVIDIA's CEO resign on 12 November 2026?"
+  category: recent_event_freshness
+  expected_entities: [NVDA]
+  expected_agents: [filings, news]
+  expected_tools: [get_8k_events, search_news]
+  expect_clarification: false
+  expect_refusal: false
+  key_facts: [data freshness, recent event, NVIDIA]
+  needs_full_data: false
+  verified: false
 - id: demo-2-apple-risk-change
   question: "How did Apple's risk factors change between its last two 10-Ks?"
   category: yoy_risk_change
