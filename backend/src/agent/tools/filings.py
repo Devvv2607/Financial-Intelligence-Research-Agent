@@ -3,7 +3,7 @@
 import difflib
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from typing import Any, Literal
 
 import numpy as np
@@ -495,6 +495,10 @@ class Get8KEventsOutput(BaseModel):
     ticker: str
     events: list[EightKEvent]
     total_matching: int
+    latest_stored_date: date | None = Field(
+        description="Newest stored 8-K filing date for the company"
+    )
+    fetched_at: datetime = Field(description="UTC time when this search checked freshness")
 
 
 @tool("get_8k_events", Get8KEventsInput)
@@ -514,6 +518,11 @@ async def get_8k_events(ctx: ToolContext, inp: Get8KEventsInput) -> Output:
         stmt = stmt.where(eight_k_events.c.filing_date >= inp.since)
     async with ctx.engine.connect() as conn:
         total = (await conn.execute(select(func.count()).select_from(stmt.subquery()))).scalar_one()
+        latest_stored_date = await conn.scalar(
+            select(func.max(eight_k_events.c.filing_date)).where(
+                eight_k_events.c.cik == company.cik
+            )
+        )
     rows = await fetch_dicts(
         ctx, stmt.order_by(eight_k_events.c.filing_date.desc()).limit(inp.limit)
     )
@@ -541,9 +550,21 @@ async def get_8k_events(ctx: ToolContext, inp: Get8KEventsInput) -> Output:
         )
         for e in events
     ]
-    warn = [] if events else ["no matching 8-K events stored (8-Ks cover the last 12 months)"]
+    fetched_at = datetime.now(UTC)
+    warnings = [] if events else ["no matching 8-K events stored (8-Ks cover the last 12 months)"]
+    warnings.append(
+        "8-K filings stored through "
+        + (latest_stored_date.isoformat() if latest_stored_date else "no date")
+        + f"; fetched at {fetched_at.isoformat()}"
+    )
     return Output(
-        Get8KEventsOutput(ticker=company.ticker, events=events, total_matching=total),
+        Get8KEventsOutput(
+            ticker=company.ticker,
+            events=events,
+            total_matching=total,
+            latest_stored_date=latest_stored_date,
+            fetched_at=fetched_at,
+        ),
         evidence,
-        warn,
+        warnings,
     )

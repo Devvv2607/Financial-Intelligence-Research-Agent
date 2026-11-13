@@ -992,3 +992,19 @@ the filing data or the extraction pipeline.
 
 Therefore D-045 is retracted. No extraction fix, re-extraction, or re-tagging is
 required for this symptom.
+
+## D-047 · Source freshness is explicit for recent-event questions
+
+**Status:** Implemented.
+
+News and 8-K tools now return the newest stored item date and the UTC time at which
+freshness was checked. The synthesizer receives those dates and must not turn missing
+recent coverage into a negative conclusion. If stored news or filings are more than
+two days old, the answer includes a freshness warning.
+
+The `search_news` live fallback remains guarded: it considers stored news stale after
+three days, but it is disabled when `APP_ENV=production` and is also subject to the
+daily NewsAPI request cap. The repository's NewsAPI integration and the official
+Everything endpoint documentation describe publication-date filtering, but do not
+state a guaranteed free-plan article delay. We therefore do not claim a fixed delay;
+stored publication dates are the freshness boundary shown to users.

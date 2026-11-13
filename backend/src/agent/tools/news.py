@@ -49,9 +49,17 @@ class NewsHit(BaseModel):
     matched_on: str | None = Field(None, description="where the company was named, e.g. title:name")
 
 
+class NewsFreshness(BaseModel):
+    latest_stored_date: date | None
+    fetched_at: datetime
+
+
 class SearchNewsOutput(BaseModel):
     hits: list[NewsHit]
     live_fetched: list[str] = Field(description="Tickers refreshed from NewsAPI in this call")
+    freshness: dict[str, NewsFreshness] = Field(
+        description="Newest stored article date and freshness-check time per company"
+    )
 
 
 def stale_companies(latest: dict[int, datetime | None], now: datetime) -> list[int]:
@@ -269,4 +277,25 @@ async def search_news(ctx: ToolContext, inp: SearchNewsInput) -> Output:
             "or below the relevance floor)"
         )
     warnings = missing_warning(missing) + warnings + ([] if hits else ["no relevant news found"])
-    return Output(SearchNewsOutput(hits=hits, live_fetched=fetched), evidence, warnings)
+    fetched_at = datetime.now(UTC)
+    freshness = {
+        company.ticker: NewsFreshness(
+            latest_stored_date=(stored.date() if (stored := latest[company.cik]) else None),
+            fetched_at=fetched_at,
+        )
+        for company in known
+    }
+    for ticker, metadata in freshness.items():
+        warnings.append(
+            f"news stored through {metadata.latest_stored_date or 'no date'} for {ticker}; "
+            f"fetched at {fetched_at.isoformat()}"
+        )
+    return Output(
+        SearchNewsOutput(
+            hits=hits,
+            live_fetched=fetched,
+            freshness=freshness,
+        ),
+        evidence,
+        warnings,
+    )
