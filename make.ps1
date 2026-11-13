@@ -56,6 +56,8 @@ $targets = [ordered]@{
     "web-check" = @{ Help = "Frontend lint + typecheck"; Run = {
             Invoke-Step npm @("--prefix", "frontend", "run", "lint")
             Invoke-Step npm @("--prefix", "frontend", "run", "typecheck") } }
+    "e2e"       = @{ Help = "Run zero-token Playwright browser tests"; Run = {
+            Invoke-Step npm @("--prefix", "frontend", "run", "test:e2e") } }
     "check"     = @{ Help = "Everything CI runs, minus the frontend build"; Run = {
             foreach ($t in "lint", "typecheck", "test", "web-check") { & $targets[$t].Run } } }
     "up"        = @{ Help = "Build and start the full stack"; Run = { Invoke-Step docker @("compose", "up", "-d", "--build") } }

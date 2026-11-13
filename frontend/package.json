@@ -9,7 +9,8 @@
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "gen:types": "openapi-typescript ../contracts/openapi.json -o lib/generated/api.ts && json2ts -i ../contracts/agent-events.schema.json -o lib/generated/events.ts --additionalProperties=false --bannerComment \"/* Generated from contracts/agent-events.schema.json by npm run gen:types. Do not edit. */\"",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "playwright test --config=e2e/playwright.config.ts"
   },
   "dependencies": {
     "@dagrejs/dagre": "3.1.1",
@@ -24,6 +25,7 @@
     "remark-gfm": "4.0.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.56.1",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
