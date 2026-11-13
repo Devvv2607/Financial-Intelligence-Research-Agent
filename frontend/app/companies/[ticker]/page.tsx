@@ -14,6 +14,7 @@ async function loadCompany(ticker: string) {
     return await getCompanyDetail(ticker);
   } catch (error) {
     if (error instanceof CompanyNotFoundError) notFound();
+    console.error("Failed to load company detail", { ticker, error });
     throw error;
   }
 }
