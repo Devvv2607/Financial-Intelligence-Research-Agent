@@ -255,6 +255,29 @@ async def _progress(args: argparse.Namespace, s: Settings) -> int:
     return 0
 
 
+async def _refresh(args: argparse.Namespace, s: Settings) -> int:
+    from ingestion.refresh import refresh_selected
+
+    engine = create_engine(s.database_url)
+    try:
+        results = await refresh_selected(
+            engine,
+            s,
+            sample=args.sample,
+            tickers=args.tickers,
+            dry_run=args.dry_run,
+        )
+    finally:
+        await engine.dispose()
+    for result in results:
+        console.print(
+            f"{result['ticker']}: new 8-Ks={result['new_8ks']}; "
+            f"news requests needed={result['news_requests']}; "
+            f"SEC requests estimated={result['sec_requests']}"
+        )
+    return 0
+
+
 async def _replay_tag_cache(s: Settings) -> int:
     engine = create_engine(s.database_url)
     result = await replay_cached_tags(engine)
@@ -381,6 +404,12 @@ def main() -> None:
         "--experiment-tickers", help="comma-separated tickers to also tag from headings only"
     )
     sub.choices["report"].add_argument("--section", choices=["all", "sectors"], default="all")
+    refresh = sub.add_parser("refresh")
+    refresh.add_argument("--sample", type=int, help=f"first N of {SAMPLE_TICKERS}")
+    refresh.add_argument("--tickers", help="comma-separated tickers")
+    refresh.add_argument(
+        "--dry-run", action="store_true", help="plan without database or cache writes"
+    )
     exp = sub.add_parser("experiment")
     exp.add_argument("--tickers", required=True)
     exp.add_argument(
@@ -413,6 +442,7 @@ def main() -> None:
         "experiment": _experiment,
         "review": _review,
         "progress": _progress,
+        "refresh": _refresh,
         "replay-tag-cache": _replay_handler,
     }[args.command]
     sys.exit(aio.run(handler(args, s)))

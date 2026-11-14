@@ -119,7 +119,13 @@ class NewsApiClient:
         return sum(1 for _ in self._cache_dir.glob(f"*/{self._today()}.json"))
 
     async def everything(
-        self, ticker: str, query: str, window_days: int, today: date | None = None
+        self,
+        ticker: str,
+        query: str,
+        window_days: int,
+        today: date | None = None,
+        *,
+        cache: bool = True,
     ) -> dict[str, Any]:
         today = today or datetime.now(UTC).date()
         path = self._cache_dir / ticker / f"{today.isoformat()}.json"
@@ -143,6 +149,7 @@ class NewsApiClient:
             raise NewsApiError(
                 f"NewsAPI HTTP {resp.status_code}: {payload.get('code')} {payload.get('message')}"
             )
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(payload), encoding="utf-8")
+        if cache:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps(payload), encoding="utf-8")
         return payload
