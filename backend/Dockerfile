@@ -6,7 +6,9 @@ FROM ghcr.io/astral-sh/uv:0.13.7 AS uv
 # ---- builder: resolve and install into /app/.venv -------------------------
 FROM python:3.12-slim AS builder
 COPY --from=uv /uv /usr/local/bin/uv
-ENV UV_COMPILE_BYTECODE=1 \
+# No BuildKit cache mounts: Railway's builder requires service-specific mount ids.
+ENV UV_NO_CACHE=1 \
+    UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PYTHON_DOWNLOADS=never
 WORKDIR /app
@@ -14,13 +16,11 @@ WORKDIR /app
 # Dependencies first, in their own layer: code edits don't re-download wheels.
 COPY pyproject.toml uv.lock ./
 COPY backend/pyproject.toml backend/
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev --no-install-workspace --package fira-backend
+RUN uv sync --frozen --no-dev --no-install-workspace --package fira-backend
 
 # Then our own code, installed non-editable so the runtime only needs .venv.
 COPY backend/src backend/src
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev --no-editable --package fira-backend
+RUN uv sync --frozen --no-dev --no-editable --package fira-backend
 
 # ---- runtime: slim image, non-root ---------------------------------------
 FROM python:3.12-slim AS runtime
