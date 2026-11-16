@@ -16,6 +16,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.types import Command
 
 from agent.checkpoint import memory_saver
+from agent.citecheck import verify_citations
 from agent.graph import RECURSION_LIMIT, build_graph
 from agent.nodes.answer import (
     FOOTER,
@@ -679,7 +680,9 @@ def test_synthesizer_prompt_rules_for_events() -> None:
     assert "mid-November" in synth and "never replace it" in synth
     assert "leave it out entirely" in synth and "opinion piece" in synth
     assert "after the filing sentence, add 1-3 sentences on what news reporting adds" in synth
-    assert "each citing a news source and giving its date" in synth
+    assert "states ONE specific fact from ONE report" in synth and "cites only that report" in synth
+    assert "Never summarize several reports in one sentence" in synth
+    assert "interim CEO" not in synth  # a fact the news set may not contain (run 3)
     assert "do not write your own" in synth  # the data line is deterministic (D-049)
     assert "{event_items}" in prompts.load("planner")
 
@@ -771,3 +774,37 @@ def test_check_older_than_two_days_warns() -> None:
     # Exactly two days old is still fresh.
     edge = _fresh_state("2026-11-17", freshness_note("news", "NVDA", None, old.replace(day=15)))
     assert "warning" not in freshness_footer(edge)
+
+
+async def test_one_fact_news_sentence_passes_the_check_and_a_summary_does_not() -> None:
+    """Run 3 (2026-11-17): a sentence blending three reports scored 0.50-0.52 against each
+    and was marked [unverified]. One headline-level fact per report is checkable."""
+    reports = [
+        Evidence(
+            source_id=f"news:{i}",
+            source_type="news",
+            ticker="NVDA",
+            title=title,
+            snippet=title,
+            filed_or_published=datetime(2026, 11, 15, tzinfo=UTC),
+        )
+        for i, title in enumerate(
+            [
+                "Bessent says Nvidia must go outside the company to find new CEO",
+                "Report: Jensen Huang weighs return as Nvidia CEO",
+                "Robotics engineer leaves Nvidia over lack of transparency around Huang exit",
+            ]
+        )
+    ]
+    one_fact = (
+        "On 15 Nov 2026, Treasury Secretary Bessent said Nvidia must go outside the company "
+        "to find its new CEO [1]."
+    )
+    summary = (
+        "The resignation was reported in the press on 15 Nov 2026, with multiple outlets "
+        "describing the abrupt departure and the board's succession process [1][2][3]."
+    )
+    checked, report = await verify_citations(one_fact, reports, bow_embed)
+    assert checked == one_fact and report.precision == 1.0
+    checked, report = await verify_citations(summary, reports, bow_embed)
+    assert "[unverified]" in checked and report.unverified_claims == 1
