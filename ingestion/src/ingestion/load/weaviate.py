@@ -59,3 +59,28 @@ async def replace_company_objects(
             raise WeaviateLoadError(f"{pending.collection}: {len(result.errors)} errors: {first}")
         inserted += len(objs)
     return inserted
+
+
+async def insert_objects(
+    client: weaviate.WeaviateAsyncClient,
+    pending: PendingObjects,
+    vectors: NDArray[np.float32],
+) -> int:
+    """Insert only new deterministic objects without deleting existing company data."""
+    col = client.collections.get(pending.collection)
+    inserted = 0
+    for start in range(0, len(pending.keys), BATCH):
+        objs = [
+            DataObject(
+                properties=pending.props[i],
+                uuid=generate_uuid5(f"{pending.collection}:{pending.keys[i]}"),
+                vector=vectors[i].tolist(),
+            )
+            for i in range(start, min(start + BATCH, len(pending.keys)))
+        ]
+        result = await col.data.insert_many(objs)
+        if result.has_errors:
+            first = next(iter(result.errors.values()))
+            raise WeaviateLoadError(f"{pending.collection}: {len(result.errors)} errors: {first}")
+        inserted += len(objs)
+    return inserted

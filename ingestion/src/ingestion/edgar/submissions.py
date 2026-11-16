@@ -33,8 +33,10 @@ class CompanyMeta:
     fiscal_year_end: str | None
 
 
-async def load_ticker_map(client: EdgarClient, *, refresh: bool = False) -> dict[str, int]:
-    data = await client.get_json(TICKERS_URL, refresh=refresh)
+async def load_ticker_map(
+    client: EdgarClient, *, refresh: bool = False, cache: bool = True
+) -> dict[str, int]:
+    data = await client.get_json(TICKERS_URL, refresh=refresh, cache=cache)
     return {row["ticker"].upper(): int(row["cik_str"]) for row in data.values()}
 
 
@@ -106,3 +108,24 @@ async def load_filings(
     )[:need_10k]
     eight_ks = [r for r in refs if r.form_type == "8-K" and r.filing_date >= since_8k]
     return meta, ten_ks + sorted(eight_ks, key=lambda r: r.filing_date, reverse=True)
+
+
+async def load_recent_8ks(
+    client: EdgarClient,
+    cik: int,
+    *,
+    since: date,
+    refresh: bool = True,
+    cache: bool = True,
+) -> list[FilingRef]:
+    """Load only the recent submissions block needed by incremental refresh."""
+    data = await client.get_json(SUBMISSIONS_URL.format(cik=cik), refresh=refresh, cache=cache)
+    return sorted(
+        (
+            r
+            for r in _rows(data["filings"]["recent"], cik)
+            if r.form_type == "8-K" and r.filing_date >= since
+        ),
+        key=lambda r: r.filing_date,
+        reverse=True,
+    )

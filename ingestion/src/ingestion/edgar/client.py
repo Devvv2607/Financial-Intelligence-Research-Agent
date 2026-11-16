@@ -83,22 +83,25 @@ class EdgarClient:
         path = parsed.path.lstrip("/") or "index"
         return self._cache_dir / "sec" / parsed.netloc / path
 
-    async def get_bytes(self, url: str, *, refresh: bool = False) -> bytes:
+    async def get_bytes(self, url: str, *, refresh: bool = False, cache: bool = True) -> bytes:
         path = self.cache_path(url)
-        if path.exists() and not refresh:
+        if cache and path.exists() and not refresh:
             return path.read_bytes()
         content = await self._fetch(url)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = path.with_suffix(path.suffix + ".part")
-        tmp.write_bytes(content)
-        tmp.replace(path)  # atomic: a crash never leaves a half-written cache entry
+        if cache:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = path.with_suffix(path.suffix + ".part")
+            tmp.write_bytes(content)
+            tmp.replace(path)  # atomic: a crash never leaves a half-written cache entry
         return content
 
-    async def get_json(self, url: str, *, refresh: bool = False) -> Any:
-        return json.loads(await self.get_bytes(url, refresh=refresh))
+    async def get_json(self, url: str, *, refresh: bool = False, cache: bool = True) -> Any:
+        return json.loads(await self.get_bytes(url, refresh=refresh, cache=cache))
 
-    async def get_text(self, url: str, *, refresh: bool = False) -> str:
-        return (await self.get_bytes(url, refresh=refresh)).decode("utf-8", errors="replace")
+    async def get_text(self, url: str, *, refresh: bool = False, cache: bool = True) -> str:
+        return (await self.get_bytes(url, refresh=refresh, cache=cache)).decode(
+            "utf-8", errors="replace"
+        )
 
     async def _fetch(self, url: str) -> bytes:
         last_error = ""
