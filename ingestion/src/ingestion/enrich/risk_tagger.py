@@ -71,6 +71,23 @@ class TagResult:
 VALID_CATEGORIES: frozenset[str] = frozenset(get_args(RiskCategory))
 
 
+def safe_tag_result(tag: TagResult) -> TagResult:
+    """Keep fallback tags reviewable unless a complete valid tag was produced."""
+    category = tag.category if tag.category in VALID_CATEGORIES else "other"
+    summary = tag.summary.strip()
+    needs_review = tag.needs_review or category == "other" or not summary
+    return TagResult(
+        tag.key,
+        category,
+        summary,
+        tag.source,
+        tag.inherited_from,
+        tag.similarity,
+        needs_review,
+        tag.review_reason,
+    )
+
+
 def salvage_tags(raw: str, pending: dict[int, "RiskInput"]) -> dict[int, tuple[str, str]]:
     """Best-effort read of an invalid batch output: id -> (category, summary).
 
@@ -296,7 +313,17 @@ def inherit_tags(
         if sim >= threshold:
             src = latest_tags[int(j)]
             inherited.append(
-                TagResult(r.key, src.category, src.summary, "inherited", src.key, float(sim))
+                safe_tag_result(
+                    TagResult(
+                        r.key,
+                        src.category,
+                        src.summary,
+                        "inherited",
+                        src.key,
+                        float(sim),
+                        src.needs_review,
+                    )
+                )
             )
         else:
             remaining.append(r)

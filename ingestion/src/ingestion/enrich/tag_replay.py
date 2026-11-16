@@ -4,7 +4,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from core.db.schema import companies, llm_cache, risk_factors
@@ -80,7 +80,11 @@ async def load_cached_tag_plan(engine: AsyncEngine) -> CachedTagPlan:
                         companies.c.ticker,
                     )
                     .join(companies, companies.c.cik == risk_factors.c.cik)
-                    .where(risk_factors.c.needs_review.is_(True))
+                    .where(
+                        risk_factors.c.category == "other",
+                        risk_factors.c.summary.is_(None)
+                        | (func.trim(risk_factors.c.summary) == ""),
+                    )
                 )
             ).all()
         ]
@@ -108,7 +112,8 @@ async def replay_cached_tags(engine: AsyncEngine) -> dict[str, int]:
         flagged = (
             await conn.execute(
                 select(risk_factors.c.id, risk_factors.c.heading).where(
-                    risk_factors.c.needs_review.is_(True)
+                    risk_factors.c.category == "other",
+                    risk_factors.c.summary.is_(None) | (func.trim(risk_factors.c.summary) == ""),
                 )
             )
         ).all()

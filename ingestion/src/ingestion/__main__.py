@@ -16,6 +16,7 @@ import sys
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 from rich.console import Console
 from rich.markdown import Markdown
@@ -36,6 +37,13 @@ from core.vectorstore import create_client, ensure_ready
 from ingestion import experiments, prompts, review
 from ingestion import report as rpt
 from ingestion.edgar.client import EdgarClient
+from ingestion.enrich.risk_tagger import (
+    VALID_CATEGORIES,
+    RiskInput,
+    TagResult,
+    inherit_tags,
+    similarity_text,
+)
 from ingestion.enrich.tag_replay import load_cached_tag_plan, replay_cached_tags
 from ingestion.load import postgres as pg
 from ingestion.pipeline import SAMPLE_TICKERS, STAGES, Pipeline, Stage, UniverseRow, read_universe
@@ -74,7 +82,13 @@ async def _run(args: argparse.Namespace, s: Settings) -> int:
                     await conn.execute(
                         select(companies.c.ticker)
                         .join(risk_factors, risk_factors.c.cik == companies.c.cik)
-                        .where(risk_factors.c.needs_review.is_(True))
+                        .where(
+                            (risk_factors.c.category == "other")
+                            & (
+                                risk_factors.c.summary.is_(None)
+                                | (func.trim(risk_factors.c.summary) == "")
+                            )
+                        )
                         .distinct()
                     )
                 ).scalars()
@@ -302,7 +316,11 @@ async def _flagged_count(engine: AsyncEngine) -> int:
                 await conn.execute(
                     select(func.count())
                     .select_from(risk_factors)
-                    .where(risk_factors.c.needs_review.is_(True))
+                    .where(
+                        risk_factors.c.category == "other",
+                        risk_factors.c.summary.is_(None)
+                        | (func.trim(risk_factors.c.summary) == ""),
+                    )
                 )
             ).scalar_one()
         )
@@ -312,33 +330,77 @@ async def _print_retag_plan(
     engine: AsyncEngine, s: Settings, excluded_ids: set[str] | None = None
 ) -> None:
     async with engine.connect() as conn:
-        query = select(risk_factors.c.id, risk_factors.c.heading, risk_factors.c.body).where(
-            risk_factors.c.needs_review.is_(True)
+        query = select(risk_factors).where(
+            risk_factors.c.category == "other",
+            risk_factors.c.summary.is_(None) | (func.trim(risk_factors.c.summary) == ""),
         )
         if excluded_ids:
             query = query.where(risk_factors.c.id.not_in(excluded_ids))
-        rows = (
-            await conn.execute(
-                query.order_by(
-                    risk_factors.c.cik, risk_factors.c.fiscal_year.desc(), risk_factors.c.ordinal
+        rows = [dict(row) for row in (await conn.execute(query)).mappings().all()]
+        all_rows = [
+            dict(row) for row in (await conn.execute(select(risk_factors))).mappings().all()
+        ]
+    embedder = Embedder(s.embedding_model, s.models_dir)
+    by_cik_year: dict[tuple[int, int], list[dict[str, Any]]] = {}
+    for row in all_rows:
+        by_cik_year.setdefault((row["cik"], row["fiscal_year"]), []).append(dict(row))
+    free = 0
+    llm_rows: list[dict[str, Any]] = []
+    for (cik, year), _prior_rows in by_cik_year.items():
+        latest_year = max(y for c, y in by_cik_year if c == cik)
+        if year != latest_year:
+            continue
+        latest_tags = [
+            TagResult(r["id"], r["category"], r["summary"] or "", "llm")
+            for r in by_cik_year[(cik, year)]
+            if r["category"] in VALID_CATEGORIES and (r["summary"] or "").strip()
+        ]
+        affected = [r for r in rows if r["cik"] == cik and r["fiscal_year"] != latest_year]
+        if not affected or not latest_tags:
+            llm_rows.extend(affected)
+            continue
+        prior_inputs = [RiskInput(r["id"], r["heading"], r["body"]) for r in affected]
+        latest_by_id = {r["id"]: r for r in by_cik_year[(cik, year)]}
+        prior_vecs = await embedder.embed(
+            [similarity_text(r, s.risk_tag_body_words) for r in prior_inputs]
+        )
+        latest_vecs = await embedder.embed(
+            [
+                similarity_text(
+                    RiskInput(
+                        tag.key,
+                        latest_by_id[tag.key]["heading"],
+                        latest_by_id[tag.key]["body"],
+                    ),
+                    s.risk_tag_body_words,
                 )
-            )
-        ).all()
-    count = len(rows)
+                for tag in latest_tags
+            ]
+        )
+        inherited, remaining = inherit_tags(
+            prior_inputs,
+            latest_tags,
+            prior_vecs,
+            latest_vecs,
+            s.risk_tag_inherit_similarity,
+        )
+        free += len(inherited)
+        llm_rows.extend({"id": r.key, "heading": r.heading, "body": r.body} for r in remaining)
+    count = len(llm_rows)
     batches = (count + s.risk_tag_batch_size - 1) // s.risk_tag_batch_size
     estimated_tokens = sum(
         estimate_tokens(
             prompts.load("risk_tagging")
             + "\n\n".join(
-                f"[{i}] {row.heading}\n{row.body}"
-                for i, row in enumerate(rows[start : start + s.risk_tag_batch_size])
+                f"[{i}] {row['heading']}\n{row['body']}"
+                for i, row in enumerate(llm_rows[start : start + s.risk_tag_batch_size])
             )
         )
         + 1024
         for start in range(0, count, s.risk_tag_batch_size)
     )
     console.print(
-        f"needs_review rows: {count}; batches: {batches}; "
+        f"re-inheritable for free: {free}; rows going to LLM: {count}; batches: {batches}; "
         f"estimated counted tokens: {estimated_tokens:,}"
     )
 

@@ -426,7 +426,7 @@ class Pipeline:
     def _needs_tag(self, r: dict[str, Any]) -> bool:
         """Untagged, or tagged by an older version of the taxonomy prompt."""
         if self._needs_review_only:
-            return bool(r["needs_review"])
+            return r["category"] == "other" and not (r["summary"] or "").strip()
         return r["category"] is None or r["tag_version"] != self._tag_version
 
     async def _sector_llm(self, cik: int, details: dict[str, Any]) -> None:

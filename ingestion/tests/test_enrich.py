@@ -13,6 +13,7 @@ from ingestion.enrich.risk_tagger import (
     batch_problem,
     echo_matches,
     inherit_tags,
+    safe_tag_result,
     salvage_tags,
     tag_with_llm,
 )
@@ -249,6 +250,30 @@ def test_inherit_with_nothing_tagged_sends_everything_to_llm() -> None:
         prior, [], np.zeros((1, 3), np.float32), np.zeros((0, 3), np.float32), 0.9
     )
     assert inherited == [] and remaining == prior
+
+
+def test_empty_summary_result_stays_flagged() -> None:
+    safe = safe_tag_result(TagResult("k", "other", "", "llm"))
+    assert safe.category == "other"
+    assert safe.needs_review
+
+
+def test_inherited_flag_follows_source() -> None:
+    latest = [TagResult("L0", "other", "", "llm", needs_review=True)]
+    inherited, remaining = inherit_tags(
+        [RiskInput("P0", "risk", "body")],
+        latest,
+        np.array([[1, 0, 0]], dtype=np.float32),
+        np.array([[1, 0, 0]], dtype=np.float32),
+        threshold=0.9,
+    )
+    assert not remaining
+    assert inherited[0].needs_review
+
+
+def test_valid_summary_clears_review_flag() -> None:
+    safe = safe_tag_result(TagResult("k", "regulatory", "reviewed", "llm"))
+    assert not safe.needs_review
 
 
 class AlwaysInvalid:
