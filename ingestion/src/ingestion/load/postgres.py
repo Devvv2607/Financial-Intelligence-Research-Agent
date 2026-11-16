@@ -28,7 +28,7 @@ from core.db.schema import (
 from core.newsapi import Article
 from ingestion.edgar.submissions import CompanyMeta, FilingRef
 from ingestion.edgar.xbrl import FactRow
-from ingestion.enrich.risk_tagger import TagResult
+from ingestion.enrich.risk_tagger import TagResult, safe_tag_result
 from ingestion.extract.risk_splitter import RiskFactor
 
 
@@ -242,16 +242,17 @@ async def upsert_news(engine: AsyncEngine, cik: int, articles: list[Article]) ->
 async def save_tags(engine: AsyncEngine, tags: list[TagResult], tag_version: str) -> None:
     async with engine.begin() as conn:
         for t in tags:
+            safe = safe_tag_result(t)
             await conn.execute(
                 update(risk_factors)
-                .where(risk_factors.c.id == t.key)
+                .where(risk_factors.c.id == safe.key)
                 .values(
-                    category=t.category,
-                    summary=t.summary,
-                    tag_source=t.source,
-                    inherited_from=t.inherited_from,
-                    similarity=t.similarity,
-                    needs_review=t.needs_review,
+                    category=safe.category,
+                    summary=safe.summary,
+                    tag_source=safe.source,
+                    inherited_from=safe.inherited_from,
+                    similarity=safe.similarity,
+                    needs_review=safe.needs_review,
                     tag_version=tag_version,
                 )
             )
