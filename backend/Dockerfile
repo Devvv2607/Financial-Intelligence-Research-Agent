@@ -28,9 +28,14 @@ RUN useradd --create-home --uid 10001 app
 WORKDIR /app
 COPY --from=builder --chown=app:app /app/.venv /app/.venv
 COPY --chown=app:app config config
+RUN mkdir -p data/models && chown -R app:app data
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1
 USER app
+# Bake the embedding model into the image (data/models = Settings.models_dir), so a cold
+# start on the host doesn't download it. Must match EMBEDDING_MODEL at runtime.
+ARG EMBEDDING_MODEL=BAAI/bge-small-en-v1.5
+RUN python -c "import sys; from fastembed import TextEmbedding; TextEmbedding(sys.argv[1], cache_dir='data/models')" "$EMBEDDING_MODEL"
 EXPOSE 8000
 HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 \
     CMD python -c "import urllib.request,sys; sys.exit(urllib.request.urlopen('http://localhost:8000/health').status != 200)"
