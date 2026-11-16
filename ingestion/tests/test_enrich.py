@@ -274,6 +274,7 @@ def test_inherited_flag_follows_source() -> None:
 def test_valid_summary_clears_review_flag() -> None:
     safe = safe_tag_result(TagResult("k", "regulatory", "reviewed", "llm"))
     assert not safe.needs_review
+    assert not safe_tag_result(TagResult("k", "other", "reviewed", "llm")).needs_review
 
 
 class AlwaysInvalid:

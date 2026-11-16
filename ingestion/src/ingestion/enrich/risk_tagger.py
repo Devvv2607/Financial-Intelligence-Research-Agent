@@ -73,9 +73,10 @@ VALID_CATEGORIES: frozenset[str] = frozenset(get_args(RiskCategory))
 
 def safe_tag_result(tag: TagResult) -> TagResult:
     """Keep fallback tags reviewable unless a complete valid tag was produced."""
-    category = tag.category if tag.category in VALID_CATEGORIES else "other"
+    category_valid = tag.category in VALID_CATEGORIES
+    category = tag.category if category_valid else "other"
     summary = tag.summary.strip()
-    needs_review = tag.needs_review or category == "other" or not summary
+    needs_review = tag.needs_review or not category_valid or not summary
     return TagResult(
         tag.key,
         category,
