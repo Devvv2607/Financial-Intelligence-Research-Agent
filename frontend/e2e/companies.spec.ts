@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 import { openCompanies } from "./fixtures/data";
 
 test.describe("company pages", () => {
+  // These tests need the live sample database with NVDA and AAPL present; CI does not run them.
   test("filters and searches the company directory", async ({ page }) => {
     await openCompanies(page);
     await expect(page.getByRole("link", { name: "NVDA" })).toBeVisible();
