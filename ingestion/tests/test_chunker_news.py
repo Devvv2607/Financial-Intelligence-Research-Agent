@@ -168,3 +168,14 @@ def test_news_requests_today_counts_cache_files(tmp_path: Path) -> None:
     (tmp_path / "newsapi" / "AAPL" / "2020-01-01.json").write_text("{}")
     assert client.requests_today() == 2
     assert client.cached_today("AAPL") and not client.cached_today("TSLA")
+
+
+def test_news_cache_defaults_to_current_utc_date(tmp_path: Path) -> None:
+    from datetime import UTC, datetime
+
+    client = NewsApiClient("k", "https://newsapi.org/v2", tmp_path, http=httpx.AsyncClient())
+    today = datetime.now(UTC).date()
+    (tmp_path / "newsapi" / "AAPL").mkdir(parents=True)
+    (tmp_path / "newsapi" / "AAPL" / f"{today.isoformat()}.json").write_text("{}")
+    assert client.cached_today("AAPL")
+    assert client.requests_today() == 1

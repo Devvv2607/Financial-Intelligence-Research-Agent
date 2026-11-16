@@ -61,8 +61,8 @@ async def plan_company(
     new_refs = tuple(ref for ref in refs if ref.accession_no not in stored_accessions)
     news_needed = bool(
         news
-        and not news.cached_today(ticker)
-        and news.requests_today() + reserved_news_requests < news_cap
+        and not news.cached_today(ticker, today)
+        and news.requests_today(today) + reserved_news_requests < news_cap
     )
     return RefreshPlan(
         ticker=ticker,
