@@ -8,7 +8,8 @@ footer, records the run, and appends the answer to the conversation memory.
 
 import logging
 import re
-from datetime import date, timedelta
+from dataclasses import dataclass
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
@@ -22,6 +23,7 @@ from agent.nodes.intake import run_id_of
 from agent.nodes.planning import _step_status_lines
 from agent.state import Citation, Critique, ResearchState
 from agent.tools.base import Evidence
+from agent.tools.common import FRESHNESS_NOTE_RE
 from core.llm import DailyLimitError, LLMError
 
 MAX_REPLANS = 2
@@ -35,10 +37,7 @@ FOOTER = (
 )
 UNVERIFIED_NOTE = "\n*Claims marked [unverified] could not be matched to any retrieved source.*"
 FOOTER_NO_SOURCES = "\n\n---\n*Not investment advice.*"
-FRESHNESS_RE = re.compile(
-    r"(?P<kind>news|8-K filings) (?:stored|filings) through "
-    r"(?P<date>\d{4}-\d{2}-\d{2}|no date); fetched at (?P<fetched>[^\s\]]+)"
-)
+STALE_CHECK_DAYS = 2
 logger = logging.getLogger(__name__)
 _CITE_RE = re.compile(r"\[(\d{1,3})\]")
 # gpt-oss often cites in its native style: 【3】 or 【3†source】. Normalise to [3].
@@ -87,7 +86,22 @@ def numbered_sources(state: ResearchState) -> list[Evidence]:
             if rank < len(q) and q[rank] not in order:
                 order.append(q[rank])
     order += [sid for sid in by_id if sid not in in_steps]  # evidence of no step (rare)
-    return [by_id[sid] for sid in order[:MAX_SOURCES]]
+    chosen = [by_id[sid] for sid in order[:MAX_SOURCES]]
+    # Primary sources (SEC filings) take the first numbers, news the rest: the synthesizer
+    # tends to cite in number order, and the filing is what should lead (stable sort).
+    return sorted(chosen, key=lambda e: e.source_type == "news")
+
+
+def dated_label(e: Evidence) -> str:
+    """'Form 8-K filed 12 Nov 2026' / 'published 15 Nov 2026', so the answer can quote an
+    exact date instead of 'mid-November'."""
+    when = e.filed_or_published
+    if when is None:
+        return ""
+    day = f"{when.day} {when:%b %Y}"
+    if e.source_type == "news":
+        return f"published {day}"
+    return f"Form {e.form_type} filed {day}" if e.form_type else f"dated {day}"
 
 
 def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
@@ -256,7 +270,7 @@ def synthesis_sections(
             if e.form_type
             else ""
         )
-        + (f" {e.filed_or_published}" if e.filed_or_published else "")
+        + (f" — {dated_label(e)}" if e.filed_or_published else "")
         + f"\n{source_text(e)}"
         for i, e in enumerate(sources, start=1)
     ]
@@ -274,37 +288,73 @@ def synthesis_sections(
     ]
 
 
-def freshness_lines(state: ResearchState) -> list[str]:
-    lines: list[str] = []
+@dataclass(frozen=True)
+class SourceFreshness:
+    kind: str  # "news" | "8-K filings"
+    ticker: str
+    latest: date | None
+    checked: datetime | None
+
+
+def source_freshness(state: ResearchState) -> list[SourceFreshness]:
+    """The tools' freshness notes, one per (source, company), newest check kept."""
+    found: dict[tuple[str, str], SourceFreshness] = {}
     for result in state.get("step_results", {}).values():
-        match = FRESHNESS_RE.search(result.data_digest)
-        if not match:
-            continue
-        source = match.group("kind")
-        lines.append(
-            f"{source} through {match.group('date')}; freshness checked at {match.group('fetched')}"
-        )
-    return list(dict.fromkeys(lines))
+        for m in FRESHNESS_NOTE_RE.finditer(result.data_digest):
+            checked = None if m["checked"] == "never" else datetime.fromisoformat(m["checked"])
+            item = SourceFreshness(
+                m["kind"],
+                m["ticker"],
+                None if m["latest"] == "none" else date.fromisoformat(m["latest"]),
+                checked,
+            )
+            old = found.get((item.kind, item.ticker))
+            if old is None or (checked and (old.checked is None or checked > old.checked)):
+                found[(item.kind, item.ticker)] = item
+    return list(found.values())
+
+
+def _day(d: date) -> str:
+    return f"{d.day} {d:%b %Y}"
+
+
+def freshness_lines(state: ResearchState) -> list[str]:
+    """E.g. 'SEC filings checked 17 Nov 2026 (latest 8-K filed 12 Nov 2026)' and
+    'news through 15 Nov 2026 (checked 17 Nov 2026)'."""
+    items = source_freshness(state)
+    several = len({f.ticker for f in items}) > 1
+    lines = []
+    for f in items:
+        who = f"{f.ticker} " if several else ""
+        checked = _day(f.checked.date()) if f.checked else "never"
+        if f.kind == "8-K filings":
+            latest = f"latest 8-K filed {_day(f.latest)}" if f.latest else "no 8-Ks stored"
+            lines.append(f"{who}SEC filings checked {checked} ({latest})")
+        else:
+            latest = f"through {_day(f.latest)}" if f.latest else "none stored"
+            lines.append(f"{who}news {latest} (checked {checked})")
+    return lines
 
 
 def freshness_footer(state: ResearchState) -> str:
-    cutoff = date.fromisoformat(state["today"]) - timedelta(days=2)
-    stale: list[str] = []
-    for result in state.get("step_results", {}).values():
-        match = FRESHNESS_RE.search(result.data_digest)
-        if (
-            match
-            and match.group("date") != "no date"
-            and date.fromisoformat(match.group("date")) < cutoff
-        ):
-            stale.append(match.group("kind"))
-    if not stale:
+    """The data line, plus a warning only when a source wasn't *checked* in the last two
+    days. An old newest item alone is no warning: quiet companies file rarely (D-049)."""
+    lines = freshness_lines(state)
+    if not lines:
         return ""
-    kinds = ", ".join(dict.fromkeys(stale))
-    return (
-        f"*Freshness warning: stored {kinds} data is older than two days; "
-        "very recent events may be missing.*"
-    )
+    cutoff = date.fromisoformat(state["today"]) - timedelta(days=STALE_CHECK_DAYS)
+    stale = [
+        f"{'SEC filings' if f.kind == '8-K filings' else 'news'} for {f.ticker} "
+        + (f"last checked {_day(f.checked.date())}" if f.checked else "never checked")
+        for f in source_freshness(state)
+        if f.checked is None or f.checked.date() < cutoff
+    ]
+    footer = "*Data: " + "; ".join(lines) + ".*"
+    if stale:
+        footer += (
+            "\n*Freshness warning: " + "; ".join(stale) + "; very recent events may be missing.*"
+        )
+    return footer
 
 
 def normalize_citation_style(answer: str) -> str:

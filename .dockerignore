@@ -4,4 +4,5 @@
 !uv.lock
 !backend/pyproject.toml
 !backend/src/**
+!config/**
 **/__pycache__

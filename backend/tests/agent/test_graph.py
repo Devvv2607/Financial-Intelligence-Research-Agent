@@ -7,6 +7,7 @@ replans with unique ids, interrupt/resume returning to the node that asked, guar
 """
 
 import json
+from datetime import UTC, date, datetime
 from typing import Any
 
 import httpx
@@ -15,6 +16,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.types import Command
 
 from agent.checkpoint import memory_saver
+from agent.citecheck import verify_citations
 from agent.graph import RECURSION_LIMIT, build_graph
 from agent.nodes.answer import (
     FOOTER,
@@ -22,11 +24,18 @@ from agent.nodes.answer import (
     MAX_PER_STEP,
     MAX_SOURCES,
     UNVERIFIED_NOTE,
+    dated_label,
+    freshness_footer,
+    freshness_lines,
     numbered_sources,
     resolve_citations,
     source_text,
+    synthesis_sections,
 )
+from agent.nodes.planning import ensure_event_filings
 from agent.state import PlanStep, StepResult
+from agent.tools.base import Evidence
+from agent.tools.common import freshness_note
 
 from .fakes import (
     OK_CRITIQUE,
@@ -596,3 +605,206 @@ async def test_demo7_detail_only_gaps_do_not_replan() -> None:
     assert "3 detail-only gap(s) dropped" in out["critique"].notes
     critic_prompt = next(m for n, m in llm.calls if n == "critic")[0]["content"]
     assert "intentionally shortened summaries" in critic_prompt
+
+
+# ---------------------------------------------------------------- corporate events
+NVDA_8K = Evidence(
+    source_id="8k:0001045810-26-000082",
+    source_type="8k",
+    ticker="NVDA",
+    title="NVDA 8-K 2026-11-12: 5.02 Departure or appointment of directors or officers",
+    snippet="Item 5.02. On November 11, 2026, Jensen Huang resigned as President and CEO.",
+    url="https://www.sec.gov/Archives/edgar/data/1045810/x.htm",
+    form_type="8-K",
+    filed_or_published=date(2026, 11, 12),
+)
+NVDA_NEWS = Evidence(
+    source_id="news:abc",
+    source_type="news",
+    ticker="NVDA",
+    title="Nvidia CEO Jensen Huang resigns",
+    snippet="Jensen Huang resigned as chief executive of Nvidia.",
+    url="https://example.com/tech/nvidia-ceo",
+    filed_or_published=datetime(2026, 11, 15, 14, 14, tzinfo=UTC),
+)
+
+
+def test_event_question_gets_an_8k_step_first() -> None:
+    news = PlanStep.model_validate(
+        step(
+            "r1s1",
+            "news",
+            entities=["NVDA"],
+            tool_calls=[("search_news", '{"query": "NVIDIA CEO resign", "tickers": ["NVDA"]}')],
+        )
+    )
+    after = PlanStep.model_validate(step("r1s2", "filings", depends_on=["r1s1"]))
+    plan = ensure_event_filings([news, after], "Did the NVIDIA CEO resign?", ["NVDA"])
+    assert [s.id for s in plan] == ["r1s1", "r1s2", "r1s3"]
+    first = plan[0]
+    assert first.agent == "filings" and first.tool_calls[0].tool == "get_8k_events"
+    assert json.loads(first.tool_calls[0].args_json) == {
+        "ticker": "NVDA", "item_codes": ["5.02"], "limit": 5
+    }  # fmt: skip
+    assert plan[2].depends_on == ["r1s2"]  # dependency follows the renamed news step
+    # Already planned, or not an event question: unchanged.
+    assert ensure_event_filings(plan, "Did the NVIDIA CEO resign?", ["NVDA"]) == plan
+    assert ensure_event_filings([news], "How risky is NVIDIA?", ["NVDA"]) == [news]
+
+
+def test_8k_sources_are_numbered_before_news_with_exact_dates() -> None:
+    """Both an 8-K and news exist; the news step ran first, the filing still gets [1]."""
+    plan = [PlanStep.model_validate(step(i, a)) for i, a in (("r1s1", "news"), ("r1s2", "filings"))]
+    results = {
+        sid: StepResult(step_id=sid, status="done", mode="direct", evidence_ids=[eid])
+        for sid, eid in (("r1s1", "news:abc"), ("r1s2", NVDA_8K.source_id))
+    }
+    state: Any = {
+        "plan": plan, "step_results": results, "evidence": [NVDA_NEWS, NVDA_8K],
+        "today": "2026-11-17", "query": "Did the NVIDIA CEO resign?",
+    }  # fmt: skip
+    sources = numbered_sources(state)
+    assert [e.source_id for e in sources] == [NVDA_8K.source_id, "news:abc"]
+    assert dated_label(NVDA_8K) == "Form 8-K filed 12 Nov 2026"
+    assert dated_label(NVDA_NEWS) == "published 15 Nov 2026"
+    text = dict(synthesis_sections(state, sources, []))["sources"]
+    assert text.index("[1] NVDA 8-K") < text.index("[2] Nvidia CEO")
+    assert "Form 8-K filed 12 Nov 2026" in text and "published 15 Nov 2026" in text
+
+
+def test_synthesizer_prompt_rules_for_events() -> None:
+    from agent import prompts
+
+    synth = " ".join(prompts.load("synthesizer").split())
+    assert "Form 8-K filed 12 Nov 2026" in synth and "cite it first" in synth
+    assert "mid-November" in synth and "never replace it" in synth
+    assert "leave it out entirely" in synth and "opinion piece" in synth
+    assert "after the filing sentence, add 1-3 sentences on what news reporting adds" in synth
+    assert "states ONE specific fact from ONE report" in synth and "cites only that report" in synth
+    assert "Never summarize several reports in one sentence" in synth
+    assert "interim CEO" not in synth  # a fact the news set may not contain (run 3)
+    assert "do not write your own" in synth  # the data line is deterministic (D-049)
+    assert "{event_items}" in prompts.load("planner")
+
+
+async def test_resignation_run_cites_the_8k_first() -> None:
+    """End to end with a news-only plan from the model: the graph adds the 8-K step, both
+    tools run, and the synthesizer sees the filing as [1] with its filing date."""
+    q = "Did the NVIDIA CEO resign?"
+    news_only = planner_returns(
+        step(
+            "a",
+            "news",
+            entities=["NVDA"],
+            tool_calls=[("search_news", '{"query": "NVIDIA CEO resign", "tickers": ["NVDA"]}')],
+        )
+    )
+    llm = FakeLLM(
+        {
+            "query_analyzer": [analysis(q, ["NVDA"])],
+            "planner": [news_only],
+            "critic": [OK_CRITIQUE],
+        },
+        {
+            "synthesizer": [
+                "Yes: NVIDIA's CEO resigned, per a Form 8-K filed 12 Nov 2026 [1]. "
+                "Reuters reported on 15 Nov 2026 that Huang resigned as chief executive [2]."
+            ]
+        },
+    )
+    tools = FakeTools(
+        {
+            "get_8k_events": ok("get_8k_events", {"events": [1]}, [NVDA_8K]),
+            "search_news": ok("search_news", {"hits": [1]}, [NVDA_NEWS]),
+        }
+    )
+    graph = build_graph(make_deps(llm, tools), memory_saver())
+    out = await ask(graph, q)
+    assert sorted(name for name, *_ in tools.log) == ["get_8k_events", "search_news"]
+    k8_args = next(a for name, a, *_ in tools.log if name == "get_8k_events")
+    assert k8_args["item_codes"] == ["5.02"]
+    planner_prompt = next(m for n, m in llm.calls if n == "planner")[0]["content"]
+    assert "{event_items}" not in planner_prompt and "item_codes ['5.02']" in planner_prompt
+    synth_input = next(m for n, m in llm.calls if n == "synthesizer")[1].content
+    assert "[1] NVDA 8-K 2026-11-12" in synth_input and "Form 8-K filed 12 Nov 2026" in synth_input
+    assert "published 15 Nov 2026" in synth_input  # the news date it must quote
+    assert [c.source_id for c in out["citations"]] == [NVDA_8K.source_id, "news:abc"]
+    answer = out["answer"]
+    assert answer.index("[1]") < answer.index("[2]") and "15 Nov 2026" in answer
+
+
+# ---------------------------------------------------------------- freshness by last check
+def _fresh_state(today: str, *notes: str) -> Any:
+    result = StepResult(
+        step_id="r1s1",
+        status="done",
+        mode="direct",
+        data_digest="get_8k_events: {} [warnings: " + "; ".join(notes) + "]",
+    )
+    return {"today": today, "step_results": {"r1s1": result}}
+
+
+def test_recent_check_with_an_old_filing_is_not_stale() -> None:
+    state = _fresh_state(
+        "2026-11-17",
+        freshness_note(
+            "8-K filings", "NVDA", date(2026, 11, 12), datetime(2026, 11, 17, 8, tzinfo=UTC)
+        ),
+        freshness_note("news", "NVDA", date(2026, 11, 15), datetime(2026, 11, 16, 9, tzinfo=UTC)),
+    )
+    assert freshness_lines(state) == [
+        "SEC filings checked 17 Nov 2026 (latest 8-K filed 12 Nov 2026)",
+        "news through 15 Nov 2026 (checked 16 Nov 2026)",
+    ]
+    footer = freshness_footer(state)
+    assert footer.startswith("*Data: SEC filings checked 17 Nov 2026") and "warning" not in footer
+
+
+def test_check_older_than_two_days_warns() -> None:
+    old = datetime(2026, 11, 14, 23, tzinfo=UTC)
+    state = _fresh_state(
+        "2026-11-17",
+        freshness_note("8-K filings", "NVDA", date(2026, 11, 12), old),
+        freshness_note("news", "AMD", None, None),
+    )
+    footer = freshness_footer(state)
+    assert "NVDA SEC filings checked 14 Nov 2026" in footer  # two companies: tickers shown
+    assert "*Freshness warning: SEC filings for NVDA last checked 14 Nov 2026" in footer
+    assert "news for AMD never checked" in footer
+    # Exactly two days old is still fresh.
+    edge = _fresh_state("2026-11-17", freshness_note("news", "NVDA", None, old.replace(day=15)))
+    assert "warning" not in freshness_footer(edge)
+
+
+async def test_one_fact_news_sentence_passes_the_check_and_a_summary_does_not() -> None:
+    """Run 3 (2026-11-17): a sentence blending three reports scored 0.50-0.52 against each
+    and was marked [unverified]. One headline-level fact per report is checkable."""
+    reports = [
+        Evidence(
+            source_id=f"news:{i}",
+            source_type="news",
+            ticker="NVDA",
+            title=title,
+            snippet=title,
+            filed_or_published=datetime(2026, 11, 15, tzinfo=UTC),
+        )
+        for i, title in enumerate(
+            [
+                "Bessent says Nvidia must go outside the company to find new CEO",
+                "Report: Jensen Huang weighs return as Nvidia CEO",
+                "Robotics engineer leaves Nvidia over lack of transparency around Huang exit",
+            ]
+        )
+    ]
+    one_fact = (
+        "On 15 Nov 2026, Treasury Secretary Bessent said Nvidia must go outside the company "
+        "to find its new CEO [1]."
+    )
+    summary = (
+        "The resignation was reported in the press on 15 Nov 2026, with multiple outlets "
+        "describing the abrupt departure and the board's succession process [1][2][3]."
+    )
+    checked, report = await verify_citations(one_fact, reports, bow_embed)
+    assert checked == one_fact and report.precision == 1.0
+    checked, report = await verify_citations(summary, reports, bow_embed)
+    assert "[unverified]" in checked and report.unverified_claims == 1

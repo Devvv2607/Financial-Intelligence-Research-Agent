@@ -16,6 +16,8 @@ from urllib.parse import urlsplit, urlunsplit
 
 import httpx
 
+from core.db.source_checks import file_time
+
 _SUFFIXES = re.compile(
     r"\b(incorporated|inc|corp|corporation|co|company|plc|ltd|limited|llc|holdings?|"
     r"group|n\.?v|s\.?a|the|de|md|ma|mn|oh|tx|nv|new)\b\.?",
@@ -114,6 +116,11 @@ class NewsApiClient:
     def cached_today(self, ticker: str, today: date | None = None) -> bool:
         cache_date = today.isoformat() if today is not None else self._today()
         return (self._cache_dir / ticker / f"{cache_date}.json").exists()
+
+    def fetched_at(self, ticker: str, today: date | None = None) -> datetime | None:
+        """When today's response for the company arrived (its cache file's time), or None."""
+        cache_date = today.isoformat() if today is not None else self._today()
+        return file_time(self._cache_dir / ticker / f"{cache_date}.json")
 
     def requests_today(self, today: date | None = None) -> int:
         """Requests made today (UTC), counted from the one-file-per-request cache."""

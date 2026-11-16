@@ -1,0 +1,45 @@
+Live run via the API (POST /api/threads/{id}/runs), branch fix/event-answer-quality @ d8e6c5e, gpt-oss-120b, 2026-11-17 (UTC 2026-11-16)
+Question: Did the NVIDIA CEO resign?
+Raw SSE stream: demo8-nvda-ceo-resign-run3.sse.txt
+
+== PLAN (round 1)
+  r1s1 [filings]: Check 8-K filings for any officer or director change indicating the NVIDIA CEO resignation
+      -> get_8k_events({"ticker":"NVDA","item_codes":["5.02"]})
+  r1s2 [news]: Search recent news for reports of the NVIDIA CEO resignation
+      -> search_news({"query":"NVIDIA CEO resignation","tickers":["NVDA"]})
+    . r1s1 get_8k_events({"ticker": "NVDA", "item_codes": ["5.02"]}) ok=True evidence=6
+      8k:0001045810-26-000082 | 2026-11-12 | NVDA 8-K 2026-11-12: 5.02 Departure or appointment of directors or officers; compensation arrangements; 9.01 Financial statements and exhibits
+      8k:0001045810-26-000060 | 2026-07-02 | NVDA 8-K 2026-07-02: 5.02 Departure or appointment of directors or officers; compensation arrangements
+      8k:0001045810-26-000028 | 2026-05-08 | NVDA 8-K 2026-05-08: 5.02 Departure or appointment of directors or officers; compensation arrangements
+      8k:0001045810-26-000026 | 2026-04-27 | NVDA 8-K 2026-04-27: 5.02 Departure or appointment of directors or officers; compensation arrangements
+      8k:0001045810-26-000024 | 2026-03-06 | NVDA 8-K 2026-03-06: 5.02 Departure or appointment of directors or officers; compensation arrangements; 9.01 Financial statements and exhibits
+      8k:0001045810-26-000003 | 2026-01-23 | NVDA 8-K 2026-01-23: 5.02 Departure or appointment of directors or officers; compensation arrangements
+    . r1s2 search_news({"query": "NVIDIA CEO resignation", "tickers": ["NVDA"]}) ok=True evidence=10
+      news:fa642b16bf5b0b214343f2d9a668bd43 | 2026-11-15T14:46:05Z | 'Piece of Sh*t': Nvidia Founder Jensen Huang Was Beating Himself Up in Final Days as CEO
+      news:47efab5be35355003f1724cb6fa58de3 | 2026-11-15T17:56:15Z | Robotics engineer leaves Nvidia over lack of transparency around Jensen Huang’s exit, details decision
+      news:b16a7d95fdd6224f52c2bf5297b0ee1b | 2026-11-15T15:50:06Z | Bessent says Nvidia must 'go outside the company' to find new CEO
+      news:044e9196b35625cb551ba81fa456ca9c | 2026-11-15T18:16:58Z | Bessent says Nvidia needs external CEO search
+      news:5c2ee0451fcad3282d7e3897b26b81d4 | 2026-11-15T19:26:36Z | Report: Jensen Huang weighs return as Nvidia CEO
+      news:f7568327fc918b379ac623f070e940dd | 2026-11-15T18:18:45Z | Bessent says Nvidia should look outside the company new CEO after Huang: ‘Needs a dramatic shakeup’
+      news:60aae868a7dc24e7974114758a4e4aa8 | 2026-11-11T06:15:02Z | Nvidia CEO affair revives push for tougher US line on China
+      news:0226e442232d6c56f1da3009c70a3ca6 | 2026-11-11T12:02:33Z | Nvidia, Jensen Huang and the history of ‘sexpionage’
+      news:38326da79d644eb45f538e1780f485dd | 2026-11-11T12:59:27Z | Jensen Huang Loses $16 Billion as Nvidia Sheds $400 Billion in Two Days, Ex-Prosecutor Joon Kim Leads Probe
+      news:a8aa1047a6392ea251949bc1d9c76495 | 2026-11-15T19:26:28Z | Jensen Huang discusses comeback as Nvidia CEO with allies, FT reports
+== CRITIC verdict=ok gaps=[] replanning=False
+
+== ANSWER
+**Yes.** NVIDIA’s board accepted the resignation of Jensen Huang as President, Chief Executive Officer and director, effective immediately, as disclosed in a Form 8‑K filed on 12 Nov 2026 [1].
+
+The resignation was reported in the press on 15 Nov 2026, with multiple outlets describing Huang’s abrupt departure and the board’s search for a successor [unverified].
+
+---
+*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*
+*Data: SEC filings checked 16 Nov 2026 (latest 8-K filed 12 Nov 2026); news through 15 Nov 2026 (checked 16 Nov 2026).*
+*Claims marked [unverified] could not be matched to any retrieved source.*
+
+== CITATIONS
+  [1] NVDA 8-K 2026-11-12: 5.02 Departure or appointment of directors or officers; compensation arrangements; 9.01 Financial statements and exhibits — https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/nvda-20261111.htm
+
+== CITATION CHECK {"checked": 4, "supported": 1, "reattached": 0, "dropped": 3, "unverified_claims": 1, "precision": 0.25}
+
+== TOKENS (llm_calls): query_analyzer, planner, critic 0 (dev cache hits: same inputs as run 2) · synthesizer 3,180 · total 3,180

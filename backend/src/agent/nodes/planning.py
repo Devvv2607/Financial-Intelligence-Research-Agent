@@ -25,6 +25,7 @@ from agent.deps import AgentDeps
 from agent.nodes.intake import run_id_of
 from agent.state import PlanStep, ResearchState, SpecialistInput, StepResult, ToolCallSpec
 from agent.tools import AGENT_TOOLS, REGISTRY
+from agent.tools.eight_k_items import event_item_codes, event_items_prompt
 from core.llm import DailyLimitError, LLMError
 
 MAX_NEW_STEPS = 6
@@ -116,6 +117,56 @@ def normalize_plan(
     return out
 
 
+def ensure_event_filings(
+    steps: list[PlanStep], question: str, tickers: list[str]
+) -> list[PlanStep]:
+    """For a corporate-event question, make sure each resolved company gets a direct
+    get_8k_events call with the matching item codes. The 8-K is the primary source; the
+    2026-11-17 live run planned news only, so the filed 8-K went uncited."""
+    codes = event_item_codes(question)
+    if not codes or not steps:
+        return steps
+    covered = {
+        str(json.loads(c.args_json or "{}").get("ticker", "")).upper()
+        for s in steps
+        for c in s.tool_calls
+        if c.tool == "get_8k_events"
+    }
+    added = [
+        PlanStep(
+            id="",
+            goal=f"{t}'s 8-K filings for this event (items {', '.join(codes)})",
+            agent="filings",
+            entities=[t],
+            depends_on=[],
+            tool_calls=[
+                ToolCallSpec(
+                    tool="get_8k_events",
+                    args_json=json.dumps({"ticker": t, "item_codes": codes, "limit": 5}),
+                )
+            ],
+        )
+        for t in tickers
+        if t not in covered
+    ][: max(MAX_NEW_STEPS - len(steps), 0)]
+    if not added:
+        return steps
+    # Filing steps first, so the 8-K gets the first source numbers; ids follow the new order.
+    prefix = steps[0].id.rsplit("s", 1)[0]
+    ordered = added + steps
+    rename = {id(s): f"{prefix}s{k}" for k, s in enumerate(ordered, start=1)}
+    old_to_new = {s.id: rename[id(s)] for s in steps}
+    return [
+        s.model_copy(
+            update={
+                "id": rename[id(s)],
+                "depends_on": [old_to_new.get(d, d) for d in s.depends_on],
+            }
+        )
+        for s in ordered
+    ]
+
+
 def _step_status_lines(state: ResearchState) -> str:
     results = state.get("step_results", {})
     lines = []
@@ -166,9 +217,9 @@ def make_planning_nodes(deps: AgentDeps) -> dict[str, Any]:
                 [
                     {
                         "role": "system",
-                        "content": prompts.load("planner").replace(
-                            "{tool_catalog}", tool_catalog()
-                        ),
+                        "content": prompts.load("planner")
+                        .replace("{tool_catalog}", tool_catalog())
+                        .replace("{event_items}", event_items_prompt()),
                     },
                     {"role": "user", "content": "\n\n".join(lines)},
                 ],
@@ -179,6 +230,10 @@ def make_planning_nodes(deps: AgentDeps) -> dict[str, Any]:
                 return {"plan_round": round_no}
             return {"route": "error", "answer": f"I couldn't plan the research: {exc}"}
         new_steps = normalize_plan(out.steps, existing, round_no, set(companies))
+        if not existing:
+            new_steps = ensure_event_filings(
+                new_steps, question, [e.ticker for e in entities if e.ticker in companies]
+            )
         if not new_steps and not existing:
             return {
                 "route": "error",

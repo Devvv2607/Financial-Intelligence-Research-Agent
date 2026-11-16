@@ -19,6 +19,7 @@ import re
 import zlib
 from collections.abc import AsyncIterator, Sequence
 from contextlib import asynccontextmanager
+from datetime import UTC, date, datetime
 from typing import Any
 
 import numpy as np
@@ -30,7 +31,7 @@ from agent.checkpoint import memory_saver
 from agent.deps import AgentDeps
 from agent.scripted import ScriptedLLM, ScriptedTools, ToolHandler
 from agent.tools.base import Evidence, ToolResult
-from agent.tools.common import Company
+from agent.tools.common import Company, freshness_note
 from api.runtime import AgentRuntime, make_runtime
 from core.config import Settings
 from core.threads import MemoryThreadStore
@@ -184,13 +185,16 @@ async def _tool(name: str, args: dict[str, Any]) -> ToolResult:
         ]
     else:
         ev = []
+    # The scripted store was last checked upstream on 8 Nov: answers carry the warning.
+    checked = datetime(2026, 11, 8, 6, tzinfo=UTC)
+    latest = date(2026, 11, 8)
     if name == "search_news" or name == "get_8k_events":
         data = {
             "items": len(ev),
             "freshness": {
                 ticker: {
-                    "latest_stored_date": "2026-11-08",
-                    "fetched_at": "2026-11-13T00:00:00+00:00",
+                    "latest_stored_date": latest.isoformat(),
+                    "last_checked_at": checked.isoformat(),
                 }
             },
         }
@@ -198,11 +202,9 @@ async def _tool(name: str, args: dict[str, Any]) -> ToolResult:
         data = {"items": len(ev)}
     warnings = []
     if name == "search_news":
-        warnings.append("news stored through 2026-11-08; fetched at 2026-11-13T00:00:00+00:00")
+        warnings.append(freshness_note("news", ticker, latest, checked))
     elif name == "get_8k_events":
-        warnings.append(
-            "8-K filings stored through 2026-11-08; fetched at 2026-11-13T00:00:00+00:00"
-        )
+        warnings.append(freshness_note("8-K filings", ticker, latest, checked))
     return ToolResult(tool=name, ok=True, data=data, evidence=ev, warnings=warnings)
 
 

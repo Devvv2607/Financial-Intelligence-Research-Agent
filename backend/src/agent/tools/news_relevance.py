@@ -10,7 +10,11 @@ Our score, per article (all parts are returned with the hit):
 - semantic: cosine similarity of the query and article embeddings (bge, title +
   description), an absolute number comparable across queries;
 - keyword: share of the query's content words found in the title or description;
-- source_weight: 0.8 for aggregators that re-post others' headlines (Biztoc), 1.0 otherwise.
+- source_weight: the per-source weight times the page-kind weight, both from the owner's
+  config file (config/news_sources.toml). Page kinds come from the page, not the outlet:
+  "commentary" (opinion/editorial/letters/blog URL path segments or title phrases),
+  "primary" (the company's own press release), else "reporting". Ranking puts every
+  commentary page below every other page (news.py), whatever its score.
 Gate and floor, applied before ranking:
 - entity gate: the company's name or ticker appears in the title, or (for non-aggregator
   outlets) in the description. Aggregators list trending tickers in descriptions, so for
@@ -22,15 +26,65 @@ Gate and floor, applied before ranking:
 """
 
 import re
+import tomllib
 from dataclasses import dataclass
+from functools import cache
+from pathlib import Path
+from typing import Any, Literal
+from urllib.parse import urlsplit
 
 from core.newsapi import short_company_name
 
 SEMANTIC_WEIGHT = 0.75
 KEYWORD_WEIGHT = 0.25
 MIN_SEMANTIC = 0.58
-AGGREGATOR_WEIGHTS: dict[str, float] = {"biztoc.com": 0.8}
-NON_NEWS_SOURCES = frozenset({"pypi.org", "dealnews.com", "slickdeals.net"})
+PageKind = Literal["primary", "reporting", "commentary"]
+
+
+@dataclass(frozen=True)
+class SourcePolicy:
+    excluded: frozenset[str]
+    weights: dict[str, float]
+    aggregators: frozenset[str]
+    commentary_weight: float
+    commentary_segments: frozenset[str]
+    commentary_phrases: tuple[str, ...]
+    primary_weight: float
+    primary_segments: frozenset[str]
+    not_primary_phrases: tuple[str, ...]
+
+    def kind_weight(self, kind: PageKind) -> float:
+        return {"primary": self.primary_weight, "commentary": self.commentary_weight}.get(kind, 1.0)
+
+
+def _lower(values: Any) -> list[str]:
+    return [str(v).strip().lower() for v in values or []]
+
+
+def parse_policy(raw: dict[str, Any]) -> SourcePolicy:
+    sources = raw.get("sources", {})
+    commentary = raw.get("commentary", {})
+    primary = raw.get("primary", {})
+    return SourcePolicy(
+        excluded=frozenset(_lower(sources.get("excluded"))),
+        weights={k.lower(): float(v) for k, v in sources.get("weights", {}).items()},
+        aggregators=frozenset(_lower(raw.get("aggregators", {}).get("names"))),
+        commentary_weight=float(commentary.get("weight", 1.0)),
+        commentary_segments=frozenset(_lower(commentary.get("url_segments"))),
+        commentary_phrases=tuple(_lower(commentary.get("title_phrases"))),
+        primary_weight=float(primary.get("weight", 1.0)),
+        primary_segments=frozenset(_lower(primary.get("url_segments"))),
+        not_primary_phrases=tuple(_lower(primary.get("not_primary_title_phrases"))),
+    )
+
+
+@cache
+def load_policy(path: Path) -> SourcePolicy:
+    """The owner's news source policy; a missing or invalid file fails loudly."""
+    with path.open("rb") as f:
+        return parse_policy(tomllib.load(f))
+
+
 _STOPWORDS = frozenset(
     {
         "the", "a", "an", "and", "or", "of", "to", "in", "on", "for", "with", "by", "from",
@@ -49,6 +103,7 @@ class Relevance:
     keyword: float
     source_weight: float
     matched_on: str  # e.g. "title:name", "description:ticker"
+    page_kind: PageKind = "reporting"
 
 
 # First words too generic to identify a company on their own ("General" Motors/Electric).
@@ -100,12 +155,30 @@ def keyword_coverage(query: str, text: str) -> float:
     return len(wanted & _words(text)) / len(wanted) if wanted else 0.0
 
 
-def source_weight(source_name: str | None) -> float | None:
+def source_weight(source_name: str | None, policy: SourcePolicy) -> float | None:
     """None = not a news source (excluded)."""
     key = (source_name or "").strip().lower()
-    if key in NON_NEWS_SOURCES:
+    if key in policy.excluded:
         return None
-    return AGGREGATOR_WEIGHTS.get(key, 1.0)
+    return policy.weights.get(key, 1.0)
+
+
+def page_kind(url: str, title: str, company_name: str, policy: SourcePolicy) -> PageKind:
+    """From the page itself, for any outlet: commentary by URL path segment or title
+    phrase; primary when a press-release page's title starts with the company's name."""
+    segments = {s.lower() for s in urlsplit(url).path.split("/") if s}
+    lowered = title.lower()
+    if segments & policy.commentary_segments or any(
+        p in lowered for p in policy.commentary_phrases
+    ):
+        return "commentary"
+    if (
+        segments & policy.primary_segments
+        and not any(p in lowered for p in policy.not_primary_phrases)
+        and any(re.match(_alias_pattern(a), title, re.I) for a in name_aliases(company_name))
+    ):
+        return "primary"
+    return "reporting"
 
 
 def relevance(
@@ -116,20 +189,27 @@ def relevance(
     semantic: float,
     company_name: str,
     ticker: str,
+    policy: SourcePolicy,
+    url: str = "",
 ) -> Relevance | None:
     """None when the article fails the entity gate, isn't a news source, or falls below
     the semantic floor."""
-    weight = source_weight(source_name)
+    weight = source_weight(source_name, policy)
     if weight is None or semantic < MIN_SEMANTIC:
         return None
+    aggregator = (source_name or "").strip().lower() in policy.aggregators
     in_title = mentions_company(title, company_name, ticker)
     in_description = (
-        mentions_company(description or "", company_name, ticker) if weight == 1.0 else None
+        None if aggregator else mentions_company(description or "", company_name, ticker)
     )
     if in_title is None and in_description is None:
         return None
     matched = f"title:{in_title}" if in_title else f"description:{in_description}"
     text = f"{title}. {description or ''}"
     keyword = keyword_coverage(query, text)
+    kind = page_kind(url, title, company_name, policy)
+    weight *= policy.kind_weight(kind)
     score = (SEMANTIC_WEIGHT * semantic + KEYWORD_WEIGHT * keyword) * weight
-    return Relevance(round(score, 3), round(semantic, 3), round(keyword, 3), weight, matched)
+    return Relevance(
+        round(score, 3), round(semantic, 3), round(keyword, 3), round(weight, 3), matched, kind
+    )

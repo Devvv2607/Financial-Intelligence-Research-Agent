@@ -1,9 +1,10 @@
 """Helpers shared by tools. Nothing here assumes the full 205-company universe: tools
 work with whatever companies are in the database and say which ones are missing."""
 
+import re
 from dataclasses import dataclass
-from datetime import date
-from typing import Any
+from datetime import date, datetime
+from typing import Any, Literal
 
 from sqlalchemy import Executable, select
 
@@ -60,6 +61,26 @@ async def resolve_tickers(
 
 def missing_warning(missing: list[str]) -> list[str]:
     return [f"no ingested data for: {', '.join(missing)}"] if missing else []
+
+
+# One line per company and source, read back by the answer node (freshness footer, D-049).
+FRESHNESS_NOTE_RE = re.compile(
+    r"(?P<kind>news|8-K filings) for (?P<ticker>[A-Z0-9.\-]+): "
+    r"latest item (?P<latest>\d{4}-\d{2}-\d{2}|none); "
+    r"last checked (?P<checked>never|\d{4}-\d{2}-\d{2}T[0-9:.]+(?:Z|[+-]\d{2}:\d{2})?)"
+)
+
+
+def freshness_note(
+    kind: Literal["news", "8-K filings"],
+    ticker: str,
+    latest: date | None,
+    checked: datetime | None,
+) -> str:
+    return (
+        f"{kind} for {ticker}: latest item {latest.isoformat() if latest else 'none'}; "
+        f"last checked {checked.isoformat() if checked else 'never'}"
+    )
 
 
 def filing_index_url(cik: int, accession_no: str) -> str:

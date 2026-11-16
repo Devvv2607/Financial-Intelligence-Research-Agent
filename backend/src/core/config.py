@@ -74,6 +74,8 @@ class Settings(BaseSettings):
     news_window_days: int = 29
     newsapi_requests_per_day: int = 90  # free plan allows 100/day; keep headroom
     news_live_fallback: bool = True  # forced off in production (NewsAPI free-tier terms)
+    # Owner-edited source weights and page-kind rules for news ranking.
+    news_sources_file: Path = Path("config/news_sources.toml")
 
     # Risk tagging (D-003).
     risk_tag_body_words: int = 150
