@@ -35,3 +35,7 @@ data/models/
 fastembed_cache/
 *.onnx
 data/backups/
+
+# Playwright E2E output
+frontend/test-results/
+frontend/playwright-report/
