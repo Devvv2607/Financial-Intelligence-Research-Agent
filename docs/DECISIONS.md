@@ -1034,3 +1034,28 @@ The 2026-11-17 live run of "Did the NVIDIA CEO resign?" planned news only, so th
   own name (third-party notices excluded); else reporting. Commentary always ranks below
   every reporting or primary page; primary pages get a weight boost. No outlet names in
   logic and no judgments about outlets.
+
+## D-049 · Freshness = when we last checked the source, not the newest item
+
+**Status:** Implemented. Refines D-047.
+
+D-047 warned when the newest stored 8-K or article was over two days old. After a
+same-day refresh, NVIDIA's answer still warned, because its latest 8-K was filed five
+days earlier. A quiet company is up to date if EDGAR was checked today.
+
+- **Where the check time lives:** `ingestion_jobs`, no schema change. Two extra stage
+  values, `sec_check` and `news_check`, hold the last successful EDGAR submissions fetch
+  and NewsAPI fetch per company in `updated_at` (`core/db/source_checks.py`; never moves
+  backwards). Before this, nothing stored it: the refresh wrote no job rows, and the job
+  upsert never updated `updated_at` on conflict.
+- **Writers:** the refresh, the pipeline's `edgar`/`news` stages, and the agent's live
+  NewsAPI fallback. They record the response's cache-file time, so a run that reuses a
+  cached response doesn't claim a newer check.
+- **Readers:** `get_8k_events` and `search_news` return `last_checked_at` and a freshness
+  note per company; the answer node appends a deterministic data line ("SEC filings
+  checked 17 Nov 2026 (latest 8-K filed 12 Nov 2026); news through 15 Nov 2026 (checked
+  17 Nov 2026)") and warns only when a source was never checked or last checked more than
+  two days ago. The synthesizer no longer writes its own freshness line.
+- **Event answers:** the synthesizer adds 1-3 cited, dated sentences of directly related
+  news reporting after the filing sentence (D-048 follow-up).
+- Companies ingested before this change show "never checked" until their next refresh.

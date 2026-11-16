@@ -10,11 +10,17 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from core.config import Settings
 from core.db.schema import filings, news_articles
+from core.db.source_checks import file_time, record_check
 from core.embeddings import Embedder
 from core.newsapi import Article, NewsApiClient, build_query, parse_articles
 from core.vectorstore import FILING_CHUNK, NEWS_ARTICLE, ensure_collections
 from ingestion.edgar.client import EdgarClient
-from ingestion.edgar.submissions import FilingRef, load_recent_8ks, load_ticker_map
+from ingestion.edgar.submissions import (
+    SUBMISSIONS_URL,
+    FilingRef,
+    load_recent_8ks,
+    load_ticker_map,
+)
 from ingestion.extract.html_clean import blocks_text, html_to_blocks
 from ingestion.load import postgres as pg
 from ingestion.load.chunker import chunk_text, embedding_input, make_header
@@ -95,6 +101,7 @@ async def refresh_company(
         }
     if embedder is None or weaviate is None:
         raise ValueError("live incremental refresh requires embedding and Weaviate clients")
+    await _record_sec_check(engine, edgar, plan.cik)
 
     pending_8k = PendingObjects(FILING_CHUNK)
     for ref in plan.new_8ks:
@@ -127,6 +134,8 @@ async def refresh_company(
         for article in articles:
             if article.id not in existing:
                 _add_news(pending_news, plan.ticker, company_name, plan.cik, article)
+    if news is not None and (fetched := news.fetched_at(plan.ticker, today)):
+        await record_check(engine, plan.cik, "news_check", fetched)
 
     await ensure_collections(weaviate)
     counts: dict[str, int | str] = {
@@ -141,6 +150,13 @@ async def refresh_company(
                 weaviate, pending, await embedder.embed(pending.texts)
             )
     return counts
+
+
+async def _record_sec_check(engine: AsyncEngine, edgar: EdgarClient, cik: int) -> None:
+    """The submissions response's arrival time is when EDGAR was last checked."""
+    checked = file_time(edgar.cache_path(SUBMISSIONS_URL.format(cik=cik)))
+    if checked:
+        await record_check(engine, cik, "sec_check", checked)
 
 
 def _add_8k(

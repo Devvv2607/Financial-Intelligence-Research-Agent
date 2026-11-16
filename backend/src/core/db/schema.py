@@ -173,7 +173,8 @@ ingestion_jobs = Table(
     "ingestion_jobs",
     metadata,
     Column("cik", Integer, ForeignKey("companies.cik", ondelete="CASCADE")),
-    Column("stage", String(16), nullable=False),  # edgar | tagging | news | index
+    # edgar | tagging | news | index, plus sec_check | news_check (core.db.source_checks)
+    Column("stage", String(16), nullable=False),
     Column("status", String(16), nullable=False),  # running | done | failed
     Column("error", Text),
     Column("details", JSONB),

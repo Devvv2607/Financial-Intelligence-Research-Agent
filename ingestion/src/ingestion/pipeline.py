@@ -30,13 +30,19 @@ from core.db.schema import (
     risk_factors,
     risk_tag_experiments,
 )
+from core.db.source_checks import file_time, record_check
 from core.embeddings import Embedder
 from core.llm import DailyLimitError, GroqClient
 from core.newsapi import NewsApiClient, NewsApiError, build_query, parse_articles
 from core.vectorstore import FILING_CHUNK, NEWS_ARTICLE, RISK_FACTOR, ensure_collections
 from ingestion import prompts
 from ingestion.edgar.client import EdgarClient, EdgarError
-from ingestion.edgar.submissions import FilingRef, load_filings, load_ticker_map
+from ingestion.edgar.submissions import (
+    SUBMISSIONS_URL,
+    FilingRef,
+    load_filings,
+    load_ticker_map,
+)
 from ingestion.edgar.xbrl import COMPANYFACTS_URL, extract_annual_facts, metrics_found
 from ingestion.enrich.risk_tagger import (
     RiskInput,
@@ -219,8 +225,20 @@ class Pipeline:
                     await pg.set_job(
                         self.engine, cik, stage, "done", details=details, run_id=self.run_id
                     )
+                    await self._record_check(stage, row.ticker, cik)
         self._on_progress(row.ticker, "finished")
         return out
+
+    async def _record_check(self, stage: Stage, ticker: str, cik: int) -> None:
+        """When EDGAR / NewsAPI last answered for this company: the response's cache-file
+        time, so a stage that reused a cached response keeps the real check time (D-049)."""
+        if stage == "edgar":
+            checked = file_time(self.edgar.cache_path(SUBMISSIONS_URL.format(cik=cik)))
+            if checked:
+                await record_check(self.engine, cik, "sec_check", checked)
+        elif stage == "news" and self.news is not None:
+            if fetched := self.news.fetched_at(ticker):
+                await record_check(self.engine, cik, "news_check", fetched)
 
     async def _run_stage(
         self, stage: Stage, row: UniverseRow, cik: int, refresh: bool

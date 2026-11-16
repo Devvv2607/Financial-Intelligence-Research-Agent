@@ -24,6 +24,8 @@ from agent.nodes.answer import (
     MAX_SOURCES,
     UNVERIFIED_NOTE,
     dated_label,
+    freshness_footer,
+    freshness_lines,
     numbered_sources,
     resolve_citations,
     source_text,
@@ -32,6 +34,7 @@ from agent.nodes.answer import (
 from agent.nodes.planning import ensure_event_filings
 from agent.state import PlanStep, StepResult
 from agent.tools.base import Evidence
+from agent.tools.common import freshness_note
 
 from .fakes import (
     OK_CRITIQUE,
@@ -675,6 +678,9 @@ def test_synthesizer_prompt_rules_for_events() -> None:
     assert "Form 8-K filed 12 Nov 2026" in synth and "cite it first" in synth
     assert "mid-November" in synth and "never replace it" in synth
     assert "leave it out entirely" in synth and "opinion piece" in synth
+    assert "after the filing sentence, add 1-3 sentences on what news reporting adds" in synth
+    assert "each citing a news source and giving its date" in synth
+    assert "do not write your own" in synth  # the data line is deterministic (D-049)
     assert "{event_items}" in prompts.load("planner")
 
 
@@ -696,7 +702,12 @@ async def test_resignation_run_cites_the_8k_first() -> None:
             "planner": [news_only],
             "critic": [OK_CRITIQUE],
         },
-        {"synthesizer": ["Yes: NVIDIA's CEO resigned (Form 8-K filed 12 Nov 2026) [1][2]."]},
+        {
+            "synthesizer": [
+                "Yes: NVIDIA's CEO resigned, per a Form 8-K filed 12 Nov 2026 [1]. "
+                "Reuters reported on 15 Nov 2026 that Huang resigned as chief executive [2]."
+            ]
+        },
     )
     tools = FakeTools(
         {
@@ -713,4 +724,50 @@ async def test_resignation_run_cites_the_8k_first() -> None:
     assert "{event_items}" not in planner_prompt and "item_codes ['5.02']" in planner_prompt
     synth_input = next(m for n, m in llm.calls if n == "synthesizer")[1].content
     assert "[1] NVDA 8-K 2026-11-12" in synth_input and "Form 8-K filed 12 Nov 2026" in synth_input
+    assert "published 15 Nov 2026" in synth_input  # the news date it must quote
     assert [c.source_id for c in out["citations"]] == [NVDA_8K.source_id, "news:abc"]
+    answer = out["answer"]
+    assert answer.index("[1]") < answer.index("[2]") and "15 Nov 2026" in answer
+
+
+# ---------------------------------------------------------------- freshness by last check
+def _fresh_state(today: str, *notes: str) -> Any:
+    result = StepResult(
+        step_id="r1s1",
+        status="done",
+        mode="direct",
+        data_digest="get_8k_events: {} [warnings: " + "; ".join(notes) + "]",
+    )
+    return {"today": today, "step_results": {"r1s1": result}}
+
+
+def test_recent_check_with_an_old_filing_is_not_stale() -> None:
+    state = _fresh_state(
+        "2026-11-17",
+        freshness_note(
+            "8-K filings", "NVDA", date(2026, 11, 12), datetime(2026, 11, 17, 8, tzinfo=UTC)
+        ),
+        freshness_note("news", "NVDA", date(2026, 11, 15), datetime(2026, 11, 16, 9, tzinfo=UTC)),
+    )
+    assert freshness_lines(state) == [
+        "SEC filings checked 17 Nov 2026 (latest 8-K filed 12 Nov 2026)",
+        "news through 15 Nov 2026 (checked 16 Nov 2026)",
+    ]
+    footer = freshness_footer(state)
+    assert footer.startswith("*Data: SEC filings checked 17 Nov 2026") and "warning" not in footer
+
+
+def test_check_older_than_two_days_warns() -> None:
+    old = datetime(2026, 11, 14, 23, tzinfo=UTC)
+    state = _fresh_state(
+        "2026-11-17",
+        freshness_note("8-K filings", "NVDA", date(2026, 11, 12), old),
+        freshness_note("news", "AMD", None, None),
+    )
+    footer = freshness_footer(state)
+    assert "NVDA SEC filings checked 14 Nov 2026" in footer  # two companies: tickers shown
+    assert "*Freshness warning: SEC filings for NVDA last checked 14 Nov 2026" in footer
+    assert "news for AMD never checked" in footer
+    # Exactly two days old is still fresh.
+    edge = _fresh_state("2026-11-17", freshness_note("news", "NVDA", None, old.replace(day=15)))
+    assert "warning" not in freshness_footer(edge)

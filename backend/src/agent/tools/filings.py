@@ -3,7 +3,7 @@
 import difflib
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from datetime import UTC, date, datetime
+from datetime import date, datetime
 from typing import Any, Literal
 
 import numpy as np
@@ -13,9 +13,10 @@ from sqlalchemy import func, select
 from weaviate.classes.query import Filter, MetadataQuery
 
 from agent.tools.base import Evidence, Output, ToolContext, ToolFailure, snippet, tool
-from agent.tools.common import fetch_dicts, missing_warning, resolve_tickers
+from agent.tools.common import fetch_dicts, freshness_note, missing_warning, resolve_tickers
 from agent.tools.eight_k_items import describe_items, event_excerpt
 from core.db.schema import eight_k_events, filings, risk_factors
+from core.db.source_checks import last_checks
 from core.taxonomy import RiskCategory
 from core.vectorstore import FILING_CHUNK
 
@@ -498,7 +499,9 @@ class Get8KEventsOutput(BaseModel):
     latest_stored_date: date | None = Field(
         description="Newest stored 8-K filing date for the company"
     )
-    fetched_at: datetime = Field(description="UTC time when this search checked freshness")
+    last_checked_at: datetime | None = Field(
+        description="Last successful EDGAR submissions check for the company (None = never)"
+    )
 
 
 @tool("get_8k_events", Get8KEventsInput)
@@ -523,6 +526,7 @@ async def get_8k_events(ctx: ToolContext, inp: Get8KEventsInput) -> Output:
                 eight_k_events.c.cik == company.cik
             )
         )
+        checked_at = (await last_checks(conn, [company.cik], "sec_check")).get(company.cik)
     rows = await fetch_dicts(
         ctx, stmt.order_by(eight_k_events.c.filing_date.desc()).limit(inp.limit)
     )
@@ -550,20 +554,15 @@ async def get_8k_events(ctx: ToolContext, inp: Get8KEventsInput) -> Output:
         )
         for e in events
     ]
-    fetched_at = datetime.now(UTC)
     warnings = [] if events else ["no matching 8-K events stored (8-Ks cover the last 12 months)"]
-    warnings.append(
-        "8-K filings stored through "
-        + (latest_stored_date.isoformat() if latest_stored_date else "no date")
-        + f"; fetched at {fetched_at.isoformat()}"
-    )
+    warnings.append(freshness_note("8-K filings", company.ticker, latest_stored_date, checked_at))
     return Output(
         Get8KEventsOutput(
             ticker=company.ticker,
             events=events,
             total_matching=total,
             latest_stored_date=latest_stored_date,
-            fetched_at=fetched_at,
+            last_checked_at=checked_at,
         ),
         evidence,
         warnings,

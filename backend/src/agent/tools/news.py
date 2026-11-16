@@ -18,9 +18,10 @@ from weaviate.classes.query import Filter
 from weaviate.util import generate_uuid5
 
 from agent.tools.base import Evidence, Output, ToolContext, ToolFailure, snippet, tool
-from agent.tools.common import Company, missing_warning, resolve_tickers
+from agent.tools.common import Company, freshness_note, missing_warning, resolve_tickers
 from agent.tools.news_relevance import PageKind, load_policy, relevance
 from core.db.schema import news_articles
+from core.db.source_checks import last_checks, record_check
 from core.newsapi import Article, NewsApiError, build_query, parse_articles
 from core.vectorstore import NEWS_ARTICLE
 
@@ -53,15 +54,17 @@ class NewsHit(BaseModel):
 
 
 class NewsFreshness(BaseModel):
-    latest_stored_date: date | None
-    fetched_at: datetime
+    latest_stored_date: date | None = Field(description="Newest stored article's date")
+    last_checked_at: datetime | None = Field(
+        description="Last successful NewsAPI fetch for the company (None = never)"
+    )
 
 
 class SearchNewsOutput(BaseModel):
     hits: list[NewsHit]
     live_fetched: list[str] = Field(description="Tickers refreshed from NewsAPI in this call")
     freshness: dict[str, NewsFreshness] = Field(
-        description="Newest stored article date and freshness-check time per company"
+        description="Newest stored article date and last NewsAPI check per company"
     )
 
 
@@ -177,6 +180,12 @@ async def _live_refresh(ctx: ToolContext, stale: list[Company]) -> tuple[list[st
             existing = await _existing_ids(ctx, payload)
             await _store(ctx, company, [a for a in parse_articles(payload) if a.id not in existing])
             fetched.append(company.ticker)
+            await record_check(
+                ctx.engine,
+                company.cik,
+                "news_check",
+                news.fetched_at(company.ticker) or datetime.now(UTC),
+            )
         except (NewsApiError, TimeoutError, OSError) as exc:
             warnings.append(
                 f"news unavailable for {company.ticker} ({type(exc).__name__}); "
@@ -291,18 +300,18 @@ async def search_news(ctx: ToolContext, inp: SearchNewsInput) -> Output:
             "or below the relevance floor)"
         )
     warnings = missing_warning(missing) + warnings + ([] if hits else ["no relevant news found"])
-    fetched_at = datetime.now(UTC)
+    async with ctx.engine.connect() as conn:
+        checked = await last_checks(conn, [c.cik for c in known], "news_check")
     freshness = {
         company.ticker: NewsFreshness(
             latest_stored_date=(stored.date() if (stored := latest[company.cik]) else None),
-            fetched_at=fetched_at,
+            last_checked_at=checked.get(company.cik),
         )
         for company in known
     }
     for ticker, metadata in freshness.items():
         warnings.append(
-            f"news stored through {metadata.latest_stored_date or 'no date'} for {ticker}; "
-            f"fetched at {fetched_at.isoformat()}"
+            freshness_note("news", ticker, metadata.latest_stored_date, metadata.last_checked_at)
         )
     return Output(
         SearchNewsOutput(
