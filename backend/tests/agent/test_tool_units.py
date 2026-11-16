@@ -288,7 +288,7 @@ async def test_text_to_sql_invalid_model_output_is_upstream_error() -> None:
 
 # ---------------------------------------------------------------- news relevance
 def test_entity_gate_and_source_rules() -> None:
-    from agent.tools.news_relevance import mentions_company, relevance
+    from agent.tools.news_relevance import load_policy, mentions_company, relevance
 
     assert mentions_company("Tesla raises guidance", "Tesla, Inc.", "TSLA") == "name"
     assert mentions_company("TSLA slides 4%", "Tesla, Inc.", "TSLA") == "ticker"
@@ -300,8 +300,12 @@ def test_entity_gate_and_source_rules() -> None:
     assert mentions_company("Coca-Cola raises prices", "COCA COLA CO", "KO") == "name"
     assert mentions_company("Advanced chips ship", "ADVANCED MICRO DEVICES INC", "AMD") is None
 
+    policy = load_policy(Settings().news_sources_file)
+
     def rel(title: str, desc: str, source: str, semantic: float = 0.7) -> Any:
-        return relevance("earnings guidance", title, desc, source, semantic, "Tesla, Inc.", "TSLA")
+        return relevance(
+            "earnings guidance", title, desc, source, semantic, "Tesla, Inc.", "TSLA", policy
+        )
 
     # Aggregators list trending tickers in descriptions: only their titles count.
     assert rel("5 earnings charts", "Mentions Tesla among others", "Biztoc.com") is None
@@ -313,6 +317,89 @@ def test_entity_gate_and_source_rules() -> None:
     assert rel("Tesla earnings guidance", "", "Reuters", semantic=0.5) is None  # below floor
     r = rel("Tesla earnings guidance raised", "", "Reuters", semantic=0.7)
     assert r.keyword == 1.0 and r.score == pytest.approx(0.75 * 0.7 + 0.25 * 1.0, abs=1e-3)
+
+
+def test_page_kind_comes_from_the_page_for_any_outlet() -> None:
+    from agent.tools.news_relevance import load_policy, page_kind
+
+    policy = load_policy(Settings().news_sources_file)
+
+    def kind(url: str, title: str, company: str = "NVIDIA CORP") -> str:
+        return page_kind(url, title, company, policy)
+
+    # Commentary: URL path segments or title phrases, whichever outlet publishes it.
+    assert kind("https://nypost.com/2026/11/15/opinion/huang-letters/", "Huang resigns") == (
+        "commentary"
+    )
+    assert kind("https://www.reuters.com/opinion/columns/x", "Nvidia CEO") == "commentary"
+    assert kind("https://example.com/blog/2026/x", "Nvidia's GPUs") == "commentary"
+    assert kind("https://example.com/news/x", "Letters to the Editor: Nvidia") == "commentary"
+    # Whole segments only: "/opinions-poll-.../" or "opinionated" in a slug is reporting.
+    assert kind("https://example.com/tech/opinionated-ceo-quits", "Nvidia CEO") == "reporting"
+    assert kind("https://www.breitbart.com/tech/2026/11/15/x/", "Nvidia CEO resigned") == (
+        "reporting"
+    )
+    # Primary: the company's own press release, not another firm's release naming it.
+    wire = "https://www.prnewswire.com/news-releases/x.html"
+    jnj = "JOHNSON & JOHNSON"
+    assert kind(wire, "Johnson & Johnson reports 75% tumor response rate", jnj) == "primary"
+    assert kind(wire, "Linker Vision unveils Nexa with NVIDIA Nemotron") == "reporting"
+    assert kind(wire, "Johnson & Johnson Investigation Notice: firm notifies", jnj) == ("reporting")
+
+
+def test_source_policy_lives_in_the_config_file_not_the_code() -> None:
+    from agent.tools import news_relevance
+    from agent.tools.news_relevance import load_policy, parse_policy
+
+    code = Path(news_relevance.__file__).read_text(encoding="utf-8").lower()
+    for outlet in ("biztoc", "pypi", "dealnews", "slickdeals", "prnewswire", "nypost"):
+        assert outlet not in code
+    policy = load_policy(Settings().news_sources_file)
+    assert policy.commentary_weight < 1.0 < policy.primary_weight
+    assert "pypi.org" in policy.excluded and "biztoc.com" in policy.aggregators
+    # An owner edit takes effect without code changes.
+    edited = parse_policy({"sources": {"weights": {"Reuters": 1.2}}, "commentary": {"weight": 0.5}})
+    assert edited.weights == {"reuters": 1.2} and edited.kind_weight("commentary") == 0.5
+
+
+def test_reporting_outranks_commentary_whatever_the_score() -> None:
+    from agent.tools.news import NewsHit, rank_hits
+
+    def hit(i: str, score: float, kind: str, title: str = "") -> NewsHit:
+        return NewsHit.model_validate(
+            {
+                "source_id": f"news:{i}", "ticker": "NVDA", "title": title or f"story {i}",
+                "description": None, "source_name": "x", "url": f"https://x.com/{i}",
+                "published_at": datetime(2026, 11, 15, tzinfo=UTC), "score": score,
+                "page_kind": kind,
+            }
+        )  # fmt: skip
+
+    ranked = rank_hits(
+        [
+            hit("letter", 0.84, "commentary"),
+            hit("report", 0.75, "reporting"),
+            hit("release", 0.70, "primary"),
+            hit("copy", 0.74, "reporting", title="Story REPORT"),  # syndicated copy
+            hit("dup", 0.73, "reporting", title="story report"),
+        ],
+        limit=10,
+    )
+    assert [h.source_id for h in ranked] == ["news:report", "news:release", "news:letter"]
+
+
+def test_event_questions_map_to_8k_items() -> None:
+    from agent.tools.eight_k_items import event_item_codes, event_items_prompt
+
+    assert event_item_codes("Did the NVIDIA CEO resign?") == ["5.02"]
+    assert event_item_codes("Who did Apple appoint as CFO?") == ["5.02"]
+    assert event_item_codes("Did Tesla's CFO step down?") == ["5.02"]
+    assert event_item_codes("Is AMD's acquisition of ZT closed?") == ["1.01", "2.01"]
+    assert event_item_codes("NVIDIA earnings and guidance") == ["2.02", "7.01"]
+    for q in ("How risky is the bank?", "Compare NVIDIA and AMD risk factors"):
+        assert event_item_codes(q) == []
+    prompt = event_items_prompt()
+    assert "['5.02']" in prompt and "['2.02', '7.01']" in prompt
 
 
 # ---------------------------------------------------------------- compare: word diff

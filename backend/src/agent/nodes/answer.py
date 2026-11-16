@@ -87,7 +87,22 @@ def numbered_sources(state: ResearchState) -> list[Evidence]:
             if rank < len(q) and q[rank] not in order:
                 order.append(q[rank])
     order += [sid for sid in by_id if sid not in in_steps]  # evidence of no step (rare)
-    return [by_id[sid] for sid in order[:MAX_SOURCES]]
+    chosen = [by_id[sid] for sid in order[:MAX_SOURCES]]
+    # Primary sources (SEC filings) take the first numbers, news the rest: the synthesizer
+    # tends to cite in number order, and the filing is what should lead (stable sort).
+    return sorted(chosen, key=lambda e: e.source_type == "news")
+
+
+def dated_label(e: Evidence) -> str:
+    """'Form 8-K filed 12 Nov 2026' / 'published 15 Nov 2026', so the answer can quote an
+    exact date instead of 'mid-November'."""
+    when = e.filed_or_published
+    if when is None:
+        return ""
+    day = f"{when.day} {when:%b %Y}"
+    if e.source_type == "news":
+        return f"published {day}"
+    return f"Form {e.form_type} filed {day}" if e.form_type else f"dated {day}"
 
 
 def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
@@ -256,7 +271,7 @@ def synthesis_sections(
             if e.form_type
             else ""
         )
-        + (f" {e.filed_or_published}" if e.filed_or_published else "")
+        + (f" — {dated_label(e)}" if e.filed_or_published else "")
         + f"\n{source_text(e)}"
         for i, e in enumerate(sources, start=1)
     ]

@@ -38,12 +38,52 @@ ITEM_DESCRIPTIONS: dict[str, str] = {
     "9.01": "Financial statements and exhibits",
 }
 
+# Corporate-event questions -> the 8-K items that must report them. One table feeds both the
+# planner prompt and the deterministic check that an event question gets a filing step.
+EVENT_ITEMS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
+    (
+        "officer or director change (resignation, appointment, departure, retirement, firing)",
+        r"resign|appoint|depart|retire|step(?:s|ped|ping)?\s+down|fired|oust|successor"
+        r"|new\s+(?:ceo|cfo|coo|chair)",
+        ("5.02",),
+    ),
+    (
+        "acquisition, merger or divestiture",
+        r"acqui|merger|merg(?:e|es|ed|ing)\b|takeover|buyout|divest",
+        ("1.01", "2.01"),
+    ),
+    (
+        "earnings or quarterly results",
+        r"earnings|quarterly results|results of operations",
+        ("2.02",),
+    ),
+    ("guidance or outlook", r"guidance|outlook|forecast", ("2.02", "7.01")),
+    ("cybersecurity incident", r"breach|hack|cyber(?:security)?\s+(?:attack|incident)", ("1.05",)),
+    ("restructuring or layoffs", r"layoff|restructur|job cuts", ("2.05",)),
+    ("bankruptcy", r"bankrupt|chapter 11|receivership", ("1.03",)),
+    ("restatement", r"restat", ("4.02",)),
+)
+_EVENT_RES = tuple(
+    (label, re.compile(rf"\b(?:{pat})", re.I), codes) for label, pat, codes in EVENT_ITEMS
+)
+
 _ITEM_HEADING = re.compile(r"\bItem\s+(\d\.\d{2})\b", re.I)
 EXCERPT_CHARS = 600
 
 
 def describe_items(items: list[str] | tuple[str, ...]) -> list[str]:
     return [f"{i} {ITEM_DESCRIPTIONS.get(i, 'Unknown item')}" for i in items]
+
+
+def event_item_codes(question: str) -> list[str]:
+    """The 8-K item codes a corporate-event question needs, in table order; [] if none."""
+    codes = [c for _, rx, item_codes in _EVENT_RES if rx.search(question) for c in item_codes]
+    return list(dict.fromkeys(codes))
+
+
+def event_items_prompt() -> str:
+    """The event -> item mapping as planner-prompt lines."""
+    return "\n".join(f"  - {label}: item_codes {list(codes)}" for label, _, codes in EVENT_ITEMS)
 
 
 def event_excerpt(body: str, items: list[str] | tuple[str, ...]) -> str:

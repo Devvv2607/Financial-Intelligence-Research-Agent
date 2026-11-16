@@ -1,0 +1,39 @@
+# News source policy for search_news ranking (agent/tools/news_relevance.py).
+# Owner-controlled: edit this file to tune ranking; no code change needed. The API reads it
+# at startup (setting NEWS_SOURCES_FILE, default config/news_sources.toml).
+#
+# Ranking: score = (0.75 * semantic + 0.25 * keyword) * source weight * page-kind weight,
+# and every "reporting" or "primary" page ranks above every "commentary" page.
+# Page kinds are decided from the page itself (URL path and title), for any outlet.
+
+[sources]
+# Source names (NewsAPI `source.name`, compared case-insensitively) that are not news at
+# all: package indexes and deal sites. Their articles are never returned.
+excluded = ["pypi.org", "dealnews.com", "slickdeals.net", "dealcatcher.com"]
+
+# Per-source weights (default 1.0). Aggregators re-post others' headlines and list trending
+# tickers in their descriptions, so only their titles count as naming the company.
+[sources.weights]
+"biztoc.com" = 0.8
+
+[aggregators]
+names = ["biztoc.com"]
+
+[commentary]
+# Opinion, editorial, letters, columns and blogs: kept, but ranked below all reporting.
+weight = 0.6
+# Matched against whole URL path segments (e.g. https://site.com/opinion/...).
+url_segments = [
+  "opinion", "opinions", "editorial", "editorials", "letters", "letters-to-the-editor",
+  "blog", "blogs", "commentary", "op-ed", "oped", "column", "columns", "columnists",
+]
+# Matched case-insensitively anywhere in the title.
+title_phrases = ["letters to the editor", "letter to the editor", "op-ed", "opinion:", "| opinion", "editorial:", "column:"]
+
+[primary]
+# Company press releases: a press-release page whose title starts with the company's own
+# name ("Johnson & Johnson reports ..."). Ranked above secondary reporting.
+weight = 1.15
+url_segments = ["news-releases", "news-release", "press-releases", "press-release", "pressreleases"]
+# Titles that look like releases but are third-party notices about the company.
+not_primary_title_phrases = ["investigation", "class action", "shareholder alert", "investor alert", "deadline", "lawsuit"]
