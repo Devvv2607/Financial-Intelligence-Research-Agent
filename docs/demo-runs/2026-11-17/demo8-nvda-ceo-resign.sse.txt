@@ -1,0 +1,536 @@
+event: run_started
+data: {"event":"run_started","run_id":"1fb8f72e-ca2f-43e8-a31c-6da810f9eee5","thread_id":"2dc7f453-7734-4bb8-8bd9-8c04aeb3179d","resumed":false}
+id: 1
+
+event: node
+data: {"event":"node","node":"start_turn","phase":"start","step_id":null,"error":false,"interrupted":false}
+id: 2
+
+event: node
+data: {"event":"node","node":"start_turn","phase":"end","step_id":null,"error":false,"interrupted":false}
+id: 3
+
+event: node
+data: {"event":"node","node":"guardrail","phase":"start","step_id":null,"error":false,"interrupted":false}
+id: 4
+
+event: node
+data: {"event":"node","node":"guardrail","phase":"end","step_id":null,"error":false,"interrupted":false}
+id: 5
+
+event: node
+data: {"event":"node","node":"entity_resolver","phase":"start","step_id":null,"error":false,"interrupted":false}
+id: 6
+
+event: node
+data: {"event":"node","node":"entity_resolver","phase":"end","step_id":null,"error":false,"interrupted":false}
+id: 7
+
+event: node
+data: {"event":"node","node":"query_analyzer","phase":"start","step_id":null,"error":false,"interrupted":false}
+id: 8
+
+event: node
+data: {"event":"node","node":"query_analyzer","phase":"end","step_id":null,"error":false,"interrupted":false}
+id: 9
+
+event: node
+data: {"event":"node","node":"planner","phase":"start","step_id":null,"error":false,"interrupted":false}
+id: 10
+
+event: plan_created
+data: {"event":"plan_created","round":1,"steps":[{"id":"r1s1","goal":"Determine whether NVIDIA CEO has resigned","agent":"news","entities":["NVDA"],"depends_on":[],"tool_calls":[{"tool":"search_news","args_json":"{\"query\":\"NVIDIA CEO resign\",\"tickers\":[\"NVDA\"],\"limit\":5}"}]}]}
+id: 11
+
+event: node
+data: {"event":"node","node":"planner","phase":"end","step_id":null,"error":false,"interrupted":false}
+id: 12
+
+event: node
+data: {"event":"node","node":"dispatcher","phase":"start","step_id":null,"error":false,"interrupted":false}
+id: 13
+
+event: step_started
+data: {"event":"step_started","step_id":"r1s1","agent":"news","mode":"direct"}
+id: 14
+
+event: node
+data: {"event":"node","node":"dispatcher","phase":"end","step_id":null,"error":false,"interrupted":false}
+id: 15
+
+event: node
+data: {"event":"node","node":"news_agent","phase":"start","step_id":"r1s1","error":false,"interrupted":false}
+id: 16
+
+event: node
+data: {"event":"node","node":"news_agent:prepare","phase":"start","step_id":"r1s1","error":false,"interrupted":false}
+id: 17
+
+event: node
+data: {"event":"node","node":"news_agent:prepare","phase":"end","step_id":"r1s1","error":false,"interrupted":false}
+id: 18
+
+event: node
+data: {"event":"node","node":"news_agent:direct","phase":"start","step_id":"r1s1","error":false,"interrupted":false}
+id: 19
+
+event: tool_called
+data: {"event":"tool_called","step_id":"r1s1","tool":"search_news","args":{"query":"NVIDIA CEO resign","tickers":["NVDA"],"limit":5},"ok":true,"evidence":5,"reused":false}
+id: 20
+
+event: evidence_added
+data: {"event":"evidence_added","step_id":"r1s1","sources":[{"source_id":"news:ba0854a74d9f4007e1344bfef53ec7c6","source_type":"news","ticker":"NVDA","title":"Jensen Huang resigns: Letters to the Editor — Nov. 16, 2026","snippet":"Jensen Huang resigns: Letters to the Editor — Nov. 16, 2026. The Issue: Nvidia CEO Jensen Huang’s exit amid affairs — including one with a suspected Chinese spy. Now that Nvidia CEO Jensen Huang has resigned, Congress should probe why intelligence officials failed to warn him he was the target of a Chinese intelligence…","url":"https://nypost.com/2026/11/15/opinion/jensen-huang-resigns-letters/","form_type":null,"fiscal_year":null,"section":null,"filed_or_published":"2026-11-15T14:14:32Z","score":0.84},{"source_id":"news:fa642b16bf5b0b214343f2d9a668bd43","source_type":"news","ticker":"NVDA","title":"'Piece of Sh*t': Nvidia Founder Jensen Huang Was Beating Himself Up in Final Days as CEO","snippet":"'Piece of Sh*t': Nvidia Founder Jensen Huang Was Beating Himself Up in Final Days as CEO. Jensen Huang resigned as CEO of Nvidia late Wednesday night, ending a legendary tenure at the company he founded that collapsed under weeks of denying a relationship with an alleged Chinese spy only to have multiple other affairs come to light. The Silicon Va…","url":"https://www.breitbart.com/tech/2026/11/15/piece-of-sht-nvidia-founder-jensen-huang-was-beating-himself-up-in-final-days-as-ceo/","form_type":null,"fiscal_year":null,"section":null,"filed_or_published":"2026-11-15T14:46:05Z","score":0.779},{"source_id":"news:47efab5be35355003f1724cb6fa58de3","source_type":"news","ticker":"NVDA","title":"Robotics engineer leaves Nvidia over lack of transparency around Jensen Huang’s exit, details decision","snippet":"Robotics engineer leaves Nvidia over lack of transparency around Jensen Huang’s exit, details decision. Dai's post shows how much Nvidia employees looked up to the former CEO.","url":"https://www.tomshardware.com/tech-industry/robotics-engineer-leaves-nvidia-over-lack-of-transparency-around-jensen-huangs-exit-details-decision-joins-chorus-of-disgruntled-staff-as-petition-to-reinstate-former-ceo-passes-150-000-signatures","form_type":null,"fiscal_year":null,"section":null,"filed_or_published":"2026-11-15T17:56:15Z","score":0.746},{"source_id":"news:b16a7d95fdd6224f52c2bf5297b0ee1b","source_type":"news","ticker":"NVDA","title":"Bessent says Nvidia must 'go outside the company' to find new CEO","snippet":"Bessent says Nvidia must 'go outside the company' to find new CEO. WASHINGTON, Nov 15 : US Treasury Secretary Scott Bessent on Sunday said Nvidia needs to \"go outside the company\" as it seeks a new chief executive after Jensen Huang abruptly stepped down last week.Huang stepped down on Thursday after revelations of extramari…","url":"https://www.channelnewsasia.com/business/bessent-says-nvidia-must-go-outside-company-find-new-ceo-6553196","form_type":null,"fiscal_year":null,"section":null,"filed_or_published":"2026-11-15T15:50:06Z","score":0.737},{"source_id":"news:044e9196b35625cb551ba81fa456ca9c","source_type":"news","ticker":"NVDA","title":"Bessent says Nvidia needs external CEO search","snippet":"Bessent says Nvidia needs external CEO search. Bessent says Nvidia should seek a new CEO outside the company after Jensen Huang stepped down amid a crisis. Read more at straitstimes.com.","url":"https://www.straitstimes.com/business/companies-markets/us-bessent-says-nvidia-must-go-outside-the-company-to-find-new-ceo","form_type":null,"fiscal_year":null,"section":null,"filed_or_published":"2026-11-15T18:16:58Z","score":0.736}]}
+id: 21
+
+event: node
+data: {"event":"node","node":"news_agent:direct","phase":"end","step_id":"r1s1","error":false,"interrupted":false}
+id: 22
+
+event: node
+data: {"event":"node","node":"news_agent:finish","phase":"start","step_id":"r1s1","error":false,"interrupted":false}
+id: 23
+
+event: step_completed
+data: {"event":"step_completed","step_id":"r1s1","status":"done","mode":"direct","summary":"search_news: 5 sources (direct calls)","error":null,"reason":null,"duration_ms":124}
+id: 24
+
+event: node
+data: {"event":"node","node":"news_agent:finish","phase":"end","step_id":"r1s1","error":false,"interrupted":false}
+id: 25
+
+event: node
+data: {"event":"node","node":"news_agent","phase":"end","step_id":"r1s1","error":false,"interrupted":false}
+id: 26
+
+event: node
+data: {"event":"node","node":"join","phase":"start","step_id":null,"error":false,"interrupted":false}
+id: 27
+
+event: node
+data: {"event":"node","node":"join","phase":"end","step_id":null,"error":false,"interrupted":false}
+id: 28
+
+event: node
+data: {"event":"node","node":"dispatcher","phase":"start","step_id":null,"error":false,"interrupted":false}
+id: 29
+
+event: node
+data: {"event":"node","node":"dispatcher","phase":"end","step_id":null,"error":false,"interrupted":false}
+id: 30
+
+event: node
+data: {"event":"node","node":"critic","phase":"start","step_id":null,"error":false,"interrupted":false}
+id: 31
+
+event: critique
+data: {"event":"critique","verdict":"ok","gaps":[],"replanning":false}
+id: 32
+
+event: node
+data: {"event":"node","node":"critic","phase":"end","step_id":null,"error":false,"interrupted":false}
+id: 33
+
+event: node
+data: {"event":"node","node":"synthesizer","phase":"start","step_id":null,"error":false,"interrupted":false}
+id: 34
+
+event: token
+data: {"event":"token","text":"**"}
+id: 35
+
+event: token
+data: {"event":"token","text":"Answer"}
+id: 36
+
+event: token
+data: {"event":"token","text":":**"}
+id: 37
+
+event: token
+data: {"event":"token","text":" Yes"}
+id: 38
+
+event: token
+data: {"event":"token","text":"."}
+id: 39
+
+event: token
+data: {"event":"token","text":" NVIDIA"}
+id: 40
+
+event: token
+data: {"event":"token","text":"’s"}
+id: 41
+
+event: token
+data: {"event":"token","text":" chief"}
+id: 42
+
+event: token
+data: {"event":"token","text":" executive"}
+id: 43
+
+event: token
+data: {"event":"token","text":" Jensen"}
+id: 44
+
+event: token
+data: {"event":"token","text":" "}
+id: 45
+
+event: token
+data: {"event":"token","text":"H"}
+id: 46
+
+event: token
+data: {"event":"token","text":"uang"}
+id: 47
+
+event: token
+data: {"event":"token","text":" resigned"}
+id: 48
+
+event: token
+data: {"event":"token","text":" in"}
+id: 49
+
+event: token
+data: {"event":"token","text":" mid"}
+id: 50
+
+event: token
+data: {"event":"token","text":"‑"}
+id: 51
+
+event: token
+data: {"event":"token","text":"November"}
+id: 52
+
+event: token
+data: {"event":"token","text":" "}
+id: 53
+
+event: token
+data: {"event":"token","text":"202"}
+id: 54
+
+event: token
+data: {"event":"token","text":"6"}
+id: 55
+
+event: token
+data: {"event":"token","text":"【"}
+id: 56
+
+event: token
+data: {"event":"token","text":"1"}
+id: 57
+
+event: token
+data: {"event":"token","text":"】【"}
+id: 58
+
+event: token
+data: {"event":"token","text":"2"}
+id: 59
+
+event: token
+data: {"event":"token","text":"】"}
+id: 60
+
+event: token
+data: {"event":"token","text":"."}
+id: 61
+
+event: token
+data: {"event":"token","text":"  \n\n"}
+id: 62
+
+event: token
+data: {"event":"token","text":"**"}
+id: 63
+
+event: token
+data: {"event":"token","text":"Details"}
+id: 64
+
+event: token
+data: {"event":"token","text":"**"}
+id: 65
+
+event: token
+data: {"event":"token","text":"  \n"}
+id: 66
+
+event: token
+data: {"event":"token","text":"-"}
+id: 67
+
+event: token
+data: {"event":"token","text":" Multiple"}
+id: 68
+
+event: token
+data: {"event":"token","text":" news"}
+id: 69
+
+event: token
+data: {"event":"token","text":" reports"}
+id: 70
+
+event: token
+data: {"event":"token","text":" published"}
+id: 71
+
+event: token
+data: {"event":"token","text":" on"}
+id: 72
+
+event: token
+data: {"event":"token","text":" "}
+id: 73
+
+event: token
+data: {"event":"token","text":"15"}
+id: 74
+
+event: token
+data: {"event":"token","text":" "}
+id: 75
+
+event: token
+data: {"event":"token","text":"Nov"}
+id: 76
+
+event: token
+data: {"event":"token","text":" "}
+id: 77
+
+event: token
+data: {"event":"token","text":"202"}
+id: 78
+
+event: token
+data: {"event":"token","text":"6"}
+id: 79
+
+event: token
+data: {"event":"token","text":" describe"}
+id: 80
+
+event: token
+data: {"event":"token","text":" Huang"}
+id: 81
+
+event: token
+data: {"event":"token","text":"’s"}
+id: 82
+
+event: token
+data: {"event":"token","text":" abrupt"}
+id: 83
+
+event: token
+data: {"event":"token","text":" departure"}
+id: 84
+
+event: token
+data: {"event":"token","text":" as"}
+id: 85
+
+event: token
+data: {"event":"token","text":" CEO"}
+id: 86
+
+event: token
+data: {"event":"token","text":"【"}
+id: 87
+
+event: token
+data: {"event":"token","text":"1"}
+id: 88
+
+event: token
+data: {"event":"token","text":"】【"}
+id: 89
+
+event: token
+data: {"event":"token","text":"2"}
+id: 90
+
+event: token
+data: {"event":"token","text":"】"}
+id: 91
+
+event: token
+data: {"event":"token","text":"."}
+id: 92
+
+event: token
+data: {"event":"token","text":"  \n"}
+id: 93
+
+event: token
+data: {"event":"token","text":"-"}
+id: 94
+
+event: token
+data: {"event":"token","text":" The"}
+id: 95
+
+event: token
+data: {"event":"token","text":" resignation"}
+id: 96
+
+event: token
+data: {"event":"token","text":" was"}
+id: 97
+
+event: token
+data: {"event":"token","text":" noted"}
+id: 98
+
+event: token
+data: {"event":"token","text":" by"}
+id: 99
+
+event: token
+data: {"event":"token","text":" other"}
+id: 100
+
+event: token
+data: {"event":"token","text":" outlets"}
+id: 101
+
+event: token
+data: {"event":"token","text":" referencing"}
+id: 102
+
+event: token
+data: {"event":"token","text":" the"}
+id: 103
+
+event: token
+data: {"event":"token","text":" same"}
+id: 104
+
+event: token
+data: {"event":"token","text":" event"}
+id: 105
+
+event: token
+data: {"event":"token","text":"【"}
+id: 106
+
+event: token
+data: {"event":"token","text":"3"}
+id: 107
+
+event: token
+data: {"event":"token","text":"】【"}
+id: 108
+
+event: token
+data: {"event":"token","text":"4"}
+id: 109
+
+event: token
+data: {"event":"token","text":"】【"}
+id: 110
+
+event: token
+data: {"event":"token","text":"5"}
+id: 111
+
+event: token
+data: {"event":"token","text":"】"}
+id: 112
+
+event: token
+data: {"event":"token","text":"."}
+id: 113
+
+event: token
+data: {"event":"token","text":"  \n\n"}
+id: 114
+
+event: token
+data: {"event":"token","text":"**"}
+id: 115
+
+event: token
+data: {"event":"token","text":"Data"}
+id: 116
+
+event: token
+data: {"event":"token","text":" freshness"}
+id: 117
+
+event: token
+data: {"event":"token","text":"**"}
+id: 118
+
+event: token
+data: {"event":"token","text":" –"}
+id: 119
+
+event: token
+data: {"event":"token","text":" News"}
+id: 120
+
+event: token
+data: {"event":"token","text":" coverage"}
+id: 121
+
+event: token
+data: {"event":"token","text":" through"}
+id: 122
+
+event: token
+data: {"event":"token","text":" "}
+id: 123
+
+event: token
+data: {"event":"token","text":"15"}
+id: 124
+
+event: token
+data: {"event":"token","text":" "}
+id: 125
+
+event: token
+data: {"event":"token","text":"Nov"}
+id: 126
+
+event: token
+data: {"event":"token","text":" "}
+id: 127
+
+event: token
+data: {"event":"token","text":"202"}
+id: 128
+
+event: token
+data: {"event":"token","text":"6"}
+id: 129
+
+event: token
+data: {"event":"token","text":"."}
+id: 130
+
+event: node
+data: {"event":"node","node":"synthesizer","phase":"end","step_id":null,"error":false,"interrupted":false}
+id: 131
+
+event: node
+data: {"event":"node","node":"finalize","phase":"start","step_id":null,"error":false,"interrupted":false}
+id: 132
+
+event: final
+data: {"event":"final","answer":"**Answer:** Yes. NVIDIA’s chief executive Jensen Huang resigned in mid‑November 2026[1][2].  \n\n**Details**  \n- Multiple news reports published on 15 Nov 2026 describe Huang’s abrupt departure as CEO[1][2].  \n- The resignation was noted by other outlets referencing the same event[unverified].  \n\n**Data freshness** – News coverage through 15 Nov 2026.\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*\n*Claims marked [unverified] could not be matched to any retrieved source.*","citations":[{"n":1,"source_id":"news:ba0854a74d9f4007e1344bfef53ec7c6","title":"Jensen Huang resigns: Letters to the Editor — Nov. 16, 2026","url":"https://nypost.com/2026/11/15/opinion/jensen-huang-resigns-letters/"},{"n":2,"source_id":"news:fa642b16bf5b0b214343f2d9a668bd43","title":"'Piece of Sh*t': Nvidia Founder Jensen Huang Was Beating Himself Up in Final Days as CEO","url":"https://www.breitbart.com/tech/2026/11/15/piece-of-sht-nvidia-founder-jensen-huang-was-beating-himself-up-in-final-days-as-ceo/"}],"citation_check":{"checked":7,"supported":4,"reattached":0,"dropped":3,"unverified_claims":1,"precision":0.571}}
+id: 133
+
+event: node
+data: {"event":"node","node":"finalize","phase":"end","step_id":null,"error":false,"interrupted":false}
+id: 134
+

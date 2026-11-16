@@ -20,6 +20,7 @@ applied to earlier transcripts, and each fix is logged in `docs/DECISIONS.md`.
 | 2026-11-05 | 3 Healthcare revenue growth | `demo3-healthcare-growth.txt` | 15,680 | 6 steps (4 direct, 2 agentic after their dependencies); citation precision 1.0. UNH's "regulatory risk" is a forward-looking-statements notice extracted as a risk factor (planner didn't use the `category` filter) |
 | 2026-11-05 | 2 Apple risk changes | `demo2-apple-risk-changes.txt` | 19,043 | correct; precision 1.0; planner went agentic and the specialist repeated an identical `search_filings` call 3x (vs 7,163 direct yesterday) |
 | 2026-11-05 | 7 "Now do the same for Intel." | `demo7-intel-followup.txt` | 19,139 | follow-up in demo 2's thread; 1 replan; precision 0.727 (2 vague claims marked [unverified]). "New" list wrong: Intel FY2024 lost 7 risk factors in the re-extraction (open regression) |
+| 2026-11-17 | 8 "Did the NVIDIA CEO resign?" | `demo8-nvda-ceo-resign.txt` (+ raw `.sse.txt`) | 6,256 | first run through the API, not the CLI; after the sample refresh (NVDA 8-K Item 5.02, 12 Nov). Correct, cited, states data date. Plan used news only, so the 8-K went uncited; cites an opinion letter and Breitbart; precision 0.571 (1 filler claim [unverified]) |
 
 Data caveats:
 - **2026-11-04:** the stored risk factors still had the "Table of Contents" split from
