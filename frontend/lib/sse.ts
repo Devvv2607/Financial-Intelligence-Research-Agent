@@ -2,6 +2,7 @@ import { createParser } from "eventsource-parser";
 
 import { API_URL, toError } from "./api";
 import type { AgentEvent } from "./types";
+import { visitorHeaders } from "./visitor";
 
 export type OnEvent = (event: AgentEvent, id: number) => void;
 
@@ -19,7 +20,7 @@ export async function readStream(
   const res = await fetch(`${API_URL}${path}`, {
     ...init,
     signal,
-    headers: { "content-type": "application/json", accept: "text/event-stream" },
+    headers: { "content-type": "application/json", accept: "text/event-stream", ...visitorHeaders() },
   });
   if (!res.ok || !res.body) throw await toError(res);
   const parser = createParser({
@@ -56,6 +57,10 @@ export const resumeRun = (
     onEvent,
     signal,
   );
+
+/** Play one segment of a recorded run (zero tokens; never a live run). */
+export const playReplay = (slug: string, segment: number, onEvent: OnEvent, signal: AbortSignal) =>
+  readStream(`/api/replays/${encodeURIComponent(slug)}?segment=${segment}`, { method: "GET" }, onEvent, signal);
 
 /** Replay events after `after`, then follow live (reconnects and reloads mid-run). */
 export const followRun = (

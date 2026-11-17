@@ -11,6 +11,7 @@ export type GraphJSON = S["GraphJSON"];
 export type Evidence = S["Evidence"];
 export type Citation = S["Citation"];
 export type PlanStep = S["PlanStep"];
+export type ReplayMeta = S["ReplayMeta"];
 export type StepResult = S["StepResult"];
 
 export type { AgentEvent };

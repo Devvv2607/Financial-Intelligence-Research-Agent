@@ -3,8 +3,8 @@
   1,
   {
    "event": "run_started",
-   "run_id": "5fe066c8-9faf-4177-9a59-238da5a4cccd",
-   "thread_id": "06ec1ee8-4e33-4c16-aa57-337205ded704",
+   "run_id": "9fdeed20-cb49-40b2-b090-2ea424f80980",
+   "thread_id": "db172a9b-11cd-4a84-922c-734aae51d657",
    "resumed": true
   }
  ],
@@ -222,28 +222,6 @@
  [
   19,
   {
-   "event": "node",
-   "node": "filings_agent:prepare",
-   "phase": "end",
-   "step_id": "r1s2",
-   "error": false,
-   "interrupted": false
-  }
- ],
- [
-  20,
-  {
-   "event": "node",
-   "node": "filings_agent:direct",
-   "phase": "start",
-   "step_id": "r1s2",
-   "error": false,
-   "interrupted": false
-  }
- ],
- [
-  21,
-  {
    "event": "tool_called",
    "step_id": "r1s1",
    "tool": "get_risk_factors",
@@ -256,7 +234,7 @@
   }
  ],
  [
-  22,
+  20,
   {
    "event": "evidence_added",
    "step_id": "r1s1",
@@ -288,6 +266,28 @@
      "score": null
     }
    ]
+  }
+ ],
+ [
+  21,
+  {
+   "event": "node",
+   "node": "filings_agent:prepare",
+   "phase": "end",
+   "step_id": "r1s2",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  22,
+  {
+   "event": "node",
+   "node": "filings_agent:direct",
+   "phase": "start",
+   "step_id": "r1s2",
+   "error": false,
+   "interrupted": false
   }
  ],
  [
@@ -358,11 +358,22 @@
    "summary": "get_risk_factors: 2 sources (direct calls)",
    "error": null,
    "reason": null,
-   "duration_ms": 7
+   "duration_ms": 5
   }
  ],
  [
   28,
+  {
+   "event": "node",
+   "node": "filings_agent:finish",
+   "phase": "end",
+   "step_id": "r1s1",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  29,
   {
    "event": "node",
    "node": "filings_agent:direct",
@@ -373,7 +384,7 @@
   }
  ],
  [
-  29,
+  30,
   {
    "event": "node",
    "node": "filings_agent:finish",
@@ -384,7 +395,7 @@
   }
  ],
  [
-  30,
+  31,
   {
    "event": "step_completed",
    "step_id": "r1s2",
@@ -394,17 +405,6 @@
    "error": null,
    "reason": null,
    "duration_ms": 7
-  }
- ],
- [
-  31,
-  {
-   "event": "node",
-   "node": "filings_agent:finish",
-   "phase": "end",
-   "step_id": "r1s1",
-   "error": false,
-   "interrupted": false
   }
  ],
  [
@@ -1007,7 +1007,7 @@
   110,
   {
    "event": "final",
-   "answer": "JPMorgan Chase discloses significant legal and regulatory proceedings that could result in penalties [1], and interest rate and credit spread changes that affect earnings [3]. Its latest 8-K reported results of operations [2].\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*",
+   "answer": "JPMorgan Chase discloses significant legal and regulatory proceedings that could result in penalties [1], and interest rate and credit spread changes that affect earnings [2]. Its latest 8-K reported results of operations [3].\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*\n*Data: SEC filings checked 8 Nov 2026 (latest 8-K filed 8 Nov 2026).*\n*Freshness warning: SEC filings for JPM last checked 8 Nov 2026; very recent events may be missing.*",
    "citations": [
     {
      "n": 1,
@@ -1017,15 +1017,15 @@
     },
     {
      "n": 2,
-     "source_id": "scripted:8k-JPM-0",
-     "title": "JPM 8-K: Results of operations (scripted)",
-     "url": "https://example.com/scripted/8k-JPM-0"
-    },
-    {
-     "n": 3,
      "source_id": "scripted:rf-JPM-1",
      "title": "JPM 10-K risk factor: Interest rate and credit spread changes (scripted)",
      "url": "https://example.com/scripted/rf-JPM-1"
+    },
+    {
+     "n": 3,
+     "source_id": "scripted:8k-JPM-0",
+     "title": "JPM 8-K: Results of operations (scripted)",
+     "url": "https://example.com/scripted/8k-JPM-0"
     }
    ],
    "citation_check": {
@@ -1035,6 +1035,11 @@
     "dropped": 0,
     "unverified_claims": 0,
     "precision": 1.0
+   },
+   "renumbered": {
+    "1": 1,
+    "3": 2,
+    "2": 3
    }
   }
  ],

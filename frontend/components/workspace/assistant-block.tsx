@@ -40,7 +40,7 @@ export function AssistantBlock({
     !!run.final && (run.finalAt === null || run.finalAt >= revealAt || clock >= revealAt);
 
   const changed = useMemo(
-    () => (run.final && run.preview ? changedMarkers(run.preview, run.final.answer) : undefined),
+    () => (run.final && run.preview ? changedMarkers(run.preview, run.final.answer, run.final.renumbered) : undefined),
     [run.final, run.preview],
   );
   const verifying = (run.phase === "verifying" || (run.final && !showFinal)) && run.preview !== "";

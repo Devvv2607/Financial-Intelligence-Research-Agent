@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import { defineConfig, devices } from "@playwright/test";
 
 const apiUrl = "http://localhost:8011";
@@ -5,10 +7,14 @@ const webUrl = "http://localhost:3005";
 const e2eEnv = {
   AGENT_RUNTIME: "scripted",
   API_RUNS_PER_MINUTE: "100",
+  // Every spec shares 127.0.0.1, so only the per-visitor cap (default 3) applies here.
+  LIVE_RUNS_PER_IP_PER_DAY: "1000",
   APP_ENV: "test",
   CORS_ORIGINS: JSON.stringify(["http://127.0.0.1:3005", "http://localhost:3005"]),
   GROQ_API_KEY: "scripted-e2e",
   NEXT_PUBLIC_API_URL: apiUrl,
+  // Recordings of the scripted runtime (labeled "scripted"), never production replays.
+  REPLAYS_DIR: path.join(__dirname, "fixtures", "replays"),
 };
 
 export default defineConfig({

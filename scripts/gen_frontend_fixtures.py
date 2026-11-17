@@ -4,13 +4,14 @@
 
 Runs the real API app with AGENT_RUNTIME=scripted (zero tokens) and writes
 frontend/lib/__fixtures__/<scenario>.json: [[id, event], ...] per stream, and graph.json
-(GET /api/graph). Re-run when the
+(GET /api/graph). Also records two replays of the scripted runtime (labeled "scripted")
+into frontend/e2e/fixtures/replays/ for the replay E2E specs. Re-run when the
 event contract changes (ids, run ids and durations differ between runs; tests don't
 depend on them).
 """
 
-import asyncio
 import json
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -19,9 +20,13 @@ from pydantic import SecretStr
 
 from api import scripted
 from api.main import create_app
+from api.replay_recorder import record, render
+from core.aio import run as run_sync
 from core.config import Settings
 
-OUT = Path(__file__).resolve().parents[1] / "frontend" / "lib" / "__fixtures__"
+ROOT = Path(__file__).resolve().parents[1]
+OUT = ROOT / "frontend" / "lib" / "__fixtures__"
+REPLAYS = ROOT / "frontend" / "e2e" / "fixtures" / "replays"
 
 
 def parse(text: str) -> list[list[Any]]:
@@ -41,13 +46,20 @@ async def main() -> None:
         agent_runtime="scripted",
         groq_api_key=SecretStr("unused"),
         api_runs_per_minute=1000,
+        live_runs_per_visitor_per_day=1000,
+        live_runs_per_ip_per_day=1000,
     )
     app = create_app(settings)
     transport = httpx.ASGITransport(app=app)
     OUT.mkdir(parents=True, exist_ok=True)
     async with (
         app.router.lifespan_context(app),
-        httpx.AsyncClient(transport=transport, base_url="http://x", timeout=60) as c,
+        httpx.AsyncClient(
+            transport=transport,
+            base_url="http://x",
+            timeout=60,
+            headers={"X-Visitor-Id": str(uuid.uuid4())},
+        ) as c,
     ):
 
         async def run(q: str) -> tuple[str, list[list[Any]]]:
@@ -71,6 +83,15 @@ async def main() -> None:
         }.items():
             (OUT / f"{name}.json").write_text(json.dumps(events, indent=1) + "\n", encoding="utf-8")
             print(f"{name}: {len(events)} events")
+        REPLAYS.mkdir(parents=True, exist_ok=True)
+        for slug, question, answer in [
+            ("bank-clarification", "How risky is the bank?", "JPMorgan Chase (JPM)"),
+            ("tesla-advice", "Should I buy Tesla?", None),
+        ]:
+            replay = await record(c, slug, question, answer)
+            text = render(replay)
+            (REPLAYS / f"{slug}.json").write_text(text, encoding="utf-8", newline="\n")
+            print(f"replay {slug}: {replay.source}, {len(replay.segments)} segment(s)")
 
 
-asyncio.run(main())
+run_sync(main())

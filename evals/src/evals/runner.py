@@ -5,6 +5,7 @@ import asyncio
 import json
 import os
 import time
+import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -86,7 +87,9 @@ async def run_question(client: httpx.AsyncClient, question: GoldenQuestion) -> d
 
 
 async def run_api(questions: list[GoldenQuestion], base_url: str) -> list[dict[str, Any]]:
-    async with httpx.AsyncClient(base_url=base_url, timeout=180) as client:
+    # One fresh anonymous visitor per eval run: its threads are listed for nobody else.
+    headers = {"X-Visitor-Id": str(uuid.uuid4())}
+    async with httpx.AsyncClient(base_url=base_url, timeout=180, headers=headers) as client:
         return [await run_question(client, question) for question in questions]
 
 

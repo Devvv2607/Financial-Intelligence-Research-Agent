@@ -1,7 +1,9 @@
 "use client";
 
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, History } from "lucide-react";
 import { useState } from "react";
+
+import type { ReplayMeta } from "@/lib/types";
 
 // The spec's demo queries (BUILD_SPEC §4.6), offered on the empty state.
 export const EXAMPLES = [
@@ -13,16 +15,20 @@ export const EXAMPLES = [
   "Should I buy Tesla?",
 ];
 
+/** `initial`: text to start with (an example picked from the chips; remount with a new
+ * `key` to set it again). */
 export function Composer({
   disabled,
   hint,
+  initial = "",
   onSubmit,
 }: {
   disabled: boolean;
   hint: string | null;
+  initial?: string;
   onSubmit: (q: string) => void;
 }) {
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState(initial);
   const send = () => {
     if (!q.trim() || disabled) return;
     onSubmit(q.trim());
@@ -67,7 +73,22 @@ export function Composer({
   );
 }
 
-export function ExampleChips({ onPick }: { onPick: (q: string) => void }) {
+/**
+ * Recorded runs play instantly at zero tokens; examples without a recording only fill
+ * the question box, so a live run (with its daily cap) is always a deliberate choice.
+ */
+export function ExampleChips({
+  replays,
+  onReplay,
+  onPick,
+}: {
+  replays: ReplayMeta[];
+  onReplay: (slug: string) => void;
+  onPick: (q: string) => void;
+}) {
+  const recorded = new Set(replays.map((r) => r.question));
+  const chip =
+    "max-w-xs rounded-md border bg-surface px-3 py-1.5 text-left text-sm text-muted hover:text-foreground";
   return (
     <div className="mx-auto max-w-2xl space-y-4 py-12 text-center">
       <h1 className="text-xl font-semibold tracking-tight">Research SEC filings and financial news</h1>
@@ -75,14 +96,27 @@ export function ExampleChips({ onPick }: { onPick: (q: string) => void }) {
         The agent plans, runs specialists in parallel, checks its own work, asks when a question
         is ambiguous, and cites every claim.
       </p>
+      {replays.length > 0 && (
+        <p className="text-xs text-muted">
+          <History className="mr-1 inline size-3.5 text-recorded" aria-hidden />
+          Marked examples replay a recorded run instantly; you can then run them live.
+        </p>
+      )}
       <div className="flex flex-wrap justify-center gap-2 pt-2">
-        {EXAMPLES.map((e) => (
+        {replays.map((r) => (
           <button
-            key={e}
+            key={r.slug}
             type="button"
-            onClick={() => onPick(e)}
-            className="max-w-xs rounded-md border border-border bg-surface px-3 py-1.5 text-left text-sm text-muted hover:border-accent hover:text-foreground"
+            onClick={() => onReplay(r.slug)}
+            aria-label={`Replay recorded run: ${r.question}`}
+            className={`${chip} border-recorded/60 hover:border-recorded`}
           >
+            <History className="mr-1.5 inline size-3.5 text-recorded" aria-hidden />
+            {r.question}
+          </button>
+        ))}
+        {EXAMPLES.filter((e) => !recorded.has(e)).map((e) => (
+          <button key={e} type="button" onClick={() => onPick(e)} className={`${chip} border-border hover:border-accent`}>
             {e}
           </button>
         ))}

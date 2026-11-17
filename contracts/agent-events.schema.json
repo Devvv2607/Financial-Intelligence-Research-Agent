@@ -298,6 +298,7 @@
       "type": "object"
     },
     "Final": {
+      "description": "`answer` cites sources as [1], [2], ... in order of first appearance; `renumbered`\nmaps the numbers the streamed draft (`token` events) used to those.",
       "properties": {
         "answer": {
           "title": "Answer",
@@ -327,13 +328,21 @@
           "const": "final",
           "title": "Event",
           "type": "string"
+        },
+        "renumbered": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Renumbered",
+          "type": "object"
         }
       },
       "required": [
         "event",
         "answer",
         "citations",
-        "citation_check"
+        "citation_check",
+        "renumbered"
       ],
       "title": "Final",
       "type": "object"
@@ -468,6 +477,26 @@
         "agent"
       ],
       "title": "PlanStep",
+      "type": "object"
+    },
+    "Queued": {
+      "description": "The run waits for the one live slot (api/gate.py); sent again whenever its place\nchanges. 1 = next. The first event that isn't `queued` means the run has started.",
+      "properties": {
+        "event": {
+          "const": "queued",
+          "title": "Event",
+          "type": "string"
+        },
+        "position": {
+          "title": "Position",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "event",
+        "position"
+      ],
+      "title": "Queued",
       "type": "object"
     },
     "Replan": {
@@ -753,6 +782,7 @@
       "final": "#/$defs/Final",
       "node": "#/$defs/NodeEvent",
       "plan_created": "#/$defs/PlanCreated",
+      "queued": "#/$defs/Queued",
       "replan": "#/$defs/Replan",
       "run_started": "#/$defs/RunStarted",
       "step_completed": "#/$defs/StepCompleted",
@@ -765,6 +795,9 @@
   "oneOf": [
     {
       "$ref": "#/$defs/RunStarted"
+    },
+    {
+      "$ref": "#/$defs/Queued"
     },
     {
       "$ref": "#/$defs/PlanCreated"

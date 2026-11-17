@@ -35,6 +35,7 @@ export type NodeStatus = "active" | "done" | "paused" | "failed";
 
 export type RunPhase =
   | "starting"
+  | "queued"
   | "planning"
   | "running"
   | "reviewing"
@@ -55,8 +56,14 @@ export type RunState = {
   sourceOrder: string[]; // arrival order
   critique: { verdict: "ok" | "gaps"; gaps: string[]; replanning: boolean } | null;
   clarification: { question: string; options: string[]; source: string | null } | null;
+  queuePosition: number | null; // waiting for the one live slot: 1 = next
   preview: string; // streamed tokens: a preview until `final` arrives
-  final: { answer: string; citations: Citation[]; check: Record<string, unknown> | null } | null;
+  final: {
+    answer: string;
+    citations: Citation[]; // numbered 1, 2, 3 by first appearance in `answer`
+    check: Record<string, unknown> | null;
+    renumbered: Record<string, number>; // draft (preview) number -> final number
+  } | null;
   error: string | null;
   nodes: Record<string, NodeStatus>; // graph node id -> status (subgraph nodes "agent:node")
   activeSteps: Record<string, number>; // specialist node -> running instances
@@ -77,6 +84,7 @@ export const initialRun: RunState = {
   sourceOrder: [],
   critique: null,
   clarification: null,
+  queuePosition: null,
   preview: "",
   final: null,
   error: null,
@@ -92,7 +100,9 @@ export function applyEvent(s: RunState, e: AgentEvent, id: number, now = 0): Run
   // run_started opens a new server-side event log (a resume included), whose ids restart
   // at 1: it always applies and resets the counter.
   if (e.event !== "run_started" && id > 0 && id <= s.lastEventId) return s;
-  const next = reduce(s, e, now);
+  // Any event after `queued` means the run got its slot and has started.
+  const base = s.phase === "queued" && e.event !== "queued" ? { ...s, phase: "starting" as const, queuePosition: null } : s;
+  const next = reduce(base, e, now);
   return id > 0 ? { ...next, lastEventId: id } : next;
 }
 
@@ -107,6 +117,8 @@ function reduce(s: RunState, e: AgentEvent, now: number): RunState {
         phase: e.resumed ? s.phase : "starting",
         clarification: null,
       };
+    case "queued":
+      return { ...s, phase: "queued", queuePosition: e.position };
     case "plan_created":
     case "replan":
       return addRound(s, e);
@@ -158,7 +170,12 @@ function reduce(s: RunState, e: AgentEvent, now: number): RunState {
       return {
         ...s,
         phase: "done",
-        final: { answer: e.answer, citations: e.citations, check: e.citation_check },
+        final: {
+          answer: e.answer,
+          citations: e.citations,
+          check: e.citation_check,
+          renumbered: e.renumbered,
+        },
         finalAt: now,
         steps: settle(s.steps),
         activeSteps: {},
@@ -251,6 +268,10 @@ export function statusLine(s: RunState): string {
   switch (s.phase) {
     case "starting":
       return "Starting…";
+    case "queued":
+      return s.queuePosition === 1
+        ? "Queued: you're next (one live run at a time on the free tier)"
+        : `Queued: position ${s.queuePosition} (one live run at a time on the free tier)`;
     case "planning":
       return steps.length ? `Planning done: ${steps.length} steps` : "Planning…";
     case "running":

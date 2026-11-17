@@ -81,6 +81,44 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/replays": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Replays */
+        get: operations["list_replays_api_replays_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/replays/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Stream Replay
+         * @description Play one segment of a recording with compressed timing. Costs no tokens and is not
+         *     subject to the live-run limits.
+         */
+        get: operations["stream_replay_api_replays__slug__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/runs/{run_id}": {
         parameters: {
             query?: never;
@@ -193,6 +231,7 @@ export interface paths {
         /**
          * Start Run
          * @description Start a research run; the response is the SSE stream of its typed events.
+         *     Counts toward the caller's daily live-question cap (a resume doesn't).
          */
         post: operations["start_run_api_threads__thread_id__runs_post"];
         delete?: never;
@@ -527,6 +566,30 @@ export interface components {
              */
             status: "ready" | "not_ready";
         };
+        /**
+         * ReplayMeta
+         * @description What the UI needs to offer a replay; the events come from the stream endpoint.
+         */
+        ReplayMeta: {
+            /** Inputs */
+            inputs: components["schemas"]["SegmentInput"][];
+            /** Question */
+            question: string;
+            /**
+             * Recorded At
+             * Format: date-time
+             */
+            recorded_at: string;
+            /** Slug */
+            slug: string;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "live" | "scripted";
+            /** Tokens */
+            tokens: number | null;
+        };
         /** ResumeRequest */
         ResumeRequest: {
             /** Answer */
@@ -613,6 +676,16 @@ export interface components {
         RunRequest: {
             /** Query */
             query: string;
+        };
+        /** SegmentInput */
+        SegmentInput: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "run" | "resume";
+            /** Text */
+            text: string;
         };
         /** StepResult */
         StepResult: {
@@ -851,6 +924,60 @@ export interface operations {
             };
         };
     };
+    list_replays_api_replays_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplayMeta"][];
+                };
+            };
+        };
+    };
+    stream_replay_api_replays__slug__get: {
+        parameters: {
+            query?: {
+                segment?: number;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description SSE stream of the recorded events */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                    "text/event-stream": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     run_detail_api_runs__run_id__get: {
         parameters: {
             query?: never;
@@ -887,7 +1014,9 @@ export interface operations {
             query?: {
                 limit?: number;
             };
-            header?: never;
+            header?: {
+                "x-visitor-id"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -916,7 +1045,9 @@ export interface operations {
     create_thread_api_threads_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "x-visitor-id"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -949,7 +1080,9 @@ export interface operations {
     get_thread_api_threads__thread_id__get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "x-visitor-id"?: string | null;
+            };
             path: {
                 thread_id: string;
             };
@@ -987,6 +1120,7 @@ export interface operations {
             };
             header?: {
                 "last-event-id"?: string | null;
+                "x-visitor-id"?: string | null;
             };
             path: {
                 thread_id: string;
@@ -1019,7 +1153,9 @@ export interface operations {
     resume_run_api_threads__thread_id__resume_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "x-visitor-id"?: string | null;
+            };
             path: {
                 thread_id: string;
             };
@@ -1055,7 +1191,9 @@ export interface operations {
     start_run_api_threads__thread_id__runs_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "x-visitor-id"?: string | null;
+            };
             path: {
                 thread_id: string;
             };

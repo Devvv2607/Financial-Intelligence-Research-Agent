@@ -45,6 +45,14 @@ class RunStarted(_Event):
     resumed: bool = False
 
 
+class Queued(_Event):
+    """The run waits for the one live slot (api/gate.py); sent again whenever its place
+    changes. 1 = next. The first event that isn't `queued` means the run has started."""
+
+    event: Literal["queued"]
+    position: int
+
+
 class PlanCreated(_Event):
     event: Literal["plan_created"]
     round: int
@@ -123,10 +131,14 @@ class Token(_Event):
 
 
 class Final(_Event):
+    """`answer` cites sources as [1], [2], ... in order of first appearance; `renumbered`
+    maps the numbers the streamed draft (`token` events) used to those."""
+
     event: Literal["final"]
     answer: str
     citations: list[Citation]
     citation_check: dict[str, Any] | None = None
+    renumbered: dict[str, int] = Field(default_factory=dict)
 
 
 class ErrorEvent(_Event):
@@ -137,6 +149,7 @@ class ErrorEvent(_Event):
 
 AgentEvent = Annotated[
     RunStarted
+    | Queued
     | PlanCreated
     | Replan
     | StepStarted

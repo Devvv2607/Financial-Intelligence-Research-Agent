@@ -1,4 +1,5 @@
-import type { GraphJSON, Thread, ThreadDetail } from "./types";
+import type { GraphJSON, ReplayMeta, Thread, ThreadDetail } from "./types";
+import { visitorHeaders } from "./visitor";
 
 // Base URL of the FastAPI service as seen from the browser.
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -10,11 +11,13 @@ export type ReadyResponse = {
   checks: Record<string, CheckResult>;
 };
 
-/** A non-2xx answer from the API, with its `detail` message when it sent one. */
+/** A non-2xx answer from the API, with its `detail` message when it sent one, and which
+ * limit refused it (X-Limit-Reason: "daily-cap", "per-minute", "queue-full"), if any. */
 export class ApiError extends Error {
   constructor(
     readonly status: number,
     message: string,
+    readonly reason: string | null = null,
   ) {
     super(message);
   }
@@ -24,7 +27,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     cache: "no-store",
     ...init,
-    headers: { "content-type": "application/json", ...init?.headers },
+    headers: { "content-type": "application/json", ...visitorHeaders(), ...init?.headers },
   });
   if (!res.ok) throw await toError(res);
   return (await res.json()) as T;
@@ -38,7 +41,7 @@ export async function toError(res: Response): Promise<ApiError> {
   } catch {
     // not JSON: keep the status message
   }
-  return new ApiError(res.status, detail);
+  return new ApiError(res.status, detail, res.headers.get("x-limit-reason"));
 }
 
 export async function fetchReady(signal?: AbortSignal): Promise<ReadyResponse> {
@@ -55,4 +58,5 @@ export const api = {
   createThread: () => request<Thread>("/api/threads", { method: "POST", body: "{}" }),
   getThread: (id: string) => request<ThreadDetail>(`/api/threads/${id}`),
   getGraph: () => request<GraphJSON>("/api/graph"),
+  listReplays: () => request<ReplayMeta[]>("/api/replays"),
 };

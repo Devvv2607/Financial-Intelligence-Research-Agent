@@ -88,10 +88,23 @@ class Settings(BaseSettings):
     readiness_timeout_s: float = 3.0
     # Public-demo protection: agent runs (and resumes) per client IP per minute.
     api_runs_per_minute: int = 6
+    # Live questions per UTC day, per anonymous visitor id and per client IP (api/ratelimit.py).
+    live_runs_per_visitor_per_day: int = 3
+    live_runs_per_ip_per_day: int = 3
+    # Request header holding the real client IP behind a proxy ("X-Real-IP" on Railway).
+    # Unset: the socket peer address (local, tests). Only set it behind a proxy that sets it.
+    client_ip_header: str | None = None
+    # Live runs at once (Groq free tier: 8K tokens/minute) and how many may wait in line.
+    live_concurrency: int = Field(1, ge=1)
+    live_queue_max: int = Field(5, ge=0)
     api_max_question_chars: int = 1_000
     # "scripted": replay canned scenarios with no LLM or tools (zero-token browser E2E,
     # api/scripted.py). Refused in production.
     agent_runtime: Literal["live", "scripted"] = "live"
+    # Recorded runs (api/replays.py): fixture folder, and a multiplier on the compressed
+    # playback pauses (0 = no pauses, for tests).
+    replays_dir: Path = Path("replays")
+    replay_delay_factor: float = Field(1.0, ge=0)
 
     @model_validator(mode="after")
     def _no_scripted_agent_in_production(self) -> "Settings":

@@ -3,8 +3,8 @@
   1,
   {
    "event": "run_started",
-   "run_id": "8943e4e9-cc35-49e3-a3cc-9a5278ee9077",
-   "thread_id": "77d5f589-24cb-4a9a-9f43-f70f6a01bc90",
+   "run_id": "61993cd6-5f29-40ea-9d3c-7f28ab0865af",
+   "thread_id": "a8ecad32-3e3f-4c7d-8915-67aace46889a",
    "resumed": false
   }
  ],
@@ -380,6 +380,28 @@
  [
   31,
   {
+   "event": "node",
+   "node": "news_agent:prepare",
+   "phase": "end",
+   "step_id": "r1s3",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  32,
+  {
+   "event": "node",
+   "node": "news_agent:direct",
+   "phase": "start",
+   "step_id": "r1s3",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  33,
+  {
    "event": "tool_called",
    "step_id": "r1s1",
    "tool": "get_risk_factors",
@@ -392,7 +414,7 @@
   }
  ],
  [
-  32,
+  34,
   {
    "event": "evidence_added",
    "step_id": "r1s1",
@@ -440,7 +462,7 @@
   }
  ],
  [
-  33,
+  35,
   {
    "event": "tool_called",
    "step_id": "r1s2",
@@ -454,7 +476,7 @@
   }
  ],
  [
-  34,
+  36,
   {
    "event": "evidence_added",
    "step_id": "r1s2",
@@ -502,51 +524,7 @@
   }
  ],
  [
-  35,
-  {
-   "event": "node",
-   "node": "news_agent:prepare",
-   "phase": "end",
-   "step_id": "r1s3",
-   "error": false,
-   "interrupted": false
-  }
- ],
- [
-  36,
-  {
-   "event": "node",
-   "node": "news_agent:direct",
-   "phase": "start",
-   "step_id": "r1s3",
-   "error": false,
-   "interrupted": false
-  }
- ],
- [
   37,
-  {
-   "event": "node",
-   "node": "news_agent:prepare",
-   "phase": "end",
-   "step_id": "r1s4",
-   "error": false,
-   "interrupted": false
-  }
- ],
- [
-  38,
-  {
-   "event": "node",
-   "node": "news_agent:direct",
-   "phase": "start",
-   "step_id": "r1s4",
-   "error": false,
-   "interrupted": false
-  }
- ],
- [
-  39,
   {
    "event": "tool_called",
    "step_id": "r1s3",
@@ -563,7 +541,7 @@
   }
  ],
  [
-  40,
+  38,
   {
    "event": "evidence_added",
    "step_id": "r1s3",
@@ -582,6 +560,28 @@
      "score": null
     }
    ]
+  }
+ ],
+ [
+  39,
+  {
+   "event": "node",
+   "node": "news_agent:prepare",
+   "phase": "end",
+   "step_id": "r1s4",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  40,
+  {
+   "event": "node",
+   "node": "news_agent:direct",
+   "phase": "start",
+   "step_id": "r1s4",
+   "error": false,
+   "interrupted": false
   }
  ],
  [
@@ -670,6 +670,28 @@
  [
   47,
   {
+   "event": "node",
+   "node": "news_agent:direct",
+   "phase": "end",
+   "step_id": "r1s3",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  48,
+  {
+   "event": "node",
+   "node": "news_agent:finish",
+   "phase": "start",
+   "step_id": "r1s3",
+   "error": false,
+   "interrupted": false
+  }
+ ],
+ [
+  49,
+  {
    "event": "step_completed",
    "step_id": "r1s1",
    "status": "done",
@@ -677,11 +699,11 @@
    "summary": "get_risk_factors: 3 sources (direct calls)",
    "error": null,
    "reason": null,
-   "duration_ms": 26
+   "duration_ms": 13
   }
  ],
  [
-  48,
+  50,
   {
    "event": "step_completed",
    "step_id": "r1s2",
@@ -690,49 +712,29 @@
    "summary": "get_risk_factors: 3 sources (direct calls)",
    "error": null,
    "reason": null,
-   "duration_ms": 26
-  }
- ],
- [
-  49,
-  {
-   "event": "node",
-   "node": "news_agent:direct",
-   "phase": "end",
-   "step_id": "r1s3",
-   "error": false,
-   "interrupted": false
-  }
- ],
- [
-  50,
-  {
-   "event": "node",
-   "node": "news_agent:finish",
-   "phase": "start",
-   "step_id": "r1s3",
-   "error": false,
-   "interrupted": false
+   "duration_ms": 13
   }
  ],
  [
   51,
   {
-   "event": "node",
-   "node": "news_agent:direct",
-   "phase": "end",
-   "step_id": "r1s4",
-   "error": false,
-   "interrupted": false
+   "event": "step_completed",
+   "step_id": "r1s3",
+   "status": "done",
+   "mode": "direct",
+   "summary": "search_news: 1 sources (direct calls)",
+   "error": null,
+   "reason": null,
+   "duration_ms": 13
   }
  ],
  [
   52,
   {
    "event": "node",
-   "node": "news_agent:finish",
-   "phase": "start",
-   "step_id": "r1s4",
+   "node": "filings_agent:finish",
+   "phase": "end",
+   "step_id": "r1s1",
    "error": false,
    "interrupted": false
   }
@@ -740,36 +742,32 @@
  [
   53,
   {
-   "event": "step_completed",
-   "step_id": "r1s3",
-   "status": "done",
-   "mode": "direct",
-   "summary": "search_news: 1 sources (direct calls)",
-   "error": null,
-   "reason": null,
-   "duration_ms": 30
+   "event": "node",
+   "node": "filings_agent:finish",
+   "phase": "end",
+   "step_id": "r1s2",
+   "error": false,
+   "interrupted": false
   }
  ],
  [
   54,
   {
-   "event": "step_completed",
-   "step_id": "r1s4",
-   "status": "done",
-   "mode": "direct",
-   "summary": "search_news: 1 sources (direct calls)",
-   "error": null,
-   "reason": null,
-   "duration_ms": 30
+   "event": "node",
+   "node": "news_agent:finish",
+   "phase": "end",
+   "step_id": "r1s3",
+   "error": false,
+   "interrupted": false
   }
  ],
  [
   55,
   {
    "event": "node",
-   "node": "filings_agent:finish",
+   "node": "news_agent:direct",
    "phase": "end",
-   "step_id": "r1s1",
+   "step_id": "r1s4",
    "error": false,
    "interrupted": false
   }
@@ -778,9 +776,9 @@
   56,
   {
    "event": "node",
-   "node": "filings_agent:finish",
-   "phase": "end",
-   "step_id": "r1s2",
+   "node": "news_agent:finish",
+   "phase": "start",
+   "step_id": "r1s4",
    "error": false,
    "interrupted": false
   }
@@ -788,12 +786,14 @@
  [
   57,
   {
-   "event": "node",
-   "node": "news_agent:finish",
-   "phase": "end",
-   "step_id": "r1s3",
-   "error": false,
-   "interrupted": false
+   "event": "step_completed",
+   "step_id": "r1s4",
+   "status": "done",
+   "mode": "direct",
+   "summary": "search_news: 1 sources (direct calls)",
+   "error": null,
+   "reason": null,
+   "duration_ms": 17
   }
  ],
  [
@@ -1438,7 +1438,7 @@
   142,
   {
    "event": "token",
-   "text": "[5]"
+   "text": "[3]"
   }
  ],
  [
@@ -1676,7 +1676,7 @@
   176,
   {
    "event": "token",
-   "text": "[7]"
+   "text": "[5]"
   }
  ],
  [
@@ -1760,7 +1760,7 @@
   188,
   {
    "event": "token",
-   "text": "[6]"
+   "text": "[4]"
   }
  ],
  [
@@ -1949,7 +1949,7 @@
   215,
   {
    "event": "token",
-   "text": "[3]."
+   "text": "[7]."
   }
  ],
  [
@@ -2286,13 +2286,13 @@
   262,
   {
    "event": "final",
-   "answer": "**NVIDIA and AMD both flag competition and reliance on outside manufacturing; only NVIDIA's export-control risk has direct news support.**\n\n| Risk | NVIDIA | AMD |\n|---|---|---|\n| Competition | Competition could reduce market share [5] | Highly competitive and rapidly evolving markets [2] |\n| Manufacturing | Reliance on third-party foundries [7] | Reliance on third-party manufacturing [6] |\n\nNVIDIA tells cloud clients to limit China exposure under export controls [3]. Its 10-K says export controls restrict sales of advanced chips to China [1]. Quarterly gaming revenue doubled on record console demand [unverified].\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*\n*Claims marked [unverified] could not be matched to any retrieved source.*",
+   "answer": "**NVIDIA and AMD both flag competition and reliance on outside manufacturing; only NVIDIA's export-control risk has direct news support.**\n\n| Risk | NVIDIA | AMD |\n|---|---|---|\n| Competition | Competition could reduce market share [1] | Highly competitive and rapidly evolving markets [2] |\n| Manufacturing | Reliance on third-party foundries [3] | Reliance on third-party manufacturing [4] |\n\nNVIDIA tells cloud clients to limit China exposure under export controls [5]. Its 10-K says export controls restrict sales of advanced chips to China [6]. Quarterly gaming revenue doubled on record console demand [unverified].\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*\n*Data: NVDA news through 8 Nov 2026 (checked 8 Nov 2026); AMD news through 8 Nov 2026 (checked 8 Nov 2026).*\n*Freshness warning: news for NVDA last checked 8 Nov 2026; news for AMD last checked 8 Nov 2026; very recent events may be missing.*\n*Claims marked [unverified] could not be matched to any retrieved source.*",
    "citations": [
     {
      "n": 1,
-     "source_id": "scripted:rf-NVDA-0",
-     "title": "NVDA 10-K risk factor: Export controls restrict sales of advanced chips to China (scripted)",
-     "url": "https://example.com/scripted/rf-NVDA-0"
+     "source_id": "scripted:rf-NVDA-1",
+     "title": "NVDA 10-K risk factor: Competition could reduce market share (scripted)",
+     "url": "https://example.com/scripted/rf-NVDA-1"
     },
     {
      "n": 2,
@@ -2302,27 +2302,27 @@
     },
     {
      "n": 3,
-     "source_id": "scripted:news-NVDA-0",
-     "title": "NVIDIA tells cloud clients to limit China exposure (scripted)",
-     "url": "https://example.com/scripted/news-NVDA-0"
+     "source_id": "scripted:rf-NVDA-2",
+     "title": "NVDA 10-K risk factor: Reliance on third-party foundries (scripted)",
+     "url": "https://example.com/scripted/rf-NVDA-2"
     },
     {
-     "n": 5,
-     "source_id": "scripted:rf-NVDA-1",
-     "title": "NVDA 10-K risk factor: Competition could reduce market share (scripted)",
-     "url": "https://example.com/scripted/rf-NVDA-1"
-    },
-    {
-     "n": 6,
+     "n": 4,
      "source_id": "scripted:rf-AMD-1",
      "title": "AMD 10-K risk factor: Reliance on third-party manufacturing (scripted)",
      "url": "https://example.com/scripted/rf-AMD-1"
     },
     {
-     "n": 7,
-     "source_id": "scripted:rf-NVDA-2",
-     "title": "NVDA 10-K risk factor: Reliance on third-party foundries (scripted)",
-     "url": "https://example.com/scripted/rf-NVDA-2"
+     "n": 5,
+     "source_id": "scripted:news-NVDA-0",
+     "title": "NVIDIA tells cloud clients to limit China exposure (scripted)",
+     "url": "https://example.com/scripted/news-NVDA-0"
+    },
+    {
+     "n": 6,
+     "source_id": "scripted:rf-NVDA-0",
+     "title": "NVDA 10-K risk factor: Export controls restrict sales of advanced chips to China (scripted)",
+     "url": "https://example.com/scripted/rf-NVDA-0"
     }
    ],
    "citation_check": {
@@ -2332,6 +2332,14 @@
     "dropped": 1,
     "unverified_claims": 1,
     "precision": 0.857
+   },
+   "renumbered": {
+    "3": 1,
+    "2": 2,
+    "5": 3,
+    "4": 4,
+    "7": 5,
+    "1": 6
    }
   }
  ],

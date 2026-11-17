@@ -12,7 +12,7 @@ from api import scripted
 from api.main import create_app
 from core.config import Settings
 
-from .test_api_agent import events, first, kinds
+from .test_api_agent import VISITOR, events, first, kinds
 
 
 @pytest.fixture
@@ -25,12 +25,16 @@ async def client(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[httpx.AsyncCl
         agent_runtime="scripted",
         groq_api_key=SecretStr("gsk_unused"),
         api_runs_per_minute=100,
+        live_runs_per_visitor_per_day=100,
+        live_runs_per_ip_per_day=100,
     )
     app = create_app(settings)
     transport = httpx.ASGITransport(app=app)
     async with (
         app.router.lifespan_context(app),
-        httpx.AsyncClient(transport=transport, base_url="http://test", timeout=30) as c,
+        httpx.AsyncClient(
+            transport=transport, base_url="http://test", timeout=30, headers=VISITOR
+        ) as c,
     ):
         yield c
 

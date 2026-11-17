@@ -241,6 +241,9 @@ threads = Table(
     Column("title", Text, nullable=False),  # the first question, shortened
     Column("status", String(24), nullable=False, server_default="idle"),
     Column("last_run_id", UUID(as_uuid=True)),
+    # Anonymous browser id of the public demo visitor who owns the thread. NULL = created
+    # before per-visitor threads, or by the CLI: listed for nobody (never deleted).
+    Column("visitor_id", String(64)),
     Column("created_at", DateTime(timezone=True), server_default=func.now(), nullable=False),
     # The server default only fires on INSERT; the thread store sets it on every update.
     Column("updated_at", DateTime(timezone=True), server_default=func.now(), nullable=False),
@@ -248,6 +251,7 @@ threads = Table(
         "status IN (" + ", ".join(f"'{s}'" for s in THREAD_STATUSES) + ")",
         name="ck_threads_status",
     ),
+    Index("ix_threads_visitor_updated", "visitor_id", "updated_at"),
 )
 
 # Agent run log (written by the agent from Phase 3).

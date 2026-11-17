@@ -75,7 +75,7 @@ export function runFromDetail(d: ThreadDetail): RunState | null {
       : null,
     final:
       status === "idle" && lastAnswer
-        ? { answer: lastAnswer, citations: l.citations, check: l.citation_check ?? null }
+        ? { answer: lastAnswer, citations: l.citations, check: l.citation_check ?? null, renumbered: {} }
         : null,
     error: status === "error" ? "The last run failed." : null,
   };

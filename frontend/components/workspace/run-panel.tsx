@@ -13,11 +13,13 @@ export function RunPanel({
   tab,
   onTab,
   highlight,
+  recorded = null,
 }: {
   run: RunState;
   tab: Tab;
   onTab: (t: Tab) => void;
   highlight: number | null;
+  recorded?: string | null; // the replay label when this run is a recording
 }) {
   const steps = Object.values(run.steps);
   const done = steps.filter((s) => s.status === "done").length;
@@ -28,6 +30,9 @@ export function RunPanel({
   };
   return (
     <aside className="flex min-h-0 flex-1 flex-col border-l border-border">
+      {recorded && (
+        <p className="shrink-0 border-b border-recorded/60 px-3 py-1.5 text-xs font-semibold text-recorded">{recorded}</p>
+      )}
       <div role="tablist" className="flex shrink-0 border-b border-border">
         {(["plan", "graph", "sources"] as const).map((t) => (
           <button

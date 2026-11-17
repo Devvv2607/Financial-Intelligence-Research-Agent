@@ -4,12 +4,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { api, ApiError } from "./api";
+import type { ReplayMeta } from "./types";
 import { runFromDetail } from "./run-from-detail";
 import { applyEvent, initialRun, type RunState } from "./run-state";
-import { followRun, type OnEvent, resumeRun, startRun } from "./sse";
+import { followRun, type OnEvent, playReplay, resumeRun, startRun } from "./sse";
 
 const BACKOFF_MS = [500, 1000, 2000, 4000, 8000];
 const POLL_MS = 2000;
+const REPLAY_ANSWER_MS = 1200; // pause on the recorded clarification before its answer
 const sleep = (ms: number, signal: AbortSignal) =>
   new Promise<void>((resolve) => {
     const t = setTimeout(resolve, ms);
@@ -20,6 +22,8 @@ const sleep = (ms: number, signal: AbortSignal) =>
   });
 
 export type Connection = "live" | "reconnecting" | "polling" | "idle";
+/** Why a run was refused before it started; `reason` names the limit, if one did. */
+export type Failure = { message: string; reason: string | null };
 
 /**
  * One thread's run, driven by SSE. A run lives on the server (D-041), so a dropped
@@ -31,7 +35,10 @@ export function useRun() {
   const qc = useQueryClient();
   const [run, setRun] = useState<RunState>(initialRun);
   const [connection, setConnection] = useState<Connection>("idle");
-  const [failure, setFailure] = useState<string | null>(null);
+  const [failure, setFailure] = useState<Failure | null>(null);
+  // Index of the recording segment being played (0: the question, 1: the recorded
+  // clarification answer); -1 when this is not a replay.
+  const [replayStep, setReplayStep] = useState(-1);
   const ref = useRef(run);
   const abort = useRef<AbortController | null>(null);
   // The thread being driven. Set by start/load directly: for a brand-new thread the URL
@@ -101,7 +108,7 @@ export function useRun() {
         if (ctrl.signal.aborted) return;
         if (err instanceof ApiError) {
           // Refused before it started (409 busy, 422 bad input, 429 rate limit): no run.
-          setFailure(err.message);
+          setFailure({ message: err.message, reason: err.reason });
           setConnection("idle");
           return;
         }
@@ -118,6 +125,7 @@ export function useRun() {
   const start = useCallback(
     (query: string, id: string) => {
       thread.current = id;
+      setReplayStep(-1);
       return drive((signal) => startRun(id, query, onEvent, signal));
     },
     [drive, onEvent],
@@ -131,12 +139,39 @@ export function useRun() {
     [drive, onEvent],
   );
 
+  /** Play a recorded run: the same events through the same reducer, from the replay
+   * endpoint (no thread, no tokens). */
+  const replay = useCallback(
+    (meta: ReplayMeta) => {
+      thread.current = null;
+      set(initialRun);
+      setReplayStep(0);
+      return drive(async (signal) => {
+        try {
+          for (let i = 0; i < meta.inputs.length; i++) {
+            if (i > 0) {
+              await sleep(REPLAY_ANSWER_MS, signal);
+              if (signal.aborted) return;
+              setReplayStep(i);
+            }
+            await playReplay(meta.slug, i, onEvent, signal);
+          }
+        } catch (err) {
+          if (signal.aborted || err instanceof ApiError) throw err;
+          throw new ApiError(0, "Couldn't play the recording. Try again.");
+        }
+      });
+    },
+    [drive, onEvent, set],
+  );
+
   /** Open a thread: follow a run that is still going (reload mid-run), else show its last
    * state. */
   const load = useCallback(
     async (id: string) => {
       abort.current?.abort();
       thread.current = id;
+      setReplayStep(-1);
       set(initialRun);
       setFailure(null);
       const d = await api.getThread(id);
@@ -153,6 +188,7 @@ export function useRun() {
   const reset = useCallback(() => {
     abort.current?.abort();
     thread.current = null;
+    setReplayStep(-1);
     setFailure(null);
     setConnection("idle");
     set(initialRun);
@@ -160,5 +196,5 @@ export function useRun() {
 
   useEffect(() => () => abort.current?.abort(), []);
 
-  return { run, connection, failure, start, resume, load, reset };
+  return { run, connection, failure, replayStep, start, resume, replay, load, reset };
 }

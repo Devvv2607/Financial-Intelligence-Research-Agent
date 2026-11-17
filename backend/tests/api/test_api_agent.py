@@ -29,6 +29,7 @@ from core.threads import MemoryThreadStore
 from ..agent.fakes import OK_CRITIQUE, FakeLLM, FakeTools, analysis, ev, make_deps, ok, step
 
 Q = "What are NVIDIA's main risks?"
+VISITOR = {"X-Visitor-Id": str(uuid.uuid4())}
 
 
 def settings(**kw: Any) -> Settings:
@@ -37,6 +38,8 @@ def settings(**kw: Any) -> Settings:
         "app_env": "test",
         "groq_api_key": SecretStr("gsk_test"),
         "api_runs_per_minute": 100,
+        "live_runs_per_visitor_per_day": 100,
+        "live_runs_per_ip_per_day": 100,
     }
     return Settings(**(base | kw))
 
@@ -105,7 +108,9 @@ async def api(llm: FakeLLM, tools: FakeTools, **kw: Any) -> AsyncIterator[Api]:
     transport = httpx.ASGITransport(app=app)
     async with (
         app.router.lifespan_context(app),
-        httpx.AsyncClient(transport=transport, base_url="http://test", timeout=30) as client,
+        httpx.AsyncClient(
+            transport=transport, base_url="http://test", timeout=30, headers=VISITOR
+        ) as client,
     ):
         yield Api(client, holder["rt"], recorded)
 
@@ -324,7 +329,7 @@ async def test_agent_endpoints_503_without_a_runtime(path: str) -> None:
     transport = httpx.ASGITransport(app=app)
     async with (
         app.router.lifespan_context(app),
-        httpx.AsyncClient(transport=transport, base_url="http://test") as client,
+        httpx.AsyncClient(transport=transport, base_url="http://test", headers=VISITOR) as client,
     ):
         assert (await client.get(path)).status_code == 503
 

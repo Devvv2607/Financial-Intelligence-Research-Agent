@@ -200,6 +200,7 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
             except Exception:  # a local-model failure must not cost the user the answer
                 logger.exception("citation check failed", extra={"run_id": run_id_of(config)})
         answer, citations = resolve_citations(answer, state)
+        answer, citations, renumbered = renumber_citations(answer, citations)
         footer = FOOTER if citations else FOOTER_NO_SOURCES
         freshness = freshness_footer(state)
         if freshness:
@@ -233,6 +234,7 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
                 "answer": answer,
                 "citations": [c.model_dump() for c in citations],
                 "citation_check": check,
+                "renumbered": {str(old): new for old, new in renumbered.items()},
             }
         )
         return {
@@ -408,6 +410,30 @@ def resolve_citations(answer: str, state: ResearchState) -> tuple[str, list[Cita
         return ""
 
     return _CITE_RE.sub(check, answer), [used[k] for k in sorted(used)]
+
+
+def renumber_citations(
+    answer: str, citations: list[Citation]
+) -> tuple[str, list[Citation], dict[int, int]]:
+    """Number the cited sources 1, 2, 3… in order of first appearance.
+
+    The synthesizer cites from a numbered list of up to MAX_SOURCES, so a verified answer
+    can read [4] [17] [2]. The reader sees 1, 2, 3; the Sources tab and the citations
+    list use the same numbers. Runs after the citation check and resolve_citations
+    (which work on the synthesizer's numbering), so every [n] left is a real source.
+    Returns the mapping old -> new as well, so a client that streamed the draft in the
+    old numbering can line the two up."""
+    mapping: dict[int, int] = {}
+    for m in _CITE_RE.finditer(answer):
+        mapping.setdefault(int(m.group(1)), len(mapping) + 1)
+    answer = _CITE_RE.sub(lambda m: f"[{mapping[int(m.group(1))]}]", answer)
+    by_old = {c.n: c for c in citations}
+    renumbered = [
+        by_old[old].model_copy(update={"n": new})
+        for old, new in sorted(mapping.items(), key=lambda kv: kv[1])
+        if old in by_old
+    ]
+    return answer, renumbered, mapping
 
 
 def route_after_critic(state: ResearchState) -> str:

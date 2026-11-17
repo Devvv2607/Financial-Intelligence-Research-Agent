@@ -3,8 +3,8 @@
   1,
   {
    "event": "run_started",
-   "run_id": "9278ddb6-a230-4ae2-89c4-19827d1418a9",
-   "thread_id": "023496ae-bb2f-4dfc-a422-e76689fb5872",
+   "run_id": "af7908e7-fb2e-4875-886f-564ea486b507",
+   "thread_id": "a2fc72d2-99d8-4428-9519-c5fbb5dac775",
    "resumed": false
   }
  ],
@@ -298,7 +298,7 @@
    "summary": "compare_risk_factors: 2 sources (direct calls)",
    "error": null,
    "reason": null,
-   "duration_ms": 5
+   "duration_ms": 4
   }
  ],
  [
@@ -644,7 +644,7 @@
    "summary": "Two recent headlines cover Apple's AI risk.",
    "error": null,
    "reason": null,
-   "duration_ms": 15
+   "duration_ms": 7
   }
  ],
  [
@@ -1193,7 +1193,7 @@
   125,
   {
    "event": "token",
-   "text": "[3]."
+   "text": "[2]."
   }
  ],
  [
@@ -1305,7 +1305,7 @@
   141,
   {
    "event": "token",
-   "text": "[2]."
+   "text": "[3]."
   }
  ],
  [
@@ -1334,7 +1334,7 @@
   144,
   {
    "event": "final",
-   "answer": "Comparing the FY2025 and FY2026 10-K risk factors: 1 new, 0 removed, 20 materially changed and 7 unchanged [1]. The new risk: artificial intelligence may cause reputational harm and regulatory action [3]. Regulators examine AI features in Apple devices [2].\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*",
+   "answer": "Comparing the FY2025 and FY2026 10-K risk factors: 1 new, 0 removed, 20 materially changed and 7 unchanged [1]. The new risk: artificial intelligence may cause reputational harm and regulatory action [2]. Regulators examine AI features in Apple devices [3].\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*\n*Data: news through 8 Nov 2026 (checked 8 Nov 2026).*\n*Freshness warning: news for AAPL last checked 8 Nov 2026; very recent events may be missing.*",
    "citations": [
     {
      "n": 1,
@@ -1344,15 +1344,15 @@
     },
     {
      "n": 2,
-     "source_id": "scripted:news-AAPL-0",
-     "title": "Regulators examine AI features in Apple devices (scripted)",
-     "url": "https://example.com/scripted/news-AAPL-0"
-    },
-    {
-     "n": 3,
      "source_id": "scripted:rf-AAPL-ai",
      "title": "AAPL 10-K risk factor: Artificial intelligence may cause reputational harm (scripted)",
      "url": "https://example.com/scripted/rf-AAPL-ai"
+    },
+    {
+     "n": 3,
+     "source_id": "scripted:news-AAPL-0",
+     "title": "Regulators examine AI features in Apple devices (scripted)",
+     "url": "https://example.com/scripted/news-AAPL-0"
     }
    ],
    "citation_check": {
@@ -1362,6 +1362,11 @@
     "dropped": 0,
     "unverified_claims": 0,
     "precision": 1.0
+   },
+   "renumbered": {
+    "1": 1,
+    "2": 2,
+    "3": 3
    }
   }
  ],
