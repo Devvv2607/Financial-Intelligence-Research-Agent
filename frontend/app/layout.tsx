@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+import { ServerWake } from "@/components/shell/server-wake";
 import { TopBar } from "@/components/shell/top-bar";
 
 import { Providers } from "./providers";
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex h-dvh flex-col overflow-hidden">
         <Providers>
+          <ServerWake />
           <TopBar />
           <div className="flex min-h-0 flex-1 flex-col">{children}</div>
         </Providers>
