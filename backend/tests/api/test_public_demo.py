@@ -5,6 +5,7 @@ Zero Groq calls.
 """
 
 import asyncio
+import re
 import uuid
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -178,3 +179,18 @@ async def test_a_full_queue_refuses_the_run_before_it_starts() -> None:
         assert "one live question at a time" in r.json()["detail"]
         await first
         assert (await live_run(c, me)).status_code == 200  # the refusal didn't count
+
+
+# ---------------------------------------------------------------- citation numbering
+async def test_final_answer_cites_1_2_3_in_order_with_a_map_from_the_draft() -> None:
+    async with scripted_app(live_runs_per_visitor_per_day=10, live_runs_per_ip_per_day=10) as c:
+        evs = events(await live_run(c, visitor(), COMPARE))
+    final = next(e for e in evs if e["event"] == "final")
+    numbers = [int(n) for n in re.findall(r"\[(\d+)\]", final["answer"])]
+    first_seen = list(dict.fromkeys(numbers))
+    assert first_seen == list(range(1, len(first_seen) + 1)) and len(first_seen) > 1
+    assert [cit["n"] for cit in final["citations"]] == first_seen
+    draft = "".join(e["text"] for e in evs if e["event"] == "token")
+    drafted = {int(n) for n in re.findall(r"\[(\d+)\]", draft)}
+    assert set(map(int, final["renumbered"])) <= drafted  # old numbers come from the draft
+    assert sorted(final["renumbered"].values()) == first_seen

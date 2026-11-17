@@ -58,7 +58,12 @@ export type RunState = {
   clarification: { question: string; options: string[]; source: string | null } | null;
   queuePosition: number | null; // waiting for the one live slot: 1 = next
   preview: string; // streamed tokens: a preview until `final` arrives
-  final: { answer: string; citations: Citation[]; check: Record<string, unknown> | null } | null;
+  final: {
+    answer: string;
+    citations: Citation[]; // numbered 1, 2, 3 by first appearance in `answer`
+    check: Record<string, unknown> | null;
+    renumbered: Record<string, number>; // draft (preview) number -> final number
+  } | null;
   error: string | null;
   nodes: Record<string, NodeStatus>; // graph node id -> status (subgraph nodes "agent:node")
   activeSteps: Record<string, number>; // specialist node -> running instances
@@ -165,7 +170,12 @@ function reduce(s: RunState, e: AgentEvent, now: number): RunState {
       return {
         ...s,
         phase: "done",
-        final: { answer: e.answer, citations: e.citations, check: e.citation_check },
+        final: {
+          answer: e.answer,
+          citations: e.citations,
+          check: e.citation_check,
+          renumbered: e.renumbered,
+        },
         finalAt: now,
         steps: settle(s.steps),
         activeSteps: {},

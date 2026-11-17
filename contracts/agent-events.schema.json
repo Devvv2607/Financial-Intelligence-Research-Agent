@@ -298,6 +298,7 @@
       "type": "object"
     },
     "Final": {
+      "description": "`answer` cites sources as [1], [2], ... in order of first appearance; `renumbered`\nmaps the numbers the streamed draft (`token` events) used to those.",
       "properties": {
         "answer": {
           "title": "Answer",
@@ -327,13 +328,21 @@
           "const": "final",
           "title": "Event",
           "type": "string"
+        },
+        "renumbered": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Renumbered",
+          "type": "object"
         }
       },
       "required": [
         "event",
         "answer",
         "citations",
-        "citation_check"
+        "citation_check",
+        "renumbered"
       ],
       "title": "Final",
       "type": "object"

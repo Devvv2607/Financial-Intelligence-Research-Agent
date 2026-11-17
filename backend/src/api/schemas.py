@@ -131,10 +131,14 @@ class Token(_Event):
 
 
 class Final(_Event):
+    """`answer` cites sources as [1], [2], ... in order of first appearance; `renumbered`
+    maps the numbers the streamed draft (`token` events) used to those."""
+
     event: Literal["final"]
     answer: str
     citations: list[Citation]
     citation_check: dict[str, Any] | None = None
+    renumbered: dict[str, int] = Field(default_factory=dict)
 
 
 class ErrorEvent(_Event):

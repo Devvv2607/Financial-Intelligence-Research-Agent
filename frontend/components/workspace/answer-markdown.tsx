@@ -13,10 +13,19 @@ export function markers(text: string): string[] {
 
 /**
  * Markers that changed between the streamed preview and the verified answer, by
- * position: index -> what the preview had ("" if the preview had none there).
+ * position: index -> what the preview had ("" if the preview had none there). The final
+ * answer numbers sources 1, 2, 3 by first appearance; `renumbered` (draft number -> final
+ * number) puts the preview in the same numbering first. A draft number with no final
+ * number ("x7") cited a source the verified answer doesn't keep.
  */
-export function changedMarkers(preview: string, final: string): Map<number, string> {
-  const before = markers(preview);
+export function changedMarkers(
+  preview: string,
+  final: string,
+  renumbered: Record<string, number> = {},
+): Map<number, string> {
+  const before = markers(preview).map((m) =>
+    m === "unverified" ? m : m in renumbered ? String(renumbered[m]) : `x${m}`,
+  );
   const out = new Map<number, string>();
   markers(final).forEach((m, i) => {
     if (before[i] !== m) out.set(i, before[i] ?? "");
@@ -62,9 +71,11 @@ export function AnswerMarkdown({
               ? undefined
               : m === "unverified"
                 ? "No retrieved source supports this claim"
-                : was
-                  ? `Citation moved from [${was}] after verification`
-                  : "Citation added after verification";
+                : was.startsWith("x")
+                  ? "Citation changed after verification: the draft cited a source the answer doesn't keep"
+                  : was
+                    ? `Citation moved from [${was}] after verification`
+                    : "Citation added after verification";
             if (m === "unverified") {
               return (
                 <span

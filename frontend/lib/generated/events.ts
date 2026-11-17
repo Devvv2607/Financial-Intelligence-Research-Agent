@@ -219,17 +219,25 @@ export interface Token {
   event: Event11;
   text: Text;
 }
+/**
+ * `answer` cites sources as [1], [2], ... in order of first appearance; `renumbered`
+ * maps the numbers the streamed draft (`token` events) used to those.
+ */
 export interface Final {
   answer: Answer;
   citation_check: CitationCheck;
   citations: Citations;
   event: Event12;
+  renumbered: Renumbered;
 }
 export interface Citation {
   n: N;
   source_id: SourceId1;
   title: Title1;
   url: Url1;
+}
+export interface Renumbered {
+  [k: string]: number;
 }
 export interface ErrorEvent {
   code: Code;

@@ -1,7 +1,7 @@
 {
  "slug": "bank-clarification",
  "question": "How risky is the bank?",
- "recorded_at": "2026-11-17T07:05:57.440919Z",
+ "recorded_at": "2026-11-17T07:32:39.157281Z",
  "source": "scripted",
  "api_url": null,
  "tokens": null,
@@ -13,16 +13,16 @@
    },
    "events": [
     {
-     "t_ms": 15,
+     "t_ms": 16,
      "event": {
       "event": "run_started",
-      "run_id": "a3c4d90b-8759-4124-8c0f-e081e1406db2",
-      "thread_id": "fd10a8e1-6a2c-4901-8ee3-dd8b4973d09c",
+      "run_id": "fd3eebf8-e284-4aff-a305-5a5c22af425b",
+      "thread_id": "b8cc922e-cba1-4cbb-8740-228aecacb31d",
       "resumed": false
      }
     },
     {
-     "t_ms": 15,
+     "t_ms": 16,
      "event": {
       "event": "node",
       "node": "start_turn",
@@ -33,7 +33,7 @@
      }
     },
     {
-     "t_ms": 15,
+     "t_ms": 16,
      "event": {
       "event": "node",
       "node": "start_turn",
@@ -44,7 +44,7 @@
      }
     },
     {
-     "t_ms": 15,
+     "t_ms": 16,
      "event": {
       "event": "node",
       "node": "guardrail",
@@ -55,7 +55,7 @@
      }
     },
     {
-     "t_ms": 15,
+     "t_ms": 16,
      "event": {
       "event": "node",
       "node": "guardrail",
@@ -66,7 +66,7 @@
      }
     },
     {
-     "t_ms": 15,
+     "t_ms": 16,
      "event": {
       "event": "node",
       "node": "entity_resolver",
@@ -77,7 +77,7 @@
      }
     },
     {
-     "t_ms": 15,
+     "t_ms": 16,
      "event": {
       "event": "node",
       "node": "entity_resolver",
@@ -88,7 +88,7 @@
      }
     },
     {
-     "t_ms": 15,
+     "t_ms": 16,
      "event": {
       "event": "node",
       "node": "query_analyzer",
@@ -99,7 +99,7 @@
      }
     },
     {
-     "t_ms": 15,
+     "t_ms": 16,
      "event": {
       "event": "clarification_needed",
       "question": "Which bank do you mean?",
@@ -111,7 +111,7 @@
      }
     },
     {
-     "t_ms": 15,
+     "t_ms": 16,
      "event": {
       "event": "node",
       "node": "query_analyzer",
@@ -122,7 +122,7 @@
      }
     },
     {
-     "t_ms": 15,
+     "t_ms": 16,
      "event": {
       "event": "node",
       "node": "ask_clarification",
@@ -133,7 +133,7 @@
      }
     },
     {
-     "t_ms": 15,
+     "t_ms": 16,
      "event": {
       "event": "node",
       "node": "ask_clarification",
@@ -152,16 +152,16 @@
    },
    "events": [
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "run_started",
-      "run_id": "a3c4d90b-8759-4124-8c0f-e081e1406db2",
-      "thread_id": "fd10a8e1-6a2c-4901-8ee3-dd8b4973d09c",
+      "run_id": "fd3eebf8-e284-4aff-a305-5a5c22af425b",
+      "thread_id": "b8cc922e-cba1-4cbb-8740-228aecacb31d",
       "resumed": true
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "ask_clarification",
@@ -172,7 +172,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "ask_clarification",
@@ -183,7 +183,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "query_analyzer",
@@ -194,7 +194,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "query_analyzer",
@@ -205,7 +205,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "planner",
@@ -216,7 +216,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "plan_created",
       "round": 1,
@@ -255,7 +255,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "planner",
@@ -266,7 +266,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "dispatcher",
@@ -277,7 +277,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "step_started",
       "step_id": "r1s1",
@@ -286,7 +286,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "step_started",
       "step_id": "r1s2",
@@ -295,7 +295,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "dispatcher",
@@ -306,7 +306,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "filings_agent",
@@ -317,7 +317,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "filings_agent",
@@ -328,7 +328,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "filings_agent:prepare",
@@ -339,7 +339,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "filings_agent:prepare",
@@ -350,7 +350,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "filings_agent:prepare",
@@ -361,7 +361,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "filings_agent:direct",
@@ -372,7 +372,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "filings_agent:prepare",
@@ -383,7 +383,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "filings_agent:direct",
@@ -394,7 +394,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "tool_called",
       "step_id": "r1s1",
@@ -408,7 +408,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "evidence_added",
       "step_id": "r1s1",
@@ -443,7 +443,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "tool_called",
       "step_id": "r1s2",
@@ -457,7 +457,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "evidence_added",
       "step_id": "r1s2",
@@ -479,7 +479,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "filings_agent:direct",
@@ -490,7 +490,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "filings_agent:finish",
@@ -501,29 +501,7 @@
      }
     },
     {
-     "t_ms": 63,
-     "event": {
-      "event": "node",
-      "node": "filings_agent:direct",
-      "phase": "end",
-      "step_id": "r1s2",
-      "error": false,
-      "interrupted": false
-     }
-    },
-    {
-     "t_ms": 63,
-     "event": {
-      "event": "node",
-      "node": "filings_agent:finish",
-      "phase": "start",
-      "step_id": "r1s2",
-      "error": false,
-      "interrupted": false
-     }
-    },
-    {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "step_completed",
       "step_id": "r1s1",
@@ -536,7 +514,29 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:direct",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 61,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 61,
      "event": {
       "event": "step_completed",
       "step_id": "r1s2",
@@ -545,11 +545,11 @@
       "summary": "get_8k_events: 1 sources (direct calls)",
       "error": null,
       "reason": null,
-      "duration_ms": 5
+      "duration_ms": 6
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "filings_agent:finish",
@@ -560,7 +560,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "filings_agent:finish",
@@ -571,7 +571,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "filings_agent",
@@ -582,7 +582,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "filings_agent",
@@ -593,7 +593,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "join",
@@ -604,7 +604,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "join",
@@ -615,7 +615,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "dispatcher",
@@ -626,7 +626,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "dispatcher",
@@ -637,7 +637,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "critic",
@@ -648,7 +648,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "critique",
       "verdict": "ok",
@@ -657,7 +657,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "critic",
@@ -668,7 +668,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "synthesizer",
@@ -679,462 +679,462 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "JPMorgan"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "Chase"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "discloses"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "significant"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "legal"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "and"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "regulatory"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "proceedings"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "that"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "could"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "result"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "in"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "penalties"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "[1],"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "and"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "interest"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "rate"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "and"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "credit"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "spread"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "changes"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "that"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "affect"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "earnings"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "[3]."
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "Its"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "latest"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "8-K"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "reported"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "results"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "of"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "operations"
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": " "
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "token",
       "text": "[2]."
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "synthesizer",
@@ -1145,7 +1145,7 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "finalize",
@@ -1156,10 +1156,10 @@
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "final",
-      "answer": "JPMorgan Chase discloses significant legal and regulatory proceedings that could result in penalties [1], and interest rate and credit spread changes that affect earnings [3]. Its latest 8-K reported results of operations [2].\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*\n*Data: SEC filings checked 8 Nov 2026 (latest 8-K filed 8 Nov 2026).*\n*Freshness warning: SEC filings for JPM last checked 8 Nov 2026; very recent events may be missing.*",
+      "answer": "JPMorgan Chase discloses significant legal and regulatory proceedings that could result in penalties [1], and interest rate and credit spread changes that affect earnings [2]. Its latest 8-K reported results of operations [3].\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*\n*Data: SEC filings checked 8 Nov 2026 (latest 8-K filed 8 Nov 2026).*\n*Freshness warning: SEC filings for JPM last checked 8 Nov 2026; very recent events may be missing.*",
       "citations": [
        {
         "n": 1,
@@ -1169,15 +1169,15 @@
        },
        {
         "n": 2,
-        "source_id": "scripted:8k-JPM-0",
-        "title": "JPM 8-K: Results of operations (scripted)",
-        "url": "https://example.com/scripted/8k-JPM-0"
-       },
-       {
-        "n": 3,
         "source_id": "scripted:rf-JPM-1",
         "title": "JPM 10-K risk factor: Interest rate and credit spread changes (scripted)",
         "url": "https://example.com/scripted/rf-JPM-1"
+       },
+       {
+        "n": 3,
+        "source_id": "scripted:8k-JPM-0",
+        "title": "JPM 8-K: Results of operations (scripted)",
+        "url": "https://example.com/scripted/8k-JPM-0"
        }
       ],
       "citation_check": {
@@ -1187,11 +1187,16 @@
        "dropped": 0,
        "unverified_claims": 0,
        "precision": 1.0
+      },
+      "renumbered": {
+       "1": 1,
+       "3": 2,
+       "2": 3
       }
      }
     },
     {
-     "t_ms": 63,
+     "t_ms": 61,
      "event": {
       "event": "node",
       "node": "finalize",
