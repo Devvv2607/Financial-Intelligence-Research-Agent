@@ -26,8 +26,13 @@ What this means:
 1. The `api` (639 MB) doesn't fit a Free service (0.5 GB).
 2. More importantly, $1/month of credit can't keep three always-on services running
    for a month. Railway Free is no home for this stack even if the API were made smaller.
-3. Not verified (my page fetches hit a limit): the exact trial end date and Railway's
-   per-GB RAM price. Read both in Railway → Usage before day 25.
+3. The trial lasts up to 30 days or until the $5 is spent, whichever comes first. It
+   then reverts to the Free plan, and stateful volumes are deleted 30 days after the
+   credits expire unless you upgrade
+   ([free trial](https://docs.railway.com/reference/pricing/free-trial), checked
+   2026-11-17). The trial started on deploy day (2026-11-16/17), so it ends around
+   2026-12-16, or sooner if usage reaches $5. Watch Railway → Usage: three always-on
+   services can spend $5 before day 30. Railway's per-GB RAM price wasn't checked.
 
 ## 2. Options
 
@@ -48,9 +53,19 @@ Option C, checked so far:
   zero after 5 minutes idle, no card ([pricing](https://neon.com/pricing), checked
   2026-11-17). It fits Postgres. The supported Postgres versions weren't on the page;
   check that 18 restores before relying on it.
-- **Render / Koyeb / Google e2-micro:** not verified this session. From earlier research
-  the free web tiers are 512 MB (too small for the API) and e2-micro needs a billing
-  account. Re-check before choosing.
+- **Render Free:** web services spin down after 15 minutes without traffic and take
+  about 1 minute to wake. Free Postgres expires 30 days after creation
+  ([Render free docs](https://render.com/docs/free), checked 2026-11-17). Neither the
+  docs nor the pricing page states the free instance's RAM, so the API's fit is
+  unconfirmed. The free Postgres rules it out as a database.
+- **Koyeb:** the pricing page lists no free compute instance, only a free serverless
+  Postgres (0.25 vCPU, 1 GB RAM, 1 GB storage)
+  ([pricing](https://www.koyeb.com/pricing), checked 2026-11-17). Ruled out for the API.
+- **Google Cloud e2-micro:** one free e2-micro VM in us-west1/us-central1/us-east1 with
+  30 GB-months of standard disk. It needs a billing account, and the Free Trial path
+  needs a card or other payment method
+  ([free features](https://docs.cloud.google.com/free/docs/free-cloud-features),
+  checked 2026-11-17). The page doesn't state e2-micro's memory.
 - **Weaviate:** no free managed option found that lasts. Weaviate Cloud's sandbox expires
   (check its current terms). Weaviate needs a self-hosted home, which pushes toward B.
 
@@ -66,7 +81,7 @@ Option C, checked so far:
    hosts. It doesn't solve Weaviate, and it doesn't make Railway Free viable ($1 credit).
    Revisit only if B fails.
 
-Decide by **day 20**, so the move has five days of slack before day 25.
+Decide by **day 20** (around 2026-12-06), or sooner if Railway → Usage shows the $5 running out, so the move has five days of slack before day 25.
 
 ## 4. Migration steps for B, with no data loss
 
