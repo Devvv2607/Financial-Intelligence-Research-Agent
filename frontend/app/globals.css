@@ -15,6 +15,7 @@
   --ok: #3fb950;
   --bad: #f85149;
   --paused: #a78bfa; /* violet: waiting for the user */
+  --recorded: #f0883e; /* orange: a recorded run being replayed, not live */
   --agent-filings: #6cb6ff;
   --agent-financials: #3fb950;
   --agent-news: #f778ba;
@@ -34,6 +35,7 @@
   --color-ok: var(--ok);
   --color-bad: var(--bad);
   --color-paused: var(--paused);
+  --color-recorded: var(--recorded);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

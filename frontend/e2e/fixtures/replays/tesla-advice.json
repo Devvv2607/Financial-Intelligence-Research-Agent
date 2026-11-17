@@ -1,0 +1,102 @@
+{
+ "slug": "tesla-advice",
+ "question": "Should I buy Tesla?",
+ "recorded_at": "2026-11-17T07:05:57.488290Z",
+ "source": "scripted",
+ "api_url": null,
+ "tokens": null,
+ "segments": [
+  {
+   "input": {
+    "kind": "run",
+    "text": "Should I buy Tesla?"
+   },
+   "events": [
+    {
+     "t_ms": 0,
+     "event": {
+      "event": "run_started",
+      "run_id": "0c4ad5c5-fea7-4846-a675-33857b246314",
+      "thread_id": "c086606f-01f1-44e1-bdc1-133b80f9a9b2",
+      "resumed": false
+     }
+    },
+    {
+     "t_ms": 0,
+     "event": {
+      "event": "node",
+      "node": "start_turn",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 0,
+     "event": {
+      "event": "node",
+      "node": "start_turn",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 0,
+     "event": {
+      "event": "node",
+      "node": "guardrail",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 0,
+     "event": {
+      "event": "node",
+      "node": "guardrail",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 0,
+     "event": {
+      "event": "node",
+      "node": "finalize",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 0,
+     "event": {
+      "event": "final",
+      "answer": "I can't give investment advice, so I won't say whether to buy, sell or hold Tesla, Inc. What I can do is research it from SEC filings and recent news: its main risk factors, how they changed year over year, recent 8-K events, and reported financials. For example, ask: \"What are TSLA's main risk factors and how did its revenue change last year?\"\n\n---\n*Not investment advice.*",
+      "citations": [],
+      "citation_check": null
+     }
+    },
+    {
+     "t_ms": 0,
+     "event": {
+      "event": "node",
+      "node": "finalize",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    }
+   ]
+  }
+ ]
+}

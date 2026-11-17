@@ -28,6 +28,8 @@ RUN useradd --create-home --uid 10001 app
 WORKDIR /app
 COPY --from=builder --chown=app:app /app/.venv /app/.venv
 COPY --chown=app:app config config
+# Recorded runs for the demo's example chips (api/replays.py).
+COPY --chown=app:app replays replays
 RUN mkdir -p data/models && chown -R app:app data
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1

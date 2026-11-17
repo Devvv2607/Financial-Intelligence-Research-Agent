@@ -922,6 +922,60 @@
         "title": "ReadyResponse",
         "type": "object"
       },
+      "ReplayMeta": {
+        "description": "What the UI needs to offer a replay; the events come from the stream endpoint.",
+        "properties": {
+          "inputs": {
+            "items": {
+              "$ref": "#/components/schemas/SegmentInput"
+            },
+            "title": "Inputs",
+            "type": "array"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          },
+          "recorded_at": {
+            "format": "date-time",
+            "title": "Recorded At",
+            "type": "string"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "live",
+              "scripted"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tokens"
+          }
+        },
+        "required": [
+          "slug",
+          "question",
+          "recorded_at",
+          "source",
+          "tokens",
+          "inputs"
+        ],
+        "title": "ReplayMeta",
+        "type": "object"
+      },
       "ResumeRequest": {
         "properties": {
           "answer": {
@@ -1215,6 +1269,28 @@
           "query"
         ],
         "title": "RunRequest",
+        "type": "object"
+      },
+      "SegmentInput": {
+        "properties": {
+          "kind": {
+            "enum": [
+              "run",
+              "resume"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "text"
+        ],
+        "title": "SegmentInput",
         "type": "object"
       },
       "StepResult": {
@@ -1695,6 +1771,84 @@
         "summary": "Risk Heatmap",
         "tags": [
           "data"
+        ]
+      }
+    },
+    "/api/replays": {
+      "get": {
+        "operationId": "list_replays_api_replays_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReplayMeta"
+                  },
+                  "title": "Response List Replays Api Replays Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Replays",
+        "tags": [
+          "replays"
+        ]
+      }
+    },
+    "/api/replays/{slug}": {
+      "get": {
+        "description": "Play one segment of a recording with compressed timing. Costs no tokens and is not\nsubject to the live-run limits.",
+        "operationId": "stream_replay_api_replays__slug__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "segment",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Segment",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "text/event-stream": {}
+            },
+            "description": "SSE stream of the recorded events"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Stream Replay",
+        "tags": [
+          "replays"
         ]
       }
     },

@@ -92,6 +92,10 @@ class Settings(BaseSettings):
     # "scripted": replay canned scenarios with no LLM or tools (zero-token browser E2E,
     # api/scripted.py). Refused in production.
     agent_runtime: Literal["live", "scripted"] = "live"
+    # Recorded runs (api/replays.py): fixture folder, and a multiplier on the compressed
+    # playback pauses (0 = no pauses, for tests).
+    replays_dir: Path = Path("replays")
+    replay_delay_factor: float = Field(1.0, ge=0)
 
     @model_validator(mode="after")
     def _no_scripted_agent_in_production(self) -> "Settings":

@@ -5,4 +5,5 @@
 !backend/pyproject.toml
 !backend/src/**
 !config/**
+!replays/**
 **/__pycache__

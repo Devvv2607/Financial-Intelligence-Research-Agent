@@ -58,6 +58,10 @@ export const resumeRun = (
     signal,
   );
 
+/** Play one segment of a recorded run (zero tokens; never a live run). */
+export const playReplay = (slug: string, segment: number, onEvent: OnEvent, signal: AbortSignal) =>
+  readStream(`/api/replays/${encodeURIComponent(slug)}?segment=${segment}`, { method: "GET" }, onEvent, signal);
+
 /** Replay events after `after`, then follow live (reconnects and reloads mid-run). */
 export const followRun = (
   threadId: string,

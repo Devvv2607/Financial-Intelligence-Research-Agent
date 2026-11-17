@@ -1,4 +1,4 @@
-import type { GraphJSON, Thread, ThreadDetail } from "./types";
+import type { GraphJSON, ReplayMeta, Thread, ThreadDetail } from "./types";
 import { visitorHeaders } from "./visitor";
 
 // Base URL of the FastAPI service as seen from the browser.
@@ -56,4 +56,5 @@ export const api = {
   createThread: () => request<Thread>("/api/threads", { method: "POST", body: "{}" }),
   getThread: (id: string) => request<ThreadDetail>(`/api/threads/${id}`),
   getGraph: () => request<GraphJSON>("/api/graph"),
+  listReplays: () => request<ReplayMeta[]>("/api/replays"),
 };

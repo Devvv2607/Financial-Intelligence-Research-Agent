@@ -1,0 +1,1207 @@
+{
+ "slug": "bank-clarification",
+ "question": "How risky is the bank?",
+ "recorded_at": "2026-11-17T07:05:57.440919Z",
+ "source": "scripted",
+ "api_url": null,
+ "tokens": null,
+ "segments": [
+  {
+   "input": {
+    "kind": "run",
+    "text": "How risky is the bank?"
+   },
+   "events": [
+    {
+     "t_ms": 15,
+     "event": {
+      "event": "run_started",
+      "run_id": "a3c4d90b-8759-4124-8c0f-e081e1406db2",
+      "thread_id": "fd10a8e1-6a2c-4901-8ee3-dd8b4973d09c",
+      "resumed": false
+     }
+    },
+    {
+     "t_ms": 15,
+     "event": {
+      "event": "node",
+      "node": "start_turn",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 15,
+     "event": {
+      "event": "node",
+      "node": "start_turn",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 15,
+     "event": {
+      "event": "node",
+      "node": "guardrail",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 15,
+     "event": {
+      "event": "node",
+      "node": "guardrail",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 15,
+     "event": {
+      "event": "node",
+      "node": "entity_resolver",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 15,
+     "event": {
+      "event": "node",
+      "node": "entity_resolver",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 15,
+     "event": {
+      "event": "node",
+      "node": "query_analyzer",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 15,
+     "event": {
+      "event": "clarification_needed",
+      "question": "Which bank do you mean?",
+      "options": [
+       "JPMorgan Chase (JPM)",
+       "Another bank (not covered)"
+      ],
+      "source": "query_analyzer"
+     }
+    },
+    {
+     "t_ms": 15,
+     "event": {
+      "event": "node",
+      "node": "query_analyzer",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 15,
+     "event": {
+      "event": "node",
+      "node": "ask_clarification",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 15,
+     "event": {
+      "event": "node",
+      "node": "ask_clarification",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": true
+     }
+    }
+   ]
+  },
+  {
+   "input": {
+    "kind": "resume",
+    "text": "JPMorgan Chase (JPM)"
+   },
+   "events": [
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "run_started",
+      "run_id": "a3c4d90b-8759-4124-8c0f-e081e1406db2",
+      "thread_id": "fd10a8e1-6a2c-4901-8ee3-dd8b4973d09c",
+      "resumed": true
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "ask_clarification",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "ask_clarification",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "query_analyzer",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "query_analyzer",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "planner",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "plan_created",
+      "round": 1,
+      "steps": [
+       {
+        "id": "r1s1",
+        "goal": "JPMorgan's latest 10-K risk factors",
+        "agent": "filings",
+        "entities": [
+         "JPM"
+        ],
+        "depends_on": [],
+        "tool_calls": [
+         {
+          "tool": "get_risk_factors",
+          "args_json": "{\"ticker\": \"JPM\"}"
+         }
+        ]
+       },
+       {
+        "id": "r1s2",
+        "goal": "JPMorgan's recent 8-K events",
+        "agent": "filings",
+        "entities": [
+         "JPM"
+        ],
+        "depends_on": [],
+        "tool_calls": [
+         {
+          "tool": "get_8k_events",
+          "args_json": "{\"ticker\": \"JPM\"}"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "planner",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "step_started",
+      "step_id": "r1s1",
+      "agent": "filings",
+      "mode": "direct"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "step_started",
+      "step_id": "r1s2",
+      "agent": "filings",
+      "mode": "direct"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "filings_agent",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "filings_agent",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:prepare",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:prepare",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:prepare",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:direct",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:prepare",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:direct",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "tool_called",
+      "step_id": "r1s1",
+      "tool": "get_risk_factors",
+      "args": {
+       "ticker": "JPM"
+      },
+      "ok": true,
+      "evidence": 2,
+      "reused": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "evidence_added",
+      "step_id": "r1s1",
+      "sources": [
+       {
+        "source_id": "scripted:rf-JPM-0",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K risk factor: Significant legal and regulatory proceedings (scripted)",
+        "snippet": "Significant legal and regulatory proceedings could result in penalties.",
+        "url": "https://example.com/scripted/rf-JPM-0",
+        "form_type": "10-K",
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": null,
+        "score": null
+       },
+       {
+        "source_id": "scripted:rf-JPM-1",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K risk factor: Interest rate and credit spread changes (scripted)",
+        "snippet": "Interest rate and credit spread changes affect earnings and liquidity.",
+        "url": "https://example.com/scripted/rf-JPM-1",
+        "form_type": "10-K",
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": null,
+        "score": null
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "tool_called",
+      "step_id": "r1s2",
+      "tool": "get_8k_events",
+      "args": {
+       "ticker": "JPM"
+      },
+      "ok": true,
+      "evidence": 1,
+      "reused": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "evidence_added",
+      "step_id": "r1s2",
+      "sources": [
+       {
+        "source_id": "scripted:8k-JPM-0",
+        "source_type": "8k",
+        "ticker": "JPM",
+        "title": "JPM 8-K: Results of operations (scripted)",
+        "snippet": "Item 2.02 Results of operations and financial condition.",
+        "url": "https://example.com/scripted/8k-JPM-0",
+        "form_type": "8-K",
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": null,
+        "score": null
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:direct",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:direct",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "step_completed",
+      "step_id": "r1s1",
+      "status": "done",
+      "mode": "direct",
+      "summary": "get_risk_factors: 2 sources (direct calls)",
+      "error": null,
+      "reason": null,
+      "duration_ms": 5
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "step_completed",
+      "step_id": "r1s2",
+      "status": "done",
+      "mode": "direct",
+      "summary": "get_8k_events: 1 sources (direct calls)",
+      "error": null,
+      "reason": null,
+      "duration_ms": 5
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "filings_agent",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "filings_agent",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "join",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "join",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "critic",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "critique",
+      "verdict": "ok",
+      "gaps": [],
+      "replanning": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "critic",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "synthesizer",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "JPMorgan"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "Chase"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "discloses"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "significant"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "legal"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "and"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "regulatory"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "proceedings"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "that"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "could"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "result"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "in"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "penalties"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "[1],"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "and"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "interest"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "rate"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "and"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "credit"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "spread"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "changes"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "that"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "affect"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "earnings"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "[3]."
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "Its"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "latest"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "8-K"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "reported"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "results"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "of"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "operations"
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "token",
+      "text": "[2]."
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "synthesizer",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "finalize",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "final",
+      "answer": "JPMorgan Chase discloses significant legal and regulatory proceedings that could result in penalties [1], and interest rate and credit spread changes that affect earnings [3]. Its latest 8-K reported results of operations [2].\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*\n*Data: SEC filings checked 8 Nov 2026 (latest 8-K filed 8 Nov 2026).*\n*Freshness warning: SEC filings for JPM last checked 8 Nov 2026; very recent events may be missing.*",
+      "citations": [
+       {
+        "n": 1,
+        "source_id": "scripted:rf-JPM-0",
+        "title": "JPM 10-K risk factor: Significant legal and regulatory proceedings (scripted)",
+        "url": "https://example.com/scripted/rf-JPM-0"
+       },
+       {
+        "n": 2,
+        "source_id": "scripted:8k-JPM-0",
+        "title": "JPM 8-K: Results of operations (scripted)",
+        "url": "https://example.com/scripted/8k-JPM-0"
+       },
+       {
+        "n": 3,
+        "source_id": "scripted:rf-JPM-1",
+        "title": "JPM 10-K risk factor: Interest rate and credit spread changes (scripted)",
+        "url": "https://example.com/scripted/rf-JPM-1"
+       }
+      ],
+      "citation_check": {
+       "checked": 3,
+       "supported": 3,
+       "reattached": 0,
+       "dropped": 0,
+       "unverified_claims": 0,
+       "precision": 1.0
+      }
+     }
+    },
+    {
+     "t_ms": 63,
+     "event": {
+      "event": "node",
+      "node": "finalize",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    }
+   ]
+  }
+ ]
+}

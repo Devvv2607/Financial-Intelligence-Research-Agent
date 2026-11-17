@@ -14,6 +14,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.ratelimit import RateLimiter
+from api.replays import load_replays
+from api.replays import router as replays_router
 from api.routes import data, health, threads
 from api.runtime import RuntimeFactory, live_runtime
 from api.scripted import scripted_runtime
@@ -39,6 +41,7 @@ def create_app(
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         app.state.settings = settings
         app.state.rate_limiter = RateLimiter(settings.api_runs_per_minute)
+        app.state.replays = load_replays(settings.replays_dir)
         app.state.engine = db.create_engine(settings.database_url)
         app.state.weaviate = vectorstore.create_client(settings)
         app.state.runtime = None
@@ -64,6 +67,7 @@ def create_app(
     app.include_router(health.router)
     app.include_router(threads.router)
     app.include_router(data.router)
+    app.include_router(replays_router)
     return app
 
 
