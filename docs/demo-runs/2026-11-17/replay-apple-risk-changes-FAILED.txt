@@ -1,0 +1,20 @@
+Recorded 2026-11-17T09:27:31.082826Z from https://api-production-08d8051f.up.railway.app (production, live runtime) with api.replay_recorder
+Question: How did Apple's risk factors change between its last two 10-Ks?
+Counted tokens (from /api/runs): 8574
+Citation check: {'checked': 13, 'supported': 13, 'reattached': 0, 'dropped': 0, 'unverified_claims': 0, 'precision': 1.0}
+
+**Apple’s risk‑factor profile changed as follows between FY 2025 (filed 31 Oct 2025) and FY 2026 (filed 3 Nov 2026):**
+
+- The FY 2026 Form 10‑K added one new risk factor concerning artificial‑intelligence technologies, warning that AI‑related issues may cause reputational, competitive, financial, regulatory, and legal harm [1].  
+- The FY 2026 filing also re‑worded the supply‑chain risk to expand the scope from “components” to “components, compute capacity and storage resources,” highlighting reliance on third‑party cloud providers [2][3].  
+- A direct comparison of the two 10‑Ks shows **1 new risk, 0 removed risks, 20 materially changed risks, and 7 unchanged risks** [4].  
+- Several risk factors remained unchanged, including:  
+  * Design and manufacturing defect risk (identical language in FY 2025 and FY 2026) [5][6];  
+  * Legal proceedings and government‑investigation risk [7][8];  
+  * Cybersecurity and data‑privacy risk [9][10];  
+  * Dependence on third‑party software developers [11][12].  
+
+*No risk factors were removed between the two filings* [4].
+
+---
+*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*

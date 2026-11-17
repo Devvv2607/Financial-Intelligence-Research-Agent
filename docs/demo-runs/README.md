@@ -21,6 +21,12 @@ applied to earlier transcripts, and each fix is logged in `docs/DECISIONS.md`.
 | 2026-11-05 | 2 Apple risk changes | `demo2-apple-risk-changes.txt` | 19,043 | correct; precision 1.0; planner went agentic and the specialist repeated an identical `search_filings` call 3x (vs 7,163 direct yesterday) |
 | 2026-11-05 | 7 "Now do the same for Intel." | `demo7-intel-followup.txt` | 19,139 | follow-up in demo 2's thread; 1 replan; precision 0.727 (2 vague claims marked [unverified]). "New" list wrong: Intel FY2024 lost 7 risk factors in the re-extraction (open regression) |
 | 2026-11-17 | 8 "Did the NVIDIA CEO resign?" | `demo8-nvda-ceo-resign.txt` (+ raw `.sse.txt`) | 6,256 | first run through the API, not the CLI; after the sample refresh (NVDA 8-K Item 5.02, 12 Nov). Correct, cited, states data date. Plan used news only, so the 8-K went uncited; cites an opinion letter and Breitbart; precision 0.571 (1 filler claim [unverified]) |
+| 2026-11-17 | Replay: "Should I buy Tesla?" | `replay-tesla-advice.txt` | 0 | recorded for the demo chips (production API); guardrail; **saved** to `replays/` |
+| 2026-11-17 | Replay: NVIDIA vs AMD risks | `replay-nvda-amd-risks.txt` | 13,627 | precision 1.0 (10/10); news freshness line correct; **saved**. Two "supports competition" news rows are loose (stock move, leadership scandal) |
+| 2026-11-17 | Replay: Apple risk changes | `replay-apple-risk-changes-FAILED.txt` | 8,574 | precision 1.0 but **failed the gate, not saved**: calls defects/legal/cybersecurity risks "unchanged" ("identical language") although its own cited FY2025/FY2026 texts differ; the comparison said 20 materially changed |
+| 2026-11-17 | Replay: healthcare growth + regulatory risks | `replay-healthcare-growth.txt` | 27,346 | precision 1.0 (17/17); growth math checked (UNH +11.8%, JNJ +6.0%); **saved** |
+| 2026-11-17 | Replay: Boeing 8-Ks this year | `replay-boeing-8k-events-HELD.txt` | 7,942 | precision 1.0; freshness line correct; **held, not saved**: the 21 Aug 5.02 row restates the item title ("new directors/officers"); the filing appoints Ryan L. Shedd as SVP and Controller |
+| 2026-11-17 | Replay: "How risky is the bank?" → JPMorgan | `replay-bank-clarification.txt` | 10,261 | clarification flow (BAC/JPM/C/WFC offered); precision 1.0 (13/13); **saved** |
 
 Data caveats:
 - **2026-11-04:** the stored risk factors still had the "Table of Contents" split from

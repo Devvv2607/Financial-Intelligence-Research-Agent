@@ -1,0 +1,29 @@
+Recorded 2026-11-17T09:36:57.319352Z from https://api-production-08d8051f.up.railway.app (production, live runtime) with api.replay_recorder
+Question: How risky is the bank?
+Clarification answer: JPMorgan Chase (JPM)
+Counted tokens (from /api/runs): 10261
+Citation check: {'checked': 13, 'supported': 13, 'reattached': 0, 'dropped': 0, 'unverified_claims': 0, 'precision': 1.0}
+
+**JPMorgan Chase’s disclosed risk profile (FY 2025, ended 31 Dec 2025)**  
+
+The company’s Form 10‑K filed 13 Feb 2026 lists a broad set of risk factors covering legal, regulatory, economic, market‑ and liquidity‑related exposures[1]. The key categories are:
+
+| Risk category | Summary of disclosed exposure |
+|---------------|--------------------------------|
+| **Legal & litigation** | Faces significant legal risks from civil and governmental proceedings, including class actions, derivative actions, investigations and enforcement actions that could lead to adverse judgments or penalties[1]. |
+| **Regulatory investigations** | Governmental investigations could result in substantial penalties and other repercussions, affecting operations and financial condition[2]. |
+| **Compliance & jurisdictional risk** | Higher compliance costs and operating risks in jurisdictions with less predictable legal, regulatory and judicial frameworks[3]. |
+| **Governmental policy risk** | Business could be negatively affected by policies that discourage or penalize certain industries or require specific practices[4]. |
+| **Resolution‑plan risk** | Changes in regulatory evaluation of its resolution plan could increase funding or operational costs, or require restructuring/curtailment of businesses[5]. |
+| **Debt‑/equity‑loss‑absorption risk** | Holders of JPMorgan Chase’s debt and equity could absorb losses if the firm entered a resolution without extraordinary government support[6]. |
+| **Geopolitical risk** | Political and geopolitical developments could create economic uncertainty that harms results of operations[7]. |
+| **Macroeconomic & market risk** | Adverse economic and market conditions (e.g., U.S. and global economic downturns, investor/consumer sentiment) could negatively affect operations and investment/market‑making positions[8]. |
+| **Consumer‑business risk** | Consumer businesses are especially vulnerable to adverse economic conditions and governmental policy impacts on income distribution, unemployment, etc.[9]. |
+| **Wholesale‑business risk** | Unfavorable market and economic conditions could reduce transaction volume and advisory engagements, affecting wholesale revenue[10]. |
+| **Interest‑rate & credit‑spread risk** | Changes in interest rates and credit spreads could adversely affect earnings, liquidity and capital levels; higher rates can also suppress loan originations[11]. |
+| **Market‑valuation risk** | Fluctuations in market prices and valuation of securities, derivatives and other financial instruments could materially affect results[12]. |
+
+**Overall risk picture** – JPMorgan Chase reports exposure to a wide array of legal, regulatory, geopolitical, macro‑economic, interest‑rate and market‑valuation risks, each detailed in its FY 2025 10‑K filing. No additional news coverage was provided in the data checked.
+
+---
+*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*
