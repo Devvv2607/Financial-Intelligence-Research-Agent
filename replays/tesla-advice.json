@@ -1,0 +1,103 @@
+{
+ "slug": "tesla-advice",
+ "question": "Should I buy Tesla?",
+ "recorded_at": "2026-11-17T09:23:35.772447Z",
+ "source": "live",
+ "api_url": "https://api-production-08d8051f.up.railway.app",
+ "tokens": 0,
+ "segments": [
+  {
+   "input": {
+    "kind": "run",
+    "text": "Should I buy Tesla?"
+   },
+   "events": [
+    {
+     "t_ms": 343,
+     "event": {
+      "event": "run_started",
+      "run_id": "11815333-15fb-4541-9b56-edb1c0d9ec1c",
+      "thread_id": "0a965c53-c196-4780-9404-dd6a357301ae",
+      "resumed": false
+     }
+    },
+    {
+     "t_ms": 343,
+     "event": {
+      "event": "node",
+      "node": "start_turn",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 343,
+     "event": {
+      "event": "node",
+      "node": "start_turn",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 343,
+     "event": {
+      "event": "node",
+      "node": "guardrail",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 375,
+     "event": {
+      "event": "node",
+      "node": "guardrail",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 375,
+     "event": {
+      "event": "node",
+      "node": "finalize",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 375,
+     "event": {
+      "event": "final",
+      "answer": "I can't give investment advice, so I won't say whether to buy, sell or hold Tesla, Inc. What I can do is research it from SEC filings and recent news: its main risk factors, how they changed year over year, recent 8-K events, and reported financials. For example, ask: \"What are TSLA's main risk factors and how did its revenue change last year?\"\n\n---\n*Not investment advice.*",
+      "citations": [],
+      "citation_check": null,
+      "renumbered": {}
+     }
+    },
+    {
+     "t_ms": 375,
+     "event": {
+      "event": "node",
+      "node": "finalize",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    }
+   ]
+  }
+ ]
+}
