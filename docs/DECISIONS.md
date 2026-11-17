@@ -1059,3 +1059,50 @@ days earlier. A quiet company is up to date if EDGAR was checked today.
 - **Event answers:** the synthesizer adds 1-3 cited, dated sentences of directly related
   news reporting after the filing sentence (D-048 follow-up).
 - Companies ingested before this change show "never checked" until their next refresh.
+
+## D-050 · Public demo mode: per-visitor threads, replays, daily cap, one live run
+
+**Status:** Implemented (branch `feat/public-demo-mode`). Zero LLM calls during the work.
+
+- **Per-visitor threads.** No login: the browser makes a random UUID once (localStorage)
+  and sends it as `X-Visitor-Id`. `threads.visitor_id` (migration `43d773fb5e4a`, a
+  nullable column plus an index) records the owner. The list shows only the caller's
+  titled threads; get/run/resume/events on someone else's thread answer 404, the same as
+  an unknown id. Threads without an owner (the owner's old local test runs, CLI threads)
+  are hidden from everyone and kept; nothing was deleted. This isn't authentication:
+  the id only has to be unguessable. `GET /api/runs/{id}` is still unscoped (run ids
+  are random UUIDs that only the owner's thread lists).
+- **Recorded runs.** `replays/<slug>.json` holds a real run's SSE events with arrival
+  times, in segments (question; clarification answer). `GET /api/replays` lists them and
+  `GET /api/replays/{slug}?segment=n` plays one with compressed timing (4x, gaps capped
+  at 600 ms, token gaps at 12 ms). The chips play recordings with a "Recorded live run ·
+  <date> · not live" banner (and the same label in the run panel) and a "Run it live"
+  button. Examples without a recording only fill the question box, so a live run is
+  always a deliberate click. `python -m api.replay_recorder` labels a recording by the
+  API's `X-Agent-Runtime` (never by a flag), needs `--yes` to spend tokens, stores the
+  run's token count from `/api/runs`, and refuses failed runs and anything resembling a
+  key or an IP. E2E fixtures are recordings of the scripted runtime, labeled `scripted`.
+- **Daily cap.** 3 live questions per UTC day per visitor id and per client IP; resumes
+  are free. Refusals are 429 with `X-Limit-Reason: daily-cap`, and the UI offers the
+  recordings. Counts are in memory (one instance; a restart resets them). The hard
+  ceilings stay the agent's daily token budget and the gate below.
+- **Client IP behind Railway.** `request.client` is Railway's proxy, so the old
+  per-minute limit was effectively global. Railway documents `X-Real-IP` as the client's
+  remote IP (https://docs.railway.com/networking/public-networking/specs-and-limits,
+  checked 2026-11-17) but not whether a client-sent copy is replaced, and forum answers
+  disagree. So the header is read only when `CLIENT_IP_HEADER` names it, the IP is one
+  of two keys, and the cap is checked before question validation: after the deploy, a
+  capped visitor can send a spoofed `X-Real-IP` with an over-long question and get 429
+  (header not spoofable) or 422 (spoofable), with no tokens spent.
+- **One live run at a time.** Groq's free tier gives 8K tokens/minute, so parallel runs
+  only produce 429s. `RunGate` (FIFO, `LIVE_CONCURRENCY=1`) holds runs and resumes; a
+  waiting run streams `queued {position}` whenever its place changes. A run that would
+  make the queue longer than `LIVE_QUEUE_MAX` (5) is refused with 503 `queue-full`.
+- **Citations 1, 2, 3.** `finalize` renumbers markers by first appearance after the
+  citation check (which works on the synthesizer's numbering). The final event, stored
+  answer and citations use the new numbers; `renumbered` maps draft numbers to them so
+  the UI can compare the streamed draft with the verified answer.
+- **Cold start.** If `/health` doesn't answer in 5 s, an overlay says "Waking the
+  free-tier server, about 30–60s" and retries every 5 s, then refetches failed queries.
+- **ingest-daily freshness.** Confirmed `run --daily` records `sec_check`/`news_check`
+  through `Pipeline._record_check`; tests now cover it.
