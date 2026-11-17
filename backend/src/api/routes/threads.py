@@ -15,7 +15,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.types import Command
 
 from api.events import RunLog
-from api.ratelimit import limit_runs
+from api.ratelimit import DailyCap, cap_reached, client_ip, limit_runs
 from api.runtime import AgentRuntime, RunConflictError, thread_config
 from api.schemas import (
     CreateThread,
@@ -127,16 +127,21 @@ async def get_thread(thread_id: uuid.UUID, request: Request, visitor: VisitorId)
 async def start_run(
     thread_id: uuid.UUID, body: RunRequest, request: Request, visitor: VisitorId
 ) -> EventSourceResponse:
-    """Start a research run; the response is the SSE stream of its typed events."""
+    """Start a research run; the response is the SSE stream of its typed events.
+    Counts toward the caller's daily live-question cap (a resume doesn't)."""
     rt = runtime_of(request)
     settings: Settings = request.app.state.settings
+    await _thread_or_404(rt, thread_id, visitor)
+    cap: DailyCap = request.app.state.daily_cap
+    ip = client_ip(request)
+    if not cap.allowed(visitor, ip):
+        raise cap_reached(cap)
     query = body.query.strip()
     if not query or len(query) > settings.api_max_question_chars:
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_CONTENT,
             f"The question must be 1-{settings.api_max_question_chars} characters.",
         )
-    await _thread_or_404(rt, thread_id, visitor)
     if rt.runs.is_active(thread_id):
         raise HTTPException(
             status.HTTP_409_CONFLICT, "A run is already in progress on this thread."
@@ -148,6 +153,10 @@ async def start_run(
             "This thread is waiting for a clarification; answer it with /resume first.",
         )
     await rt.threads.set_title_if_empty(thread_id, title_from(query))
+    # Check, start and count with no await in between: concurrent requests can't
+    # both take a visitor's last run.
+    if not cap.allowed(visitor, ip):
+        raise cap_reached(cap)
     try:
         log = rt.runs.start(
             thread_id,
@@ -159,6 +168,7 @@ async def start_run(
         raise HTTPException(
             status.HTTP_409_CONFLICT, "A run is already in progress on this thread."
         ) from None
+    cap.take(visitor, ip)
     return _stream(log)
 
 

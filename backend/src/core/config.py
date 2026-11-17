@@ -88,6 +88,12 @@ class Settings(BaseSettings):
     readiness_timeout_s: float = 3.0
     # Public-demo protection: agent runs (and resumes) per client IP per minute.
     api_runs_per_minute: int = 6
+    # Live questions per UTC day, per anonymous visitor id and per client IP (api/ratelimit.py).
+    live_runs_per_visitor_per_day: int = 3
+    live_runs_per_ip_per_day: int = 3
+    # Request header holding the real client IP behind a proxy ("X-Real-IP" on Railway).
+    # Unset: the socket peer address (local, tests). Only set it behind a proxy that sets it.
+    client_ip_header: str | None = None
     api_max_question_chars: int = 1_000
     # "scripted": replay canned scenarios with no LLM or tools (zero-token browser E2E,
     # api/scripted.py). Refused in production.

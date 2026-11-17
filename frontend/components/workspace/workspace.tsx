@@ -10,6 +10,7 @@ import { useRun } from "@/lib/use-run";
 import { AnswerMarkdown } from "./answer-markdown";
 import { AssistantBlock } from "./assistant-block";
 import { Composer, ExampleChips } from "./composer";
+import { LimitNotice } from "./limit-notice";
 import { ReplayBanner, replayLabel } from "./replay-banner";
 import { RunPanel, type Tab } from "./run-panel";
 import { ThreadList } from "./thread-list";
@@ -66,6 +67,9 @@ export function Workspace() {
     setTab("plan");
     void start(q, id);
   };
+  // Demo limits get their own notice, which offers the recorded runs instead.
+  const limited = failure?.reason === "daily-cap" || failure?.reason === "queue-full";
+  const openReplay = (slug: string) => router.push(`/?replay=${encodeURIComponent(slug)}`);
   const cite = (n: number) => {
     setHighlight(n);
     setTab("sources");
@@ -100,7 +104,7 @@ export function Workspace() {
           {empty ? (
             <ExampleChips
               replays={replays.data ?? []}
-              onReplay={(slug) => router.push(`/?replay=${encodeURIComponent(slug)}`)}
+              onReplay={openReplay}
               onPick={(text) => setDraft((d) => ({ text, n: d.n + 1 }))}
             />
           ) : replaySlug ? (
@@ -142,11 +146,14 @@ export function Workspace() {
             </div>
           )}
         </div>
+        {limited && failure && (
+          <LimitNotice message={failure.message} replays={replays.data ?? []} onReplay={openReplay} />
+        )}
         <Composer
           key={draft.n}
           initial={draft.text}
           disabled={busy || run.phase === "paused"}
-          hint={failure ?? (run.phase === "paused" ? "Answer the question above to continue." : null)}
+          hint={failure && !limited ? failure.message : (run.phase === "paused" ? "Answer the question above to continue." : null)}
           onSubmit={ask}
         />
       </main>

@@ -22,6 +22,8 @@ const sleep = (ms: number, signal: AbortSignal) =>
   });
 
 export type Connection = "live" | "reconnecting" | "polling" | "idle";
+/** Why a run was refused before it started; `reason` names the limit, if one did. */
+export type Failure = { message: string; reason: string | null };
 
 /**
  * One thread's run, driven by SSE. A run lives on the server (D-041), so a dropped
@@ -33,7 +35,7 @@ export function useRun() {
   const qc = useQueryClient();
   const [run, setRun] = useState<RunState>(initialRun);
   const [connection, setConnection] = useState<Connection>("idle");
-  const [failure, setFailure] = useState<string | null>(null);
+  const [failure, setFailure] = useState<Failure | null>(null);
   // Index of the recording segment being played (0: the question, 1: the recorded
   // clarification answer); -1 when this is not a replay.
   const [replayStep, setReplayStep] = useState(-1);
@@ -106,7 +108,7 @@ export function useRun() {
         if (ctrl.signal.aborted) return;
         if (err instanceof ApiError) {
           // Refused before it started (409 busy, 422 bad input, 429 rate limit): no run.
-          setFailure(err.message);
+          setFailure({ message: err.message, reason: err.reason });
           setConnection("idle");
           return;
         }

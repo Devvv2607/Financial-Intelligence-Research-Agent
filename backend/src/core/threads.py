@@ -93,9 +93,11 @@ class PostgresThreadStore:
         return Thread.model_validate(dict(row)) if row else None
 
     async def recent(self, limit: int, visitor_id: str) -> list[Thread]:
+        """The visitor's threads that have a question (a thread whose first run was refused,
+        e.g. by the daily cap, stays untitled and isn't worth listing)."""
         stmt = (
             select(threads)
-            .where(threads.c.visitor_id == visitor_id)
+            .where(threads.c.visitor_id == visitor_id, threads.c.title != "")
             .order_by(threads.c.updated_at.desc())
             .limit(limit)
         )
@@ -164,7 +166,9 @@ class MemoryThreadStore:
         return self._threads.get(thread_id) if self._owners.get(thread_id) == visitor_id else None
 
     async def recent(self, limit: int, visitor_id: str) -> list[Thread]:
-        mine = [t for t in self._threads.values() if self._owners.get(t.id) == visitor_id]
+        mine = [
+            t for t in self._threads.values() if self._owners.get(t.id) == visitor_id and t.title
+        ]
         return sorted(mine, key=lambda t: t.updated_at, reverse=True)[:limit]
 
     async def set_title_if_empty(self, thread_id: uuid.UUID, title: str) -> None:

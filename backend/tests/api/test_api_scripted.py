@@ -25,6 +25,8 @@ async def client(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[httpx.AsyncCl
         agent_runtime="scripted",
         groq_api_key=SecretStr("gsk_unused"),
         api_runs_per_minute=100,
+        live_runs_per_visitor_per_day=100,
+        live_runs_per_ip_per_day=100,
     )
     app = create_app(settings)
     transport = httpx.ASGITransport(app=app)

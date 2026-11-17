@@ -29,6 +29,8 @@ def app_settings(replays_dir: Path) -> Settings:
         agent_runtime="scripted",
         groq_api_key=SecretStr("gsk_unused"),
         api_runs_per_minute=100,
+        live_runs_per_visitor_per_day=100,
+        live_runs_per_ip_per_day=100,
         replays_dir=replays_dir,
         replay_delay_factor=0,
     )

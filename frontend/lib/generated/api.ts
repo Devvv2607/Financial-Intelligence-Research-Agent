@@ -231,6 +231,7 @@ export interface paths {
         /**
          * Start Run
          * @description Start a research run; the response is the SSE stream of its typed events.
+         *     Counts toward the caller's daily live-question cap (a resume doesn't).
          */
         post: operations["start_run_api_threads__thread_id__runs_post"];
         delete?: never;

@@ -46,6 +46,8 @@ async def main() -> None:
         agent_runtime="scripted",
         groq_api_key=SecretStr("unused"),
         api_runs_per_minute=1000,
+        live_runs_per_visitor_per_day=1000,
+        live_runs_per_ip_per_day=1000,
     )
     app = create_app(settings)
     transport = httpx.ASGITransport(app=app)

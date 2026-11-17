@@ -11,11 +11,13 @@ export type ReadyResponse = {
   checks: Record<string, CheckResult>;
 };
 
-/** A non-2xx answer from the API, with its `detail` message when it sent one. */
+/** A non-2xx answer from the API, with its `detail` message when it sent one, and which
+ * limit refused it (X-Limit-Reason: "daily-cap", "per-minute", "queue-full"), if any. */
 export class ApiError extends Error {
   constructor(
     readonly status: number,
     message: string,
+    readonly reason: string | null = null,
   ) {
     super(message);
   }
@@ -39,7 +41,7 @@ export async function toError(res: Response): Promise<ApiError> {
   } catch {
     // not JSON: keep the status message
   }
-  return new ApiError(res.status, detail);
+  return new ApiError(res.status, detail, res.headers.get("x-limit-reason"));
 }
 
 export async function fetchReady(signal?: AbortSignal): Promise<ReadyResponse> {

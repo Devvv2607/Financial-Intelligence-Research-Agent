@@ -38,6 +38,8 @@ def settings(**kw: Any) -> Settings:
         "app_env": "test",
         "groq_api_key": SecretStr("gsk_test"),
         "api_runs_per_minute": 100,
+        "live_runs_per_visitor_per_day": 100,
+        "live_runs_per_ip_per_day": 100,
     }
     return Settings(**(base | kw))
 
