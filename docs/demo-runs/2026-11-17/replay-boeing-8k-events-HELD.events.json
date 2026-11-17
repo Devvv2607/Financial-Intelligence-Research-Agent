@@ -1,0 +1,4130 @@
+{
+ "slug": "boeing-8k-events",
+ "question": "What material events has Boeing reported in 8-Ks this year?",
+ "recorded_at": "2026-11-17T09:34:25.219467Z",
+ "source": "live",
+ "api_url": "https://api-production-08d8051f.up.railway.app",
+ "tokens": 7942,
+ "segments": [
+  {
+   "input": {
+    "kind": "run",
+    "text": "What material events has Boeing reported in 8-Ks this year?"
+   },
+   "events": [
+    {
+     "t_ms": 311,
+     "event": {
+      "event": "run_started",
+      "run_id": "f0c40ea4-8419-46df-bc2c-ac0d7e870d11",
+      "thread_id": "3f931c8e-a8ed-42e6-bb34-7950b3ee0ab6",
+      "resumed": false
+     }
+    },
+    {
+     "t_ms": 327,
+     "event": {
+      "event": "node",
+      "node": "start_turn",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 327,
+     "event": {
+      "event": "node",
+      "node": "start_turn",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 327,
+     "event": {
+      "event": "node",
+      "node": "guardrail",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 327,
+     "event": {
+      "event": "node",
+      "node": "guardrail",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 327,
+     "event": {
+      "event": "node",
+      "node": "entity_resolver",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 327,
+     "event": {
+      "event": "node",
+      "node": "entity_resolver",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 327,
+     "event": {
+      "event": "node",
+      "node": "query_analyzer",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 1202,
+     "event": {
+      "event": "node",
+      "node": "query_analyzer",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 1202,
+     "event": {
+      "event": "node",
+      "node": "planner",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3577,
+     "event": {
+      "event": "plan_created",
+      "round": 1,
+      "steps": [
+       {
+        "id": "r1s1",
+        "goal": "Retrieve all material events Boeing reported in 8‑K filings during 2026",
+        "agent": "filings",
+        "entities": [
+         "BA"
+        ],
+        "depends_on": [],
+        "tool_calls": [
+         {
+          "tool": "get_8k_events",
+          "args_json": "{\"ticker\":\"BA\",\"since\":\"2026-01-01\"}"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 3577,
+     "event": {
+      "event": "node",
+      "node": "planner",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3577,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3577,
+     "event": {
+      "event": "step_started",
+      "step_id": "r1s1",
+      "agent": "filings",
+      "mode": "direct"
+     }
+    },
+    {
+     "t_ms": 3577,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3577,
+     "event": {
+      "event": "node",
+      "node": "filings_agent",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3577,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:prepare",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3577,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:prepare",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3577,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:direct",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3577,
+     "event": {
+      "event": "tool_called",
+      "step_id": "r1s1",
+      "tool": "get_8k_events",
+      "args": {
+       "ticker": "BA",
+       "since": "2026-01-01"
+      },
+      "ok": true,
+      "evidence": 7,
+      "reused": false
+     }
+    },
+    {
+     "t_ms": 3593,
+     "event": {
+      "event": "evidence_added",
+      "step_id": "r1s1",
+      "sources": [
+       {
+        "source_id": "8k:0001628280-26-067411",
+        "source_type": "8k",
+        "ticker": "BA",
+        "title": "BA 8-K 2026-10-27: 2.02 Results of operations and financial condition; 9.01 Financial statements and exhibits",
+        "snippet": "Item 2.02 Results of Operations and Financial Condition. On October 27, 2026, The Boeing Company issued a press release reporting its financial results for the third quarter of 2026. A copy of the Company’s press release is furnished as Exhibit 99.1 to this Current Report on Form 8-K. Item 9.01 Financial Statements and Exhibits. (d) Exhibits. Exhibit Number Description Press Release issued by The Boeing Company dated October 27, 2026, reporting Boeing's financial results for the third quarter of 2026, furnished herewith. Cover Page Interactive Data File (embedded within the Inline XBRL…",
+        "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026067411/ba-20261027.htm",
+        "form_type": "8-K",
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-10-27",
+        "score": null
+       },
+       {
+        "source_id": "8k:0001628280-26-059427",
+        "source_type": "8k",
+        "ticker": "BA",
+        "title": "BA 8-K 2026-08-28: 1.01 Entry into a material definitive agreement; 2.03 Creation of a direct financial obligation or off-balance-sheet arrangement; 9.01 Financial statements and exhibits",
+        "snippet": "Item 1.01. Entry into a Material Definitive Agreement. On August 24, 2026, The Boeing Company (“Boeing”) entered into a $3.0 billion, 364-day revolving credit agreement (the “364-Day Credit Agreement”) with Citibank, N.A. (“Citibank”) and JPMorgan Chase Bank, N.A. (“JPMorgan”) as joint lead arrangers and joint book managers, Citibank as administrative agent, JPMorgan as syndication agent, and a syndicate of lenders as defined in the 364-Day Credit Agreement. This facility replaces Boeing’s previous $3.0 billion, 364-day revolving credit agreement, which was scheduled to terminate on August…",
+        "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026059427/ba-20260824.htm",
+        "form_type": "8-K",
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-08-28",
+        "score": null
+       },
+       {
+        "source_id": "8k:0001628280-26-058481",
+        "source_type": "8k",
+        "ticker": "BA",
+        "title": "BA 8-K 2026-08-21: 5.02 Departure or appointment of directors or officers; compensation arrangements",
+        "snippet": "Item 5.02. Departure of Directors or Certain Officers; Election of Directors; Appointment of Certain Officers; Compensatory Arrangements of Certain Officers. On August 19, 2026, the Board of Directors of The Boeing Company (the “Company”) appointed Ryan L. Shedd as the Company’s Senior Vice President and Controller, to be effective as of the first business day following the Company’s filing of its Annual Report on Form 10-K for the year ended December 31, 2026 (the “Effective Date”). In that position, Mr. Shedd will also act as the Company’s principal accounting officer. Mr. Shedd will join…",
+        "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026058481/ba-20260819.htm",
+        "form_type": "8-K",
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-08-21",
+        "score": null
+       },
+       {
+        "source_id": "8k:0001628280-26-049929",
+        "source_type": "8k",
+        "ticker": "BA",
+        "title": "BA 8-K 2026-07-28: 2.02 Results of operations and financial condition; 9.01 Financial statements and exhibits",
+        "snippet": "Item 2.02 Results of Operations and Financial Condition. On July 28, 2026, The Boeing Company issued a press release reporting its financial results for the second quarter of 2026. A copy of the Company’s press release is furnished as Exhibit 99.1 to this Current Report on Form 8-K. Item 9.01 Financial Statements and Exhibits. (d) Exhibits. Exhibit Number Description Press Release issued by The Boeing Company dated July 28, 2026, reporting Boeing's financial results for the second quarter of 2026, furnished herewith. Cover Page Interactive Data File (embedded within the Inline XBRL document)…",
+        "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026049929/ba-20260728.htm",
+        "form_type": "8-K",
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-07-28",
+        "score": null
+       },
+       {
+        "source_id": "8k:0001628280-26-026391",
+        "source_type": "8k",
+        "ticker": "BA",
+        "title": "BA 8-K 2026-04-22: 2.02 Results of operations and financial condition; 9.01 Financial statements and exhibits",
+        "snippet": "Item 2.02 Results of Operations and Financial Condition. On April 22, 2026, The Boeing Company issued a press release reporting its financial results for the first quarter of 2026. A copy of the Company’s press release is furnished as Exhibit 99.1 to this Current Report on Form 8-K. Item 9.01 Financial Statements and Exhibits. (d) Exhibits. Exhibit Number Description Press Release issued by The Boeing Company dated April 22, 2026, reporting Boeing's financial results for the first quarter of 2026, furnished herewith. Cover Page Interactive Data File (embedded within the Inline XBRL document)…",
+        "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026026391/ba-20260422.htm",
+        "form_type": "8-K",
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-04-22",
+        "score": null
+       },
+       {
+        "source_id": "8k:0001628280-26-025684",
+        "source_type": "8k",
+        "ticker": "BA",
+        "title": "BA 8-K 2026-04-17: 5.07 Submission of matters to a vote of security holders",
+        "snippet": "Item 5.07. Submission of Matters to a Vote of Security Holders. The Boeing Company held its Annual Meeting of Shareholders on April 17, 2026. Set forth below are the final voting results for each of the proposals submitted to a vote of the shareholders. 1. Election of Directors NAME FOR AGAINST ABSTAIN BROKER NON-VOTES Robert A. Bradway Mortimer \"Tim\" J. Buckley Lynne M. Doughtie David L. Gitlin Lynn J. Good Stayce D. Harris Akhil Johri David L. Joyce Steven M. Mollenkopf Robert Kelly Ortberg John M. Richardson Bradley D. Tilden 2. Approve, on an Advisory Basis, Named Executive Officer…",
+        "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026025684/ba-20260417.htm",
+        "form_type": "8-K",
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-04-17",
+        "score": null
+       },
+       {
+        "source_id": "8k:0001628280-26-003518",
+        "source_type": "8k",
+        "ticker": "BA",
+        "title": "BA 8-K 2026-01-27: 2.02 Results of operations and financial condition; 9.01 Financial statements and exhibits",
+        "snippet": "Item 2.02 Results of Operations and Financial Condition. On January 27, 2026, The Boeing Company issued a press release reporting its financial results for the fourth quarter of 2025. A copy of the Company’s press release is furnished as Exhibit 99.1 to this Current Report on Form 8-K. Item 9.01 Financial Statements and Exhibits. (d) Exhibits. Exhibit Number Description Press Release issued by The Boeing Company dated January 27, 2026, reporting Boeing's financial results for the fourth quarter of 2025, furnished herewith. Cover Page Interactive Data File (embedded within the Inline XBRL…",
+        "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026003518/ba-20260127.htm",
+        "form_type": "8-K",
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-01-27",
+        "score": null
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 3593,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:direct",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3593,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3593,
+     "event": {
+      "event": "step_completed",
+      "step_id": "r1s1",
+      "status": "done",
+      "mode": "direct",
+      "summary": "get_8k_events: 7 sources (direct calls)",
+      "error": null,
+      "reason": null,
+      "duration_ms": 17
+     }
+    },
+    {
+     "t_ms": 3593,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3609,
+     "event": {
+      "event": "node",
+      "node": "filings_agent",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3609,
+     "event": {
+      "event": "node",
+      "node": "join",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3609,
+     "event": {
+      "event": "node",
+      "node": "join",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3609,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3609,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3609,
+     "event": {
+      "event": "node",
+      "node": "critic",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5156,
+     "event": {
+      "event": "critique",
+      "verdict": "ok",
+      "gaps": [],
+      "replanning": false
+     }
+    },
+    {
+     "t_ms": 5156,
+     "event": {
+      "event": "node",
+      "node": "critic",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5156,
+     "event": {
+      "event": "node",
+      "node": "synthesizer",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 6093,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 6093,
+     "event": {
+      "event": "token",
+      "text": "B"
+     }
+    },
+    {
+     "t_ms": 6093,
+     "event": {
+      "event": "token",
+      "text": "oe"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "ing"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "’s"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " material"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " events"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " reported"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " Form"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "8"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "K"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " filings"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " during"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "**\n\n"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " Filing"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " date"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " Items"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " disclosed"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " Brief"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " description"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " material"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " event"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "-------------"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "----------------"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "--------------------------------"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "----------"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "|\n"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 6109,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6125,
+     "event": {
+      "event": "token",
+      "text": "27"
+     }
+    },
+    {
+     "t_ms": 6125,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6125,
+     "event": {
+      "event": "token",
+      "text": "Oct"
+     }
+    },
+    {
+     "t_ms": 6125,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6125,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 6125,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 6125,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 6125,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6125,
+     "event": {
+      "event": "token",
+      "text": "2"
+     }
+    },
+    {
+     "t_ms": 6139,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6139,
+     "event": {
+      "event": "token",
+      "text": "02"
+     }
+    },
+    {
+     "t_ms": 6139,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 6139,
+     "event": {
+      "event": "token",
+      "text": " Results"
+     }
+    },
+    {
+     "t_ms": 6139,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 6139,
+     "event": {
+      "event": "token",
+      "text": " operations"
+     }
+    },
+    {
+     "t_ms": 6139,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 6156,
+     "event": {
+      "event": "token",
+      "text": " financial"
+     }
+    },
+    {
+     "t_ms": 6156,
+     "event": {
+      "event": "token",
+      "text": " condition"
+     }
+    },
+    {
+     "t_ms": 6156,
+     "event": {
+      "event": "token",
+      "text": ";"
+     }
+    },
+    {
+     "t_ms": 6156,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6171,
+     "event": {
+      "event": "token",
+      "text": "9"
+     }
+    },
+    {
+     "t_ms": 6171,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6171,
+     "event": {
+      "event": "token",
+      "text": "01"
+     }
+    },
+    {
+     "t_ms": 6171,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 6171,
+     "event": {
+      "event": "token",
+      "text": " Financial"
+     }
+    },
+    {
+     "t_ms": 6171,
+     "event": {
+      "event": "token",
+      "text": " statements"
+     }
+    },
+    {
+     "t_ms": 6171,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 6171,
+     "event": {
+      "event": "token",
+      "text": " exhibits"
+     }
+    },
+    {
+     "t_ms": 6171,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 6171,
+     "event": {
+      "event": "token",
+      "text": " The"
+     }
+    },
+    {
+     "t_ms": 6171,
+     "event": {
+      "event": "token",
+      "text": " company"
+     }
+    },
+    {
+     "t_ms": 6171,
+     "event": {
+      "event": "token",
+      "text": " issued"
+     }
+    },
+    {
+     "t_ms": 6171,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 6186,
+     "event": {
+      "event": "token",
+      "text": " press"
+     }
+    },
+    {
+     "t_ms": 6186,
+     "event": {
+      "event": "token",
+      "text": " release"
+     }
+    },
+    {
+     "t_ms": 6186,
+     "event": {
+      "event": "token",
+      "text": " reporting"
+     }
+    },
+    {
+     "t_ms": 6186,
+     "event": {
+      "event": "token",
+      "text": " its"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " financial"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " results"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " for"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " third"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " quarter"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " furnished"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " release"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " as"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " Exhibit"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "99"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "1"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "["
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "1"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "]"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "28"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "Aug"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "1"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "01"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " Entry"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " into"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " material"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " definitive"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " agreement"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": ";"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "2"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "03"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " Creation"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " direct"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " financial"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " obligation"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " or"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " off"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "balance"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "sheet"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " arrangement"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": ";"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "9"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "01"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " Financial"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " statements"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " exhibits"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " Boeing"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " entered"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " into"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": " $"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "3"
+     }
+    },
+    {
+     "t_ms": 6359,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6375,
+     "event": {
+      "event": "token",
+      "text": "0"
+     }
+    },
+    {
+     "t_ms": 6375,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6375,
+     "event": {
+      "event": "token",
+      "text": "b"
+     }
+    },
+    {
+     "t_ms": 6375,
+     "event": {
+      "event": "token",
+      "text": "illion"
+     }
+    },
+    {
+     "t_ms": 6375,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 6375,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6375,
+     "event": {
+      "event": "token",
+      "text": "364"
+     }
+    },
+    {
+     "t_ms": 6375,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 6375,
+     "event": {
+      "event": "token",
+      "text": "day"
+     }
+    },
+    {
+     "t_ms": 6375,
+     "event": {
+      "event": "token",
+      "text": " revolving"
+     }
+    },
+    {
+     "t_ms": 6375,
+     "event": {
+      "event": "token",
+      "text": " credit"
+     }
+    },
+    {
+     "t_ms": 6389,
+     "event": {
+      "event": "token",
+      "text": " agreement"
+     }
+    },
+    {
+     "t_ms": 6389,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 6389,
+     "event": {
+      "event": "token",
+      "text": " disclosed"
+     }
+    },
+    {
+     "t_ms": 6389,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 6389,
+     "event": {
+      "event": "token",
+      "text": " related"
+     }
+    },
+    {
+     "t_ms": 6389,
+     "event": {
+      "event": "token",
+      "text": " obligation"
+     }
+    },
+    {
+     "t_ms": 6389,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 6406,
+     "event": {
+      "event": "token",
+      "text": " accompanying"
+     }
+    },
+    {
+     "t_ms": 6406,
+     "event": {
+      "event": "token",
+      "text": " exhibits"
+     }
+    },
+    {
+     "t_ms": 6406,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6406,
+     "event": {
+      "event": "token",
+      "text": "["
+     }
+    },
+    {
+     "t_ms": 6406,
+     "event": {
+      "event": "token",
+      "text": "2"
+     }
+    },
+    {
+     "t_ms": 6406,
+     "event": {
+      "event": "token",
+      "text": "]"
+     }
+    },
+    {
+     "t_ms": 6406,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 6421,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 6421,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6421,
+     "event": {
+      "event": "token",
+      "text": "21"
+     }
+    },
+    {
+     "t_ms": 6421,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6421,
+     "event": {
+      "event": "token",
+      "text": "Aug"
+     }
+    },
+    {
+     "t_ms": 6421,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6421,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 6436,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 6436,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 6436,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6436,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 6436,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6436,
+     "event": {
+      "event": "token",
+      "text": "02"
+     }
+    },
+    {
+     "t_ms": 6436,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 6436,
+     "event": {
+      "event": "token",
+      "text": " Departure"
+     }
+    },
+    {
+     "t_ms": 6452,
+     "event": {
+      "event": "token",
+      "text": " or"
+     }
+    },
+    {
+     "t_ms": 6452,
+     "event": {
+      "event": "token",
+      "text": " appointment"
+     }
+    },
+    {
+     "t_ms": 6452,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 6452,
+     "event": {
+      "event": "token",
+      "text": " directors"
+     }
+    },
+    {
+     "t_ms": 6452,
+     "event": {
+      "event": "token",
+      "text": " or"
+     }
+    },
+    {
+     "t_ms": 6452,
+     "event": {
+      "event": "token",
+      "text": " officers"
+     }
+    },
+    {
+     "t_ms": 6452,
+     "event": {
+      "event": "token",
+      "text": ";"
+     }
+    },
+    {
+     "t_ms": 6452,
+     "event": {
+      "event": "token",
+      "text": " compensation"
+     }
+    },
+    {
+     "t_ms": 6468,
+     "event": {
+      "event": "token",
+      "text": " arrangements"
+     }
+    },
+    {
+     "t_ms": 6468,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 6468,
+     "event": {
+      "event": "token",
+      "text": " The"
+     }
+    },
+    {
+     "t_ms": 6468,
+     "event": {
+      "event": "token",
+      "text": " Board"
+     }
+    },
+    {
+     "t_ms": 6468,
+     "event": {
+      "event": "token",
+      "text": " reported"
+     }
+    },
+    {
+     "t_ms": 6468,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 6468,
+     "event": {
+      "event": "token",
+      "text": " departure"
+     }
+    },
+    {
+     "t_ms": 6484,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 6484,
+     "event": {
+      "event": "token",
+      "text": " certain"
+     }
+    },
+    {
+     "t_ms": 6484,
+     "event": {
+      "event": "token",
+      "text": " officers"
+     }
+    },
+    {
+     "t_ms": 6484,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 6484,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 6484,
+     "event": {
+      "event": "token",
+      "text": " appointment"
+     }
+    },
+    {
+     "t_ms": 6484,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 6500,
+     "event": {
+      "event": "token",
+      "text": " new"
+     }
+    },
+    {
+     "t_ms": 6500,
+     "event": {
+      "event": "token",
+      "text": " directors"
+     }
+    },
+    {
+     "t_ms": 6500,
+     "event": {
+      "event": "token",
+      "text": "/off"
+     }
+    },
+    {
+     "t_ms": 6500,
+     "event": {
+      "event": "token",
+      "text": "icers"
+     }
+    },
+    {
+     "t_ms": 6500,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 6500,
+     "event": {
+      "event": "token",
+      "text": " together"
+     }
+    },
+    {
+     "t_ms": 6500,
+     "event": {
+      "event": "token",
+      "text": " with"
+     }
+    },
+    {
+     "t_ms": 6500,
+     "event": {
+      "event": "token",
+      "text": " related"
+     }
+    },
+    {
+     "t_ms": 6514,
+     "event": {
+      "event": "token",
+      "text": " compensation"
+     }
+    },
+    {
+     "t_ms": 6514,
+     "event": {
+      "event": "token",
+      "text": " arrangements"
+     }
+    },
+    {
+     "t_ms": 6514,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6514,
+     "event": {
+      "event": "token",
+      "text": "["
+     }
+    },
+    {
+     "t_ms": 6514,
+     "event": {
+      "event": "token",
+      "text": "3"
+     }
+    },
+    {
+     "t_ms": 6514,
+     "event": {
+      "event": "token",
+      "text": "]"
+     }
+    },
+    {
+     "t_ms": 6514,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 6514,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 6531,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6531,
+     "event": {
+      "event": "token",
+      "text": "28"
+     }
+    },
+    {
+     "t_ms": 6531,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6531,
+     "event": {
+      "event": "token",
+      "text": "Jul"
+     }
+    },
+    {
+     "t_ms": 6531,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6546,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 6546,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 6546,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 6546,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6546,
+     "event": {
+      "event": "token",
+      "text": "2"
+     }
+    },
+    {
+     "t_ms": 6546,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6546,
+     "event": {
+      "event": "token",
+      "text": "02"
+     }
+    },
+    {
+     "t_ms": 6546,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 6561,
+     "event": {
+      "event": "token",
+      "text": " Results"
+     }
+    },
+    {
+     "t_ms": 6561,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 6561,
+     "event": {
+      "event": "token",
+      "text": " operations"
+     }
+    },
+    {
+     "t_ms": 6561,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 6561,
+     "event": {
+      "event": "token",
+      "text": " financial"
+     }
+    },
+    {
+     "t_ms": 6577,
+     "event": {
+      "event": "token",
+      "text": " condition"
+     }
+    },
+    {
+     "t_ms": 6577,
+     "event": {
+      "event": "token",
+      "text": ";"
+     }
+    },
+    {
+     "t_ms": 6577,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6577,
+     "event": {
+      "event": "token",
+      "text": "9"
+     }
+    },
+    {
+     "t_ms": 6577,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6577,
+     "event": {
+      "event": "token",
+      "text": "01"
+     }
+    },
+    {
+     "t_ms": 6577,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 6577,
+     "event": {
+      "event": "token",
+      "text": " Financial"
+     }
+    },
+    {
+     "t_ms": 6577,
+     "event": {
+      "event": "token",
+      "text": " statements"
+     }
+    },
+    {
+     "t_ms": 6577,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 6577,
+     "event": {
+      "event": "token",
+      "text": " exhibits"
+     }
+    },
+    {
+     "t_ms": 6593,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 6593,
+     "event": {
+      "event": "token",
+      "text": " The"
+     }
+    },
+    {
+     "t_ms": 6593,
+     "event": {
+      "event": "token",
+      "text": " company"
+     }
+    },
+    {
+     "t_ms": 6593,
+     "event": {
+      "event": "token",
+      "text": " issued"
+     }
+    },
+    {
+     "t_ms": 6593,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 6593,
+     "event": {
+      "event": "token",
+      "text": " press"
+     }
+    },
+    {
+     "t_ms": 6593,
+     "event": {
+      "event": "token",
+      "text": " release"
+     }
+    },
+    {
+     "t_ms": 6609,
+     "event": {
+      "event": "token",
+      "text": " reporting"
+     }
+    },
+    {
+     "t_ms": 6609,
+     "event": {
+      "event": "token",
+      "text": " its"
+     }
+    },
+    {
+     "t_ms": 6609,
+     "event": {
+      "event": "token",
+      "text": " financial"
+     }
+    },
+    {
+     "t_ms": 6609,
+     "event": {
+      "event": "token",
+      "text": " results"
+     }
+    },
+    {
+     "t_ms": 6609,
+     "event": {
+      "event": "token",
+      "text": " for"
+     }
+    },
+    {
+     "t_ms": 6609,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 6609,
+     "event": {
+      "event": "token",
+      "text": " second"
+     }
+    },
+    {
+     "t_ms": 6609,
+     "event": {
+      "event": "token",
+      "text": " quarter"
+     }
+    },
+    {
+     "t_ms": 6625,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 6625,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6625,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 6625,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 6625,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 6625,
+     "event": {
+      "event": "token",
+      "text": " furnished"
+     }
+    },
+    {
+     "t_ms": 6625,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 6639,
+     "event": {
+      "event": "token",
+      "text": " release"
+     }
+    },
+    {
+     "t_ms": 6639,
+     "event": {
+      "event": "token",
+      "text": " as"
+     }
+    },
+    {
+     "t_ms": 6639,
+     "event": {
+      "event": "token",
+      "text": " Exhibit"
+     }
+    },
+    {
+     "t_ms": 6639,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6639,
+     "event": {
+      "event": "token",
+      "text": "99"
+     }
+    },
+    {
+     "t_ms": 6639,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6639,
+     "event": {
+      "event": "token",
+      "text": "1"
+     }
+    },
+    {
+     "t_ms": 6639,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6656,
+     "event": {
+      "event": "token",
+      "text": "["
+     }
+    },
+    {
+     "t_ms": 6656,
+     "event": {
+      "event": "token",
+      "text": "4"
+     }
+    },
+    {
+     "t_ms": 6656,
+     "event": {
+      "event": "token",
+      "text": "]"
+     }
+    },
+    {
+     "t_ms": 6656,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 6656,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 6656,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6656,
+     "event": {
+      "event": "token",
+      "text": "22"
+     }
+    },
+    {
+     "t_ms": 6656,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6671,
+     "event": {
+      "event": "token",
+      "text": "Apr"
+     }
+    },
+    {
+     "t_ms": 6671,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6671,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 6671,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 6671,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 6671,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6671,
+     "event": {
+      "event": "token",
+      "text": "2"
+     }
+    },
+    {
+     "t_ms": 6686,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6686,
+     "event": {
+      "event": "token",
+      "text": "02"
+     }
+    },
+    {
+     "t_ms": 6686,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 6686,
+     "event": {
+      "event": "token",
+      "text": " Results"
+     }
+    },
+    {
+     "t_ms": 6686,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 6686,
+     "event": {
+      "event": "token",
+      "text": " operations"
+     }
+    },
+    {
+     "t_ms": 6686,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 6686,
+     "event": {
+      "event": "token",
+      "text": " financial"
+     }
+    },
+    {
+     "t_ms": 6702,
+     "event": {
+      "event": "token",
+      "text": " condition"
+     }
+    },
+    {
+     "t_ms": 6702,
+     "event": {
+      "event": "token",
+      "text": ";"
+     }
+    },
+    {
+     "t_ms": 6702,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6702,
+     "event": {
+      "event": "token",
+      "text": "9"
+     }
+    },
+    {
+     "t_ms": 6702,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6702,
+     "event": {
+      "event": "token",
+      "text": "01"
+     }
+    },
+    {
+     "t_ms": 6702,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 6718,
+     "event": {
+      "event": "token",
+      "text": " Financial"
+     }
+    },
+    {
+     "t_ms": 6718,
+     "event": {
+      "event": "token",
+      "text": " statements"
+     }
+    },
+    {
+     "t_ms": 6718,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 6718,
+     "event": {
+      "event": "token",
+      "text": " exhibits"
+     }
+    },
+    {
+     "t_ms": 6718,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 6734,
+     "event": {
+      "event": "token",
+      "text": " The"
+     }
+    },
+    {
+     "t_ms": 6734,
+     "event": {
+      "event": "token",
+      "text": " company"
+     }
+    },
+    {
+     "t_ms": 6734,
+     "event": {
+      "event": "token",
+      "text": " issued"
+     }
+    },
+    {
+     "t_ms": 6734,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 6734,
+     "event": {
+      "event": "token",
+      "text": " press"
+     }
+    },
+    {
+     "t_ms": 6734,
+     "event": {
+      "event": "token",
+      "text": " release"
+     }
+    },
+    {
+     "t_ms": 6734,
+     "event": {
+      "event": "token",
+      "text": " reporting"
+     }
+    },
+    {
+     "t_ms": 6734,
+     "event": {
+      "event": "token",
+      "text": " its"
+     }
+    },
+    {
+     "t_ms": 6734,
+     "event": {
+      "event": "token",
+      "text": " financial"
+     }
+    },
+    {
+     "t_ms": 6750,
+     "event": {
+      "event": "token",
+      "text": " results"
+     }
+    },
+    {
+     "t_ms": 6750,
+     "event": {
+      "event": "token",
+      "text": " for"
+     }
+    },
+    {
+     "t_ms": 6750,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 6750,
+     "event": {
+      "event": "token",
+      "text": " first"
+     }
+    },
+    {
+     "t_ms": 6750,
+     "event": {
+      "event": "token",
+      "text": " quarter"
+     }
+    },
+    {
+     "t_ms": 6750,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 6750,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6750,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 6750,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 6764,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 6764,
+     "event": {
+      "event": "token",
+      "text": " furnished"
+     }
+    },
+    {
+     "t_ms": 6764,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 6764,
+     "event": {
+      "event": "token",
+      "text": " release"
+     }
+    },
+    {
+     "t_ms": 6764,
+     "event": {
+      "event": "token",
+      "text": " as"
+     }
+    },
+    {
+     "t_ms": 6764,
+     "event": {
+      "event": "token",
+      "text": " Exhibit"
+     }
+    },
+    {
+     "t_ms": 6764,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6781,
+     "event": {
+      "event": "token",
+      "text": "99"
+     }
+    },
+    {
+     "t_ms": 6781,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6781,
+     "event": {
+      "event": "token",
+      "text": "1"
+     }
+    },
+    {
+     "t_ms": 6781,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6781,
+     "event": {
+      "event": "token",
+      "text": "["
+     }
+    },
+    {
+     "t_ms": 6781,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 6781,
+     "event": {
+      "event": "token",
+      "text": "]"
+     }
+    },
+    {
+     "t_ms": 6796,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 6796,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 6796,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6796,
+     "event": {
+      "event": "token",
+      "text": "17"
+     }
+    },
+    {
+     "t_ms": 6796,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6796,
+     "event": {
+      "event": "token",
+      "text": "Apr"
+     }
+    },
+    {
+     "t_ms": 6796,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6796,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 6811,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 6811,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 6811,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6811,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 6811,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6811,
+     "event": {
+      "event": "token",
+      "text": "07"
+     }
+    },
+    {
+     "t_ms": 6811,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 6827,
+     "event": {
+      "event": "token",
+      "text": " Submission"
+     }
+    },
+    {
+     "t_ms": 6827,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 6827,
+     "event": {
+      "event": "token",
+      "text": " matters"
+     }
+    },
+    {
+     "t_ms": 6827,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 6827,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 6827,
+     "event": {
+      "event": "token",
+      "text": " vote"
+     }
+    },
+    {
+     "t_ms": 6827,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 6827,
+     "event": {
+      "event": "token",
+      "text": " security"
+     }
+    },
+    {
+     "t_ms": 6843,
+     "event": {
+      "event": "token",
+      "text": " holders"
+     }
+    },
+    {
+     "t_ms": 6843,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 6843,
+     "event": {
+      "event": "token",
+      "text": " Boeing"
+     }
+    },
+    {
+     "t_ms": 6843,
+     "event": {
+      "event": "token",
+      "text": " held"
+     }
+    },
+    {
+     "t_ms": 6843,
+     "event": {
+      "event": "token",
+      "text": " its"
+     }
+    },
+    {
+     "t_ms": 6843,
+     "event": {
+      "event": "token",
+      "text": " Annual"
+     }
+    },
+    {
+     "t_ms": 6843,
+     "event": {
+      "event": "token",
+      "text": " Meeting"
+     }
+    },
+    {
+     "t_ms": 6859,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 6859,
+     "event": {
+      "event": "token",
+      "text": " Share"
+     }
+    },
+    {
+     "t_ms": 6859,
+     "event": {
+      "event": "token",
+      "text": "holders"
+     }
+    },
+    {
+     "t_ms": 6859,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 6859,
+     "event": {
+      "event": "token",
+      "text": " disclosed"
+     }
+    },
+    {
+     "t_ms": 6859,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 6859,
+     "event": {
+      "event": "token",
+      "text": " final"
+     }
+    },
+    {
+     "t_ms": 6859,
+     "event": {
+      "event": "token",
+      "text": " voting"
+     }
+    },
+    {
+     "t_ms": 6875,
+     "event": {
+      "event": "token",
+      "text": " results"
+     }
+    },
+    {
+     "t_ms": 6875,
+     "event": {
+      "event": "token",
+      "text": " for"
+     }
+    },
+    {
+     "t_ms": 6875,
+     "event": {
+      "event": "token",
+      "text": " each"
+     }
+    },
+    {
+     "t_ms": 6875,
+     "event": {
+      "event": "token",
+      "text": " matter"
+     }
+    },
+    {
+     "t_ms": 6875,
+     "event": {
+      "event": "token",
+      "text": " submitted"
+     }
+    },
+    {
+     "t_ms": 6875,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 6875,
+     "event": {
+      "event": "token",
+      "text": " shareholders"
+     }
+    },
+    {
+     "t_ms": 6889,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6889,
+     "event": {
+      "event": "token",
+      "text": "["
+     }
+    },
+    {
+     "t_ms": 6889,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 6889,
+     "event": {
+      "event": "token",
+      "text": "]"
+     }
+    },
+    {
+     "t_ms": 6889,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 6889,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 6889,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6906,
+     "event": {
+      "event": "token",
+      "text": "27"
+     }
+    },
+    {
+     "t_ms": 6906,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6906,
+     "event": {
+      "event": "token",
+      "text": "Jan"
+     }
+    },
+    {
+     "t_ms": 6906,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6906,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 6906,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 6906,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 6906,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6921,
+     "event": {
+      "event": "token",
+      "text": "2"
+     }
+    },
+    {
+     "t_ms": 6921,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6921,
+     "event": {
+      "event": "token",
+      "text": "02"
+     }
+    },
+    {
+     "t_ms": 6921,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 6921,
+     "event": {
+      "event": "token",
+      "text": " Results"
+     }
+    },
+    {
+     "t_ms": 6921,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 6921,
+     "event": {
+      "event": "token",
+      "text": " operations"
+     }
+    },
+    {
+     "t_ms": 6921,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 6936,
+     "event": {
+      "event": "token",
+      "text": " financial"
+     }
+    },
+    {
+     "t_ms": 6936,
+     "event": {
+      "event": "token",
+      "text": " condition"
+     }
+    },
+    {
+     "t_ms": 6936,
+     "event": {
+      "event": "token",
+      "text": ";"
+     }
+    },
+    {
+     "t_ms": 6936,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6936,
+     "event": {
+      "event": "token",
+      "text": "9"
+     }
+    },
+    {
+     "t_ms": 6936,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 6936,
+     "event": {
+      "event": "token",
+      "text": "01"
+     }
+    },
+    {
+     "t_ms": 6936,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 6952,
+     "event": {
+      "event": "token",
+      "text": " Financial"
+     }
+    },
+    {
+     "t_ms": 6952,
+     "event": {
+      "event": "token",
+      "text": " statements"
+     }
+    },
+    {
+     "t_ms": 6952,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 6952,
+     "event": {
+      "event": "token",
+      "text": " exhibits"
+     }
+    },
+    {
+     "t_ms": 6952,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 6952,
+     "event": {
+      "event": "token",
+      "text": " The"
+     }
+    },
+    {
+     "t_ms": 6952,
+     "event": {
+      "event": "token",
+      "text": " company"
+     }
+    },
+    {
+     "t_ms": 6968,
+     "event": {
+      "event": "token",
+      "text": " issued"
+     }
+    },
+    {
+     "t_ms": 6968,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 6968,
+     "event": {
+      "event": "token",
+      "text": " press"
+     }
+    },
+    {
+     "t_ms": 6968,
+     "event": {
+      "event": "token",
+      "text": " release"
+     }
+    },
+    {
+     "t_ms": 6968,
+     "event": {
+      "event": "token",
+      "text": " reporting"
+     }
+    },
+    {
+     "t_ms": 6968,
+     "event": {
+      "event": "token",
+      "text": " its"
+     }
+    },
+    {
+     "t_ms": 6968,
+     "event": {
+      "event": "token",
+      "text": " financial"
+     }
+    },
+    {
+     "t_ms": 6968,
+     "event": {
+      "event": "token",
+      "text": " results"
+     }
+    },
+    {
+     "t_ms": 6984,
+     "event": {
+      "event": "token",
+      "text": " for"
+     }
+    },
+    {
+     "t_ms": 6984,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 6984,
+     "event": {
+      "event": "token",
+      "text": " fourth"
+     }
+    },
+    {
+     "t_ms": 6984,
+     "event": {
+      "event": "token",
+      "text": " quarter"
+     }
+    },
+    {
+     "t_ms": 6984,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 6984,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 6984,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 7000,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 7000,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 7000,
+     "event": {
+      "event": "token",
+      "text": " furnished"
+     }
+    },
+    {
+     "t_ms": 7000,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 7000,
+     "event": {
+      "event": "token",
+      "text": " release"
+     }
+    },
+    {
+     "t_ms": 7000,
+     "event": {
+      "event": "token",
+      "text": " as"
+     }
+    },
+    {
+     "t_ms": 7000,
+     "event": {
+      "event": "token",
+      "text": " Exhibit"
+     }
+    },
+    {
+     "t_ms": 7014,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 7014,
+     "event": {
+      "event": "token",
+      "text": "99"
+     }
+    },
+    {
+     "t_ms": 7014,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 7014,
+     "event": {
+      "event": "token",
+      "text": "1"
+     }
+    },
+    {
+     "t_ms": 7014,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 7014,
+     "event": {
+      "event": "token",
+      "text": "["
+     }
+    },
+    {
+     "t_ms": 7014,
+     "event": {
+      "event": "token",
+      "text": "7"
+     }
+    },
+    {
+     "t_ms": 7014,
+     "event": {
+      "event": "token",
+      "text": "]"
+     }
+    },
+    {
+     "t_ms": 7031,
+     "event": {
+      "event": "token",
+      "text": " |\n\n"
+     }
+    },
+    {
+     "t_ms": 7031,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 7031,
+     "event": {
+      "event": "token",
+      "text": "Limits"
+     }
+    },
+    {
+     "t_ms": 7031,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 7031,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 7031,
+     "event": {
+      "event": "token",
+      "text": " No"
+     }
+    },
+    {
+     "t_ms": 7046,
+     "event": {
+      "event": "token",
+      "text": " additional"
+     }
+    },
+    {
+     "t_ms": 7046,
+     "event": {
+      "event": "token",
+      "text": " material"
+     }
+    },
+    {
+     "t_ms": 7046,
+     "event": {
+      "event": "token",
+      "text": " events"
+     }
+    },
+    {
+     "t_ms": 7046,
+     "event": {
+      "event": "token",
+      "text": " were"
+     }
+    },
+    {
+     "t_ms": 7046,
+     "event": {
+      "event": "token",
+      "text": " found"
+     }
+    },
+    {
+     "t_ms": 7046,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 7046,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 7046,
+     "event": {
+      "event": "token",
+      "text": " SEC"
+     }
+    },
+    {
+     "t_ms": 7046,
+     "event": {
+      "event": "token",
+      "text": " filings"
+     }
+    },
+    {
+     "t_ms": 7061,
+     "event": {
+      "event": "token",
+      "text": " checked"
+     }
+    },
+    {
+     "t_ms": 7061,
+     "event": {
+      "event": "token",
+      "text": " through"
+     }
+    },
+    {
+     "t_ms": 7061,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 7061,
+     "event": {
+      "event": "token",
+      "text": "16"
+     }
+    },
+    {
+     "t_ms": 7061,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 7061,
+     "event": {
+      "event": "token",
+      "text": "Nov"
+     }
+    },
+    {
+     "t_ms": 7061,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 7077,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 7077,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 7077,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 7093,
+     "event": {
+      "event": "node",
+      "node": "synthesizer",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 7093,
+     "event": {
+      "event": "node",
+      "node": "finalize",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 19484,
+     "event": {
+      "event": "final",
+      "answer": "**Boeing’s material events reported in Form 8‑K filings during 2026**\n\n| Filing date | Items disclosed | Brief description of the material event |\n|-------------|----------------|------------------------------------------|\n| 27 Oct 2026 | 2.02 – Results of operations and financial condition; 9.01 – Financial statements and exhibits | The company issued a press release reporting its financial results for the third quarter of 2026 and furnished the release as Exhibit 99.1 [1] |\n| 28 Aug 2026 | 1.01 – Entry into a material definitive agreement; 2.03 – Creation of a direct financial obligation or off‑balance‑sheet arrangement; 9.01 – Financial statements and exhibits | Boeing entered into a $3.0 billion, 364‑day revolving credit agreement and disclosed the related obligation and accompanying exhibits [2] |\n| 21 Aug 2026 | 5.02 – Departure or appointment of directors or officers; compensation arrangements | The Board reported the departure of certain officers and the appointment of new directors/officers, together with related compensation arrangements [3] |\n| 28 Jul 2026 | 2.02 – Results of operations and financial condition; 9.01 – Financial statements and exhibits | The company issued a press release reporting its financial results for the second quarter of 2026 and furnished the release as Exhibit 99.1 [4] |\n| 22 Apr 2026 | 2.02 – Results of operations and financial condition; 9.01 – Financial statements and exhibits | The company issued a press release reporting its financial results for the first quarter of 2026 and furnished the release as Exhibit 99.1 [5] |\n| 17 Apr 2026 | 5.07 – Submission of matters to a vote of security holders | Boeing held its Annual Meeting of Shareholders and disclosed the final voting results for each matter submitted to shareholders [6] |\n| 27 Jan 2026 | 2.02 – Results of operations and financial condition; 9.01 – Financial statements and exhibits | The company issued a press release reporting its financial results for the fourth quarter of 2025 and furnished the release as Exhibit 99.1 [7] |\n\n**Limits** – No additional material events were found in the SEC filings checked through 16 Nov 2026.\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*\n*Data: SEC filings checked 16 Nov 2026 (latest 8-K filed 27 Oct 2026).*",
+      "citations": [
+       {
+        "n": 1,
+        "source_id": "8k:0001628280-26-067411",
+        "title": "BA 8-K 2026-10-27: 2.02 Results of operations and financial condition; 9.01 Financial statements and exhibits",
+        "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026067411/ba-20261027.htm"
+       },
+       {
+        "n": 2,
+        "source_id": "8k:0001628280-26-059427",
+        "title": "BA 8-K 2026-08-28: 1.01 Entry into a material definitive agreement; 2.03 Creation of a direct financial obligation or off-balance-sheet arrangement; 9.01 Financial statements and exhibits",
+        "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026059427/ba-20260824.htm"
+       },
+       {
+        "n": 3,
+        "source_id": "8k:0001628280-26-058481",
+        "title": "BA 8-K 2026-08-21: 5.02 Departure or appointment of directors or officers; compensation arrangements",
+        "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026058481/ba-20260819.htm"
+       },
+       {
+        "n": 4,
+        "source_id": "8k:0001628280-26-049929",
+        "title": "BA 8-K 2026-07-28: 2.02 Results of operations and financial condition; 9.01 Financial statements and exhibits",
+        "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026049929/ba-20260728.htm"
+       },
+       {
+        "n": 5,
+        "source_id": "8k:0001628280-26-026391",
+        "title": "BA 8-K 2026-04-22: 2.02 Results of operations and financial condition; 9.01 Financial statements and exhibits",
+        "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026026391/ba-20260422.htm"
+       },
+       {
+        "n": 6,
+        "source_id": "8k:0001628280-26-025684",
+        "title": "BA 8-K 2026-04-17: 5.07 Submission of matters to a vote of security holders",
+        "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026025684/ba-20260417.htm"
+       },
+       {
+        "n": 7,
+        "source_id": "8k:0001628280-26-003518",
+        "title": "BA 8-K 2026-01-27: 2.02 Results of operations and financial condition; 9.01 Financial statements and exhibits",
+        "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026003518/ba-20260127.htm"
+       }
+      ],
+      "citation_check": {
+       "checked": 7,
+       "supported": 7,
+       "reattached": 0,
+       "dropped": 0,
+       "unverified_claims": 0,
+       "precision": 1.0
+      },
+      "renumbered": {
+       "1": 1,
+       "2": 2,
+       "3": 3,
+       "4": 4,
+       "5": 5,
+       "6": 6,
+       "7": 7
+      }
+     }
+    },
+    {
+     "t_ms": 19484,
+     "event": {
+      "event": "node",
+      "node": "finalize",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    }
+   ]
+  }
+ ]
+}

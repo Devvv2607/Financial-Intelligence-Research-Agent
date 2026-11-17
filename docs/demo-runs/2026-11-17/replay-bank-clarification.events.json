@@ -1,0 +1,5221 @@
+{
+ "slug": "bank-clarification",
+ "question": "How risky is the bank?",
+ "recorded_at": "2026-11-17T09:36:57.319352Z",
+ "source": "live",
+ "api_url": "https://api-production-08d8051f.up.railway.app",
+ "tokens": 10261,
+ "segments": [
+  {
+   "input": {
+    "kind": "run",
+    "text": "How risky is the bank?"
+   },
+   "events": [
+    {
+     "t_ms": 358,
+     "event": {
+      "event": "run_started",
+      "run_id": "a5515298-b0ec-46a0-ba00-21e28b837776",
+      "thread_id": "8e392e53-03bc-4172-980a-65d2458ec40a",
+      "resumed": false
+     }
+    },
+    {
+     "t_ms": 358,
+     "event": {
+      "event": "node",
+      "node": "start_turn",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 358,
+     "event": {
+      "event": "node",
+      "node": "start_turn",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 358,
+     "event": {
+      "event": "node",
+      "node": "guardrail",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 358,
+     "event": {
+      "event": "node",
+      "node": "guardrail",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 358,
+     "event": {
+      "event": "node",
+      "node": "entity_resolver",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 358,
+     "event": {
+      "event": "node",
+      "node": "entity_resolver",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 358,
+     "event": {
+      "event": "node",
+      "node": "query_analyzer",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 1125,
+     "event": {
+      "event": "clarification_needed",
+      "question": "Which specific bank are you referring to?",
+      "options": [
+       "BAC (Bank of America)",
+       "JPM (JPMorgan Chase)",
+       "C (Citigroup)",
+       "WFC (Wells Fargo)"
+      ],
+      "source": "query_analyzer"
+     }
+    },
+    {
+     "t_ms": 1125,
+     "event": {
+      "event": "node",
+      "node": "query_analyzer",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 1139,
+     "event": {
+      "event": "node",
+      "node": "ask_clarification",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 1139,
+     "event": {
+      "event": "node",
+      "node": "ask_clarification",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": true
+     }
+    }
+   ]
+  },
+  {
+   "input": {
+    "kind": "resume",
+    "text": "JPMorgan Chase (JPM)"
+   },
+   "events": [
+    {
+     "t_ms": 313,
+     "event": {
+      "event": "run_started",
+      "run_id": "a5515298-b0ec-46a0-ba00-21e28b837776",
+      "thread_id": "8e392e53-03bc-4172-980a-65d2458ec40a",
+      "resumed": true
+     }
+    },
+    {
+     "t_ms": 313,
+     "event": {
+      "event": "node",
+      "node": "ask_clarification",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 313,
+     "event": {
+      "event": "node",
+      "node": "ask_clarification",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 313,
+     "event": {
+      "event": "node",
+      "node": "query_analyzer",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 1735,
+     "event": {
+      "event": "node",
+      "node": "query_analyzer",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 1735,
+     "event": {
+      "event": "node",
+      "node": "planner",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "plan_created",
+      "round": 1,
+      "steps": [
+       {
+        "id": "r1s1",
+        "goal": "Retrieve JPMorgan Chase's risk factors from its latest 10-K filing",
+        "agent": "filings",
+        "entities": [
+         "JPM"
+        ],
+        "depends_on": [],
+        "tool_calls": [
+         {
+          "tool": "get_risk_factors",
+          "args_json": "{\"ticker\":\"JPM\"}"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "node",
+      "node": "planner",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "step_started",
+      "step_id": "r1s1",
+      "agent": "filings",
+      "mode": "direct"
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "node",
+      "node": "filings_agent",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:prepare",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:prepare",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:direct",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4360,
+     "event": {
+      "event": "tool_called",
+      "step_id": "r1s1",
+      "tool": "get_risk_factors",
+      "args": {
+       "ticker": "JPM"
+      },
+      "ok": true,
+      "evidence": 41,
+      "reused": false
+     }
+    },
+    {
+     "t_ms": 4453,
+     "event": {
+      "event": "evidence_added",
+      "step_id": "r1s1",
+      "sources": [
+       {
+        "source_id": "rf:fc844880d6dace4e5cdb4beee2bd6718",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase faces significant legal risks from civil and governmental proceedings, including litigation, investigations and enforcement actions.",
+        "snippet": "JPMorganChase faces significant legal risks from civil and governmental proceedings, including litigation, investigations and enforcement actions. JPMorganChase is named as a defendant or is otherwise involved in many civil and governmental legal proceedings, including class actions, derivative actions and other litigation or disputes with third parties, as well as investigations and enforcement actions by U.S. and non-U.S. governmental authorities, including criminal proceedings. Actions currently pending against JPMorganChase could result in judgments, settlements or penalties adverse to…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:e97435edcccf22feac092d345a0325b3",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: Resolving an investigation by a governmental authority could subject JPMorganChase to significant penalties and other repercussions.",
+        "snippet": "Resolving an investigation by a governmental authority could subject JPMorganChase to significant penalties and other repercussions. Governmental authorities conduct both routine and targeted examinations of JPMorganChase and its subsidiaries, and JPMorganChase’s businesses and operations are subject to heightened regulatory oversight. This scrutiny, or the results of such an examination, could lead to legal proceedings, including investigations or enforcement actions by governmental authorities. Furthermore, a single event involving a potential violation of applicable law could give rise to…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:b4af47945efd62fb88c46d68941c2931",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s compliance risk and operating costs could be higher in jurisdictions with less predictable legal, regulatory and judicial frameworks.",
+        "snippet": "JPMorganChase’s compliance risk and operating costs could be higher in jurisdictions with less predictable legal, regulatory and judicial frameworks. JPMorganChase conducts business in certain jurisdictions in which the application of the rule of law is inconsistent, extralegal or less predictable, including with respect to: •the absence of a statutory, regulatory or interpretative basis for engaging in specific types of business or transactions •applicable law or judicial orders that are ambiguous, conflicting, or inconsistently applied or interpreted •actions by or at the direction of…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:6e0707cff5438aa71362b08bc2ca33b2",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase's business and operations could be negatively affected by governmental policies that discourage or penalize doing business with certain industries or that require specific business practices.",
+        "snippet": "JPMorganChase's business and operations could be negatively affected by governmental policies that discourage or penalize doing business with certain industries or that require specific business practices. JPMorganChase’s businesses and results of operations could be adversely affected by actions or initiatives by governmental authorities or officials that: •seek to discourage financial institutions from doing business with companies engaged in certain industries, or conversely, to penalize financial institutions that elect not to do business with such companies, or •mandate specific…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:67ba365c998399ccab39fcc004921c6c",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: Changes in the requirements for the regulatory evaluation of JPMorganChase’s resolution plan could increase its funding or operational costs or require restructuring or curtailment of its businesses.",
+        "snippet": "Changes in the requirements for the regulatory evaluation of JPMorganChase’s resolution plan could increase its funding or operational costs or require restructuring or curtailment of its businesses. JPMorganChase must periodically submit a detailed resolution plan to the Federal Reserve and the FDIC for its rapid and orderly resolution in bankruptcy, without extraordinary government support, in the event of material financial distress or failure. The regulatory requirements concerning resolution plans and the evaluation of JPMorganChase’s resolution plan by the banking regulators could…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:55c0de20e7ace44bfc4efcbf1e842434",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: Holders of JPMorgan Chase & Co.’s debt and equity securities will absorb losses if it were to enter into a resolution.",
+        "snippet": "Holders of JPMorgan Chase & Co.’s debt and equity securities will absorb losses if it were to enter into a resolution. Federal Reserve rules require JPMorgan Chase & Co. (the “Parent Company”) to maintain minimum levels of unsecured external long-term debt and other loss-absorbing capacity with specific terms (“eligible LTD”) to recapitalize JPMorganChase’s operating subsidiaries if the Parent Company were to enter into a resolution either in a bankruptcy proceeding under Chapter 11 of the U.S. Bankruptcy Code, or in a receivership administered by the FDIC under Title II of the Dodd-Frank…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:54de05c332160b58e65157986b814208",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s businesses could be negatively affected by economic uncertainty resulting from political and geopolitical developments.",
+        "snippet": "JPMorganChase’s businesses could be negatively affected by economic uncertainty resulting from political and geopolitical developments. Political developments in the U.S. and other countries could cause uncertainty in the economic environment and market conditions in which JPMorganChase operates. Certain governmental policies or actions could significantly affect U.S. and global economic growth and cause higher volatility in the financial markets, including: •monetary policies and actions taken by central banks, including any sustained large-scale asset purchases, any suspension or reversal…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:779f8ea4361010bc746aca2a93942aa8",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: Adverse economic and market events and conditions could negatively affect JPMorganChase’s results of operations and investment and market-making positions.",
+        "snippet": "Adverse economic and market events and conditions could negatively affect JPMorganChase’s results of operations and investment and market-making positions. JPMorganChase’s results of operations could be negatively affected by the occurrence or persistence of adverse changes in any of the following: •the U.S. and global economies •investor, consumer and business sentiment, or confidence in the financial markets •inflation, deflation, recession or employment •the availability and cost of capital, liquidity and credit •levels and volatility of interest rates, credit spreads or market prices of…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:9f877804d7a3df9fd8559c0259358907",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s consumer businesses could be negatively affected by adverse economic conditions and adverse impacts of governmental policies.",
+        "snippet": "JPMorganChase’s consumer businesses could be negatively affected by adverse economic conditions and adverse impacts of governmental policies. JPMorganChase’s consumer businesses are particularly affected by U.S. and global economic conditions, including: •the distribution of personal and household income •unemployment or underemployment •changes in housing prices •the level of inflation and its effect on prices for goods and services •consumer and small business confidence levels •prolonged periods of exceptionally high or low interest rates, or significant changes to interest rates •changes…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:13a068dee8a5c7893937eed2ce3ab061",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: Unfavorable market and economic conditions could adversely affect JPMorganChase’s wholesale businesses.",
+        "snippet": "Unfavorable market and economic conditions could adversely affect JPMorganChase’s wholesale businesses. Market and economic factors can affect the volume of transactions and advisory engagements for which JPMorganChase is engaged and the related revenue from those activities. These factors could also influence the willingness of other financial institutions and investors to participate in capital markets transactions that JPMorganChase manages. Furthermore, any significant and sustained deterioration in market conditions could reduce fee revenue due to lower transaction volumes, including…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:b94d26c08231cf79c39813d3d5132287",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: Changes in interest rates and credit spreads could adversely affect JPMorganChase’s earnings or its liquidity and capital levels.",
+        "snippet": "Changes in interest rates and credit spreads could adversely affect JPMorganChase’s earnings or its liquidity and capital levels. JPMorganChase may generally be expected to earn higher net interest income when interest rates are high or increasing. However, higher interest rates could also result in: •fewer originations of commercial and residential real estate loans •losses on underwriting exposures or increases in client-specific downgrades •increased financing costs for clients, which could lead to an increase in the allowance for credit losses and higher net charge-offs •the loss of…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:07b62b86cf6444a11fe6a038417a260f",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s results could be materially affected by market fluctuations and significant changes in the valuation of financial instruments.",
+        "snippet": "JPMorganChase’s results could be materially affected by market fluctuations and significant changes in the valuation of financial instruments. The value of securities, derivatives and other financial instruments that JPMorganChase owns or in which it makes markets could be materially affected by market fluctuations. Market volatility, illiquid market conditions and other fluctuations in the financial markets could make it extremely difficult to value certain financial instruments. Subsequent valuations of financial instruments in future periods, in light of factors then prevailing, could…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:54a17df7a65c82fc2528f110f842cd28",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase could be negatively affected by adverse changes in the financial condition of clients, counterparties, CCPs and other market participants.",
+        "snippet": "JPMorganChase could be negatively affected by adverse changes in the financial condition of clients, counterparties, CCPs and other market participants. JPMorganChase routinely executes transactions with clients and counterparties such as corporations, financial institutions, asset managers, hedge funds, securities exchanges and government entities globally. Many of these transactions expose JPMorganChase to the credit risk of its clients and counterparties, and JPMorganChase could incur losses and become involved in disputes and litigation in connection with a default by a client or…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:d3c3394ff811fc875dd70bdd3f733f71",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase could suffer losses if the value of collateral declines.",
+        "snippet": "JPMorganChase could suffer losses if the value of collateral declines. During periods of market stress or illiquidity, JPMorganChase’s credit risk could increase when: •JPMorganChase fails to realize the estimated value of the collateral it holds •collateral is liquidated at prices that are insufficient to recover the full amount owed to it, or Part I •counterparties are unable to post collateral for operational or other reasons. Furthermore, borrowers may under-maintain or misrepresent the condition or existence of collateral, or at liquidation, collateral could be subject to competing…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:58e727ca67244db7557bb65b243aa943",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase could incur significant losses arising from concentrations of credit and market risk.",
+        "snippet": "JPMorganChase could incur significant losses arising from concentrations of credit and market risk. JPMorganChase could be exposed to greater credit and market risk if groupings of its clients or counterparties, or obligors on securities and other financial instruments: •engage in similar or related businesses or in related industries •operate in the same geographic region, or •have business profiles that could cause their ability to meet their obligations to be similarly affected by changes in economic conditions. For example, a significant deterioration in the credit quality of a…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:ed448c8bcb317abf1225e5cc7c5fba9b",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s ability to operate its businesses could be impaired if its liquidity is constrained.",
+        "snippet": "JPMorganChase’s ability to operate its businesses could be impaired if its liquidity is constrained. JPMorganChase’s liquidity could be impacted by factors such as: •market-wide illiquidity or disruption •actions by governmental authorities, including changes in regulatory requirements relating to liquidity or capital •actions taken by the Federal Reserve to reduce its balance sheet, which could reduce deposits held by JPMorganChase and other financial institutions •inability to sell assets, or to sell at favorable times or prices •default by a CCP or other significant market participant…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:0a3648943b0d15278ad229939a9de5c8",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorgan Chase & Co. is a holding company and depends on its subsidiaries for funding to make payments on its outstanding securities.",
+        "snippet": "JPMorgan Chase & Co. is a holding company and depends on its subsidiaries for funding to make payments on its outstanding securities. The Parent Company, JPMorgan Chase & Co., is a holding company that holds the stock of JPMorgan Chase Bank, N.A. and an intermediate holding company, JPMorgan Chase Holdings LLC (the “IHC”). In addition to holding the stock of other JPMorganChase subsidiaries, the IHC owns other assets and provides intercompany lending to the Parent Company. The Parent Company must contribute to the IHC substantially all the net proceeds that it receives from securities…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:65f07355a02fe0323e039d6bb05b20ee",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s liquidity and cost of funding could be adversely affected by downgrades in its credit ratings.",
+        "snippet": "JPMorganChase’s liquidity and cost of funding could be adversely affected by downgrades in its credit ratings. JPMorgan Chase & Co. and certain of its principal subsidiaries are rated by credit rating agencies, which evaluate general, firm-specific and industry-specific factors when determining credit ratings, including: •expected future profitability •risk management practices •legal expenses •regulatory developments •ratings differentials between bank holding companies and their bank and non-bank subsidiaries •assumptions about government support, and •economic and geopolitical…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:1db6b5681a7f2587763220b7932daa87",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s ability to distribute capital to shareholders, and to support its business activities could be limited if it does not satisfy applicable regulatory capital requirements.",
+        "snippet": "JPMorganChase’s ability to distribute capital to shareholders, and to support its business activities could be limited if it does not satisfy applicable regulatory capital requirements. JPMorganChase is subject to various regulatory capital requirements, and the amount of capital that it is required to hold under those requirements could increase at any given time due to factors such as: Part I •actions by banking regulators, as well as changes in applicable law or how applicable law is implemented by banking regulators •changes in the composition of JPMorganChase’s balance sheet or…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:00915d94ec164c087a26f92720c2299a",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s businesses could be adversely affected by the failure or disruption of operational systems on which they depend.",
+        "snippet": "JPMorganChase’s businesses could be adversely affected by the failure or disruption of operational systems on which they depend. If the operational systems on which JPMorganChase’s businesses depend, including those of acquired businesses and external parties, are unable to meet JPMorganChase’s operational requirements or bank regulatory standards, or if they fail or have other significant shortcomings, JPMorganChase could be materially and adversely affected. JPMorganChase’s businesses rely on its operational systems to process, record, monitor and report large amounts of information…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:d529d56ef89836319ae6014bef0cc6d9",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s interconnectedness with clients, customers and other external parties could be a source of significant operational risk.",
+        "snippet": "JPMorganChase’s interconnectedness with clients, customers and other external parties could be a source of significant operational risk. JPMorganChase could be exposed to operational risk if it is unable to access and use external operational systems, including during failures or cyber attacks related to those systems or other third-party systems. Similarly, retailers, payment systems and processors, data aggregators, and other external parties with which JPMorganChase’s customers do business could increase JPMorganChase’s operational risk. This is particularly the case where activities of…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:02e01f5be2d41744e48daf8093373a4f",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: A successful cyber attack could cause significant harm to JPMorganChase and its clients and customers.",
+        "snippet": "A successful cyber attack could cause significant harm to JPMorganChase and its clients and customers. JPMorganChase experiences numerous cyber attacks on its computer systems, software, networks and other technology assets. Cyber attacks could take many forms, and may be designed to: •introduce computer viruses or malicious code (i.e., “malware”) into JPMorganChase’s systems. •obtain unauthorized access to JPMorganChase’s systems or to confidential information belonging to Part I JPMorganChase or its clients, customers, counterparties or employees •manipulate or destroy data •disrupt,…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:2028e497e6d2c782a739de34f04ef945",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s businesses could be adversely affected if it fails to identify and address operational risks associated with the introduction of or changes to products, services, delivery platforms or technologies.",
+        "snippet": "JPMorganChase’s businesses could be adversely affected if it fails to identify and address operational risks associated with the introduction of or changes to products, services, delivery platforms or technologies. JPMorganChase may not always identify or recognize the full extent of operational risks that could arise from: •the introduction of a new product or service, including platforms for the delivery or distribution of products or services •the acquisition or integration of, or investment in, a new business, product or portfolio, including the development of any related technological…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:8b2e211a3987f89234411ee12ebb7350",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s business and operations rely on appropriate staffing and on the competence, trustworthiness, health and safety of employees.",
+        "snippet": "JPMorganChase’s business and operations rely on appropriate staffing and on the competence, trustworthiness, health and safety of employees. JPMorganChase’s ability to operate its businesses efficiently and profitably, to offer products and services that meet the expectations of its clients and customers, Part I and to maintain an effective risk management framework is highly dependent on its ability to staff its operations appropriately and on the competence, trustworthiness, health and safety of its employees. JPMorganChase’s businesses and operations similarly rely on the workforces of…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:dbdd0b38a9862b7973c998b70da80bdb",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase faces substantial legal and operational risks related to the processing and safeguarding of personal information.",
+        "snippet": "JPMorganChase faces substantial legal and operational risks related to the processing and safeguarding of personal information. JPMorganChase’s businesses and operations are subject to applicable law globally related to the collection, use, sharing, storage and protection of personal information of individuals. Complying with these applicable laws could: •hinder development, curtail offerings or affect pricing and delivery methods of products and services •restrict JPMorganChase from transferring information across national borders or sharing information among affiliates or with third…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:13ee884b06c4ac8feb4aa3709156283e",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s operations, results and reputation could be harmed by occurrences of extraordinary events beyond its control.",
+        "snippet": "JPMorganChase’s operations, results and reputation could be harmed by occurrences of extraordinary events beyond its control. JPMorganChase’s business and operations could be seriously disrupted, and its reputation could be harmed, by events or contributing factors that are wholly or partially beyond its control, including material instances of: •cyber attacks •security breaches of its physical premises, including threats to health and safety •utility or telecommunications failures, internet outages or shutdowns of mass transit •failure of, or loss of access to, technology or operational…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:868833d56df5ebfb95903f7514c7ca73",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: Any failure to maintain adequate data management processes could adversely affect JPMorganChase’s ability to effectively manage its businesses, comply with applicable law or make informed business decisions.",
+        "snippet": "Any failure to maintain adequate data management processes could adversely affect JPMorganChase’s ability to effectively manage its businesses, comply with applicable law or make informed business decisions. JPMorganChase relies on accurate, timely and complete data to effectively operate its systems and processes, including: •assessing risk exposures and limits •monitoring and detecting fraudulent transactions and cyber threats •developing or maintaining models and other analytical and judgment-based estimations •implementing and maintaining compliance programs, and •preparing financial…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:851762a895de54c95287b9a32bebcbcb",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: Enhanced regulatory and other standards for the oversight of JPMorganChase’s vendors and other service providers could result in higher costs and other potential exposures.",
+        "snippet": "Enhanced regulatory and other standards for the oversight of JPMorganChase’s vendors and other service providers could result in higher costs and other potential exposures. JPMorganChase must comply with enhanced regulatory and other standards when doing business with vendors and other service providers, including those relating to the outsourcing of functions as well as the performance of significant banking and other functions by subsidiaries. JPMorganChase’s failure to appropriately assess and manage these relationships, especially those involving significant banking functions, shared…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:d3a90c3045e2bee4a41b60990e396d86",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase could incur losses arising from any significant inadequacy or lapse in its risk management framework and control environment.",
+        "snippet": "JPMorganChase could incur losses arising from any significant inadequacy or lapse in its risk management framework and control environment. JPMorganChase’s financial condition or results of operations could be materially and adversely affected by any significant inadequacy or lapse in its risk management framework, governance structure, practices, models, reporting systems or controls. Any such inadequacy or lapse could: •lead to inaccurate or delayed identification of risks •hinder the timely escalation of material risk issues to JPMorganChase’s senior management and Board of Directors…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:6557c4de26d826200bab0ce913fbadd1",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase could recognize unexpected losses, its capital levels could be reduced and it could face greater regulatory scrutiny if its models, estimations or judgments, including those used in its financial statements, are inadequate or incorrect.",
+        "snippet": "JPMorganChase could recognize unexpected losses, its capital levels could be reduced and it could face greater regulatory scrutiny if its models, estimations or judgments, including those used in its financial statements, are inadequate or incorrect. JPMorganChase uses various models and other analytical and judgment-based estimations to measure, monitor and implement controls related to its market, credit, capital, liquidity, operational and other risks, as well as to prepare its financial statements under U.S. generally accepted accounting principles (“U.S. GAAP”). These models and…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:70c7f4e2f6afc8deb1a5a0a7e40d1c49",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: A significant inadequacy in disclosure or financial reporting controls could negatively affect JPMorganChase’s business, operations and reputation.",
+        "snippet": "A significant inadequacy in disclosure or financial reporting controls could negatively affect JPMorganChase’s business, operations and reputation. JPMorganChase is subject to complex global financial reporting obligations that require continuous enhancements to disclosures in its financial statements and regulatory reports. JPMorganChase’s disclosure and financial reporting controls may not always be effective, and a material weakness or significant deficiency in internal control over financial reporting could occur. Any such significant lapse, weakness or deficiency could result in…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:4977679407ac0fcc1a817770163335b1",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s results or competitive standing could suffer if its management fails to develop and execute effective business strategies and to anticipate changes affecting those strategies.",
+        "snippet": "JPMorganChase’s results or competitive standing could suffer if its management fails to develop and execute effective business strategies and to anticipate changes affecting those strategies. The ability of JPMorganChase’s management to develop and execute effective business strategies, and the ability to anticipate and respond to shifts in the competitive environment, are critical to JPMorganChase’s competitive standing and to achieving its strategic objectives. These strategies relate to: •the products and services that JPMorganChase offers •the geographies in which it operates •the types…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:665172e98e3f51fd1cdff688aa2ee73d",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: Competition in the financial services industry could lead to negative effects on JPMorganChase’s results of operations.",
+        "snippet": "Competition in the financial services industry could lead to negative effects on JPMorganChase’s results of operations. JPMorganChase operates in a highly competitive environment in which it must constantly adapt to changes in financial regulation, technological advances and economic conditions. JPMorganChase expects that competition in the financial services industry will remain intense, with new competitors in the financial services industry continuing to emerge. For example, technological advances and the growth of e-commerce have made it possible for non-depository institutions to offer…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:9fd0d3d01a3ad3f292adb7f97954f0de",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s operations, results, and competitive standing could be adversely affected by the development of advanced technologies such as AI.",
+        "snippet": "JPMorganChase’s operations, results, and competitive standing could be adversely affected by the development of advanced technologies such as AI. The rapid development and deployment of advanced technologies, including generative and agentic AI systems, present a range of risks to JPMorganChase’s businesses and operations, including: •AI system failures, inappropriate use of AI systems, lack of transparency in AI systems, or inaccurate or biased output from AI systems resulting from rapid deployment, insufficient testing, erroneous data, ineffective model design or insufficient controls,…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:996e7e03706d9971b4a4caf7a51b60ef",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: The effects of climate change could adversely affect JPMorganChase’s business and operations, both directly and as a result of impacts on its clients and customers.",
+        "snippet": "The effects of climate change could adversely affect JPMorganChase’s business and operations, both directly and as a result of impacts on its clients and customers. Both physical risks and transition risks associated with climate change could negatively impact JPMorganChase and its clients and customers. Physical risks include the increased frequency or severity of acute weather events and shifting climate patterns, which may lead to lower asset values, increased insurance costs, and business and supply chain disruptions. Transition risks, including evolving regulatory requirements, carbon…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:8d5f4eb78fec720cef2a6718896d5e86",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: Conduct failure by JPMorganChase employees could trigger litigation and regulatory actions and harm JPMorganChase’s reputation.",
+        "snippet": "Conduct failure by JPMorganChase employees could trigger litigation and regulatory actions and harm JPMorganChase’s reputation. JPMorganChase expects its employees to conduct themselves ethically and in compliance with JPMorganChase’s Code of Conduct, as well as with internal policies and applicable laws and regulations. Notwithstanding these expectations, employees of JPMorganChase have in the past engaged and could in the future engage in improper or illegal conduct. These instances of misconduct have resulted and could in the future result in litigation and resolutions of investigations…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:67054d73d22cf57a1feeb9d2356e7c13",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: Damage to JPMorganChase’s reputation could negatively affect its business, results and prospects.",
+        "snippet": "Damage to JPMorganChase’s reputation could negatively affect its business, results and prospects. Maintaining the trust, affinity and goodwill of clients, customers, employees and investors is critical to JPMorganChase’s ability to operate its business successfully. JPMorganChase’s reputation could be harmed by its decisions to engage or not engage with a client or in a business activity that lead to negative commercial impacts, and could also be compromised by: •inaccurate or misleading information about JPMorganChase or its clients, including results generated by AI, that is rapidly and…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:bcf07829460641100729ad8b9ef379b0",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: Failure to effectively manage potential conflicts of interest or to satisfy fiduciary obligations could result in litigation and enforcement actions and cause reputational harm.",
+        "snippet": "Failure to effectively manage potential conflicts of interest or to satisfy fiduciary obligations could result in litigation and enforcement actions and cause reputational harm. Managing potential conflicts of interest is highly complex for JPMorganChase due to its broad range of business activities which encompass a variety of transactions, obligations and interests with and among clients and customers. JPMorganChase could face litigation, enforcement actions and heightened regulatory scrutiny, and its reputation could be damaged, by the failure or perceived failure to: •adequately address…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:f418cffbfbceeb0cf77bfb68c5a7cb18",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: An outbreak or escalation of hostilities between countries or within a country or region could have a material adverse effect on the global economy and on JPMorganChase’s businesses within the affected region or globally.",
+        "snippet": "An outbreak or escalation of hostilities between countries or within a country or region could have a material adverse effect on the global economy and on JPMorganChase’s businesses within the affected region or globally. Conflicts and hostilities between countries or other antagonists could expand in unpredictable ways, including: •intensified cyber attacks •drawing in other adversaries •armed conflict, or •escalation into full-scale war, which could have catastrophic consequences. Depending on the scope of the conflict, the hostilities could result in: •worldwide economic disruption…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:9f12dd1a0e0620137c30ce3ef0ea09e0",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s business and operations in certain countries could be adversely affected by local economic, political, regulatory and social factors.",
+        "snippet": "JPMorganChase’s business and operations in certain countries could be adversely affected by local economic, political, regulatory and social factors. Some of the countries where JPMorganChase conducts business have economies or markets that are less developed and more volatile or have political, legal and regulatory regimes that are unpredictable or less established. In addition, in some places where JPMorganChase conducts business, the local economy and business activities are subject to substantial government influence or control. Some of these countries have in the past experienced…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       },
+       {
+        "source_id": "rf:e415e1723a0599b441daf52f1faf0455",
+        "source_type": "risk_factor",
+        "ticker": "JPM",
+        "title": "JPM 10-K FY2025 risk factor: Various factors could impact JPMorganChase’s workforce.",
+        "snippet": "Various factors could impact JPMorganChase’s workforce. JPMorganChase’s efforts to hire and retain talented employees could be hindered by factors such as: •the emerging need for more-skilled workers in an evolving workplace environment, and •targeted recruitment of JPMorganChase employees by competitors. JPMorganChase’s performance and competitive position could be materially and adversely affected if it is unable to attract or retain qualified employees or to effectively manage succession planning for key leadership roles, such as the Chief Executive Officer, members of the Operating…",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-13",
+        "score": null
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 4453,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:direct",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4453,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4453,
+     "event": {
+      "event": "step_completed",
+      "step_id": "r1s1",
+      "status": "done",
+      "mode": "direct",
+      "summary": "get_risk_factors: 41 sources (direct calls)",
+      "error": null,
+      "reason": null,
+      "duration_ms": 14
+     }
+    },
+    {
+     "t_ms": 4453,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4453,
+     "event": {
+      "event": "node",
+      "node": "filings_agent",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4453,
+     "event": {
+      "event": "node",
+      "node": "join",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4453,
+     "event": {
+      "event": "node",
+      "node": "join",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4453,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4453,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4453,
+     "event": {
+      "event": "node",
+      "node": "critic",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5828,
+     "event": {
+      "event": "critique",
+      "verdict": "ok",
+      "gaps": [],
+      "replanning": false
+     }
+    },
+    {
+     "t_ms": 5828,
+     "event": {
+      "event": "node",
+      "node": "critic",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5828,
+     "event": {
+      "event": "node",
+      "node": "synthesizer",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 13688,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 13688,
+     "event": {
+      "event": "token",
+      "text": "J"
+     }
+    },
+    {
+     "t_ms": 13688,
+     "event": {
+      "event": "token",
+      "text": "PM"
+     }
+    },
+    {
+     "t_ms": 13688,
+     "event": {
+      "event": "token",
+      "text": "organ"
+     }
+    },
+    {
+     "t_ms": 13688,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 13688,
+     "event": {
+      "event": "token",
+      "text": "Ch"
+     }
+    },
+    {
+     "t_ms": 13688,
+     "event": {
+      "event": "token",
+      "text": "ase"
+     }
+    },
+    {
+     "t_ms": 13688,
+     "event": {
+      "event": "token",
+      "text": "’s"
+     }
+    },
+    {
+     "t_ms": 13703,
+     "event": {
+      "event": "token",
+      "text": " disclosed"
+     }
+    },
+    {
+     "t_ms": 13703,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 13703,
+     "event": {
+      "event": "token",
+      "text": " profile"
+     }
+    },
+    {
+     "t_ms": 13703,
+     "event": {
+      "event": "token",
+      "text": " ("
+     }
+    },
+    {
+     "t_ms": 13703,
+     "event": {
+      "event": "token",
+      "text": "FY"
+     }
+    },
+    {
+     "t_ms": 13703,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 13703,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 13718,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 13718,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 13718,
+     "event": {
+      "event": "token",
+      "text": " ended"
+     }
+    },
+    {
+     "t_ms": 13718,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 13718,
+     "event": {
+      "event": "token",
+      "text": "31"
+     }
+    },
+    {
+     "t_ms": 13718,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 13718,
+     "event": {
+      "event": "token",
+      "text": "Dec"
+     }
+    },
+    {
+     "t_ms": 13718,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 13735,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 13735,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 13735,
+     "event": {
+      "event": "token",
+      "text": ")**"
+     }
+    },
+    {
+     "t_ms": 13735,
+     "event": {
+      "event": "token",
+      "text": "  \n\n"
+     }
+    },
+    {
+     "t_ms": 13735,
+     "event": {
+      "event": "token",
+      "text": "The"
+     }
+    },
+    {
+     "t_ms": 13735,
+     "event": {
+      "event": "token",
+      "text": " company"
+     }
+    },
+    {
+     "t_ms": 13735,
+     "event": {
+      "event": "token",
+      "text": "’s"
+     }
+    },
+    {
+     "t_ms": 13735,
+     "event": {
+      "event": "token",
+      "text": " Form"
+     }
+    },
+    {
+     "t_ms": 13750,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 13750,
+     "event": {
+      "event": "token",
+      "text": "10"
+     }
+    },
+    {
+     "t_ms": 13750,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 13750,
+     "event": {
+      "event": "token",
+      "text": "K"
+     }
+    },
+    {
+     "t_ms": 13750,
+     "event": {
+      "event": "token",
+      "text": " filed"
+     }
+    },
+    {
+     "t_ms": 13750,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 13765,
+     "event": {
+      "event": "token",
+      "text": "13"
+     }
+    },
+    {
+     "t_ms": 13765,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 13765,
+     "event": {
+      "event": "token",
+      "text": "Feb"
+     }
+    },
+    {
+     "t_ms": 13765,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 13765,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 13765,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 13765,
+     "event": {
+      "event": "token",
+      "text": " lists"
+     }
+    },
+    {
+     "t_ms": 13765,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 13765,
+     "event": {
+      "event": "token",
+      "text": " broad"
+     }
+    },
+    {
+     "t_ms": 13765,
+     "event": {
+      "event": "token",
+      "text": " set"
+     }
+    },
+    {
+     "t_ms": 13781,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 13781,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 13781,
+     "event": {
+      "event": "token",
+      "text": " factors"
+     }
+    },
+    {
+     "t_ms": 13781,
+     "event": {
+      "event": "token",
+      "text": " covering"
+     }
+    },
+    {
+     "t_ms": 13781,
+     "event": {
+      "event": "token",
+      "text": " legal"
+     }
+    },
+    {
+     "t_ms": 13781,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 13797,
+     "event": {
+      "event": "token",
+      "text": " regulatory"
+     }
+    },
+    {
+     "t_ms": 13797,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 13797,
+     "event": {
+      "event": "token",
+      "text": " economic"
+     }
+    },
+    {
+     "t_ms": 13797,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 13797,
+     "event": {
+      "event": "token",
+      "text": " market"
+     }
+    },
+    {
+     "t_ms": 13797,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 13797,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 13797,
+     "event": {
+      "event": "token",
+      "text": " liquidity"
+     }
+    },
+    {
+     "t_ms": 13813,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 13813,
+     "event": {
+      "event": "token",
+      "text": "related"
+     }
+    },
+    {
+     "t_ms": 13813,
+     "event": {
+      "event": "token",
+      "text": " exposures"
+     }
+    },
+    {
+     "t_ms": 13813,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 13813,
+     "event": {
+      "event": "token",
+      "text": "1"
+     }
+    },
+    {
+     "t_ms": 13813,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 13813,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 13828,
+     "event": {
+      "event": "token",
+      "text": " The"
+     }
+    },
+    {
+     "t_ms": 13828,
+     "event": {
+      "event": "token",
+      "text": " key"
+     }
+    },
+    {
+     "t_ms": 13828,
+     "event": {
+      "event": "token",
+      "text": " categories"
+     }
+    },
+    {
+     "t_ms": 13828,
+     "event": {
+      "event": "token",
+      "text": " are"
+     }
+    },
+    {
+     "t_ms": 13828,
+     "event": {
+      "event": "token",
+      "text": ":\n\n"
+     }
+    },
+    {
+     "t_ms": 13828,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 13828,
+     "event": {
+      "event": "token",
+      "text": " Risk"
+     }
+    },
+    {
+     "t_ms": 13828,
+     "event": {
+      "event": "token",
+      "text": " category"
+     }
+    },
+    {
+     "t_ms": 13828,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 13843,
+     "event": {
+      "event": "token",
+      "text": " Summary"
+     }
+    },
+    {
+     "t_ms": 13843,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 13843,
+     "event": {
+      "event": "token",
+      "text": " disclosed"
+     }
+    },
+    {
+     "t_ms": 13843,
+     "event": {
+      "event": "token",
+      "text": " exposure"
+     }
+    },
+    {
+     "t_ms": 13843,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 13843,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 13938,
+     "event": {
+      "event": "token",
+      "text": "---------------"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": "--------------------------------"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": "|\n"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": "Legal"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": " &"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": " litigation"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": " Faces"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": " significant"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": " legal"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": " risks"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": " from"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": " civil"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": " governmental"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": " proceedings"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": " including"
+     }
+    },
+    {
+     "t_ms": 13953,
+     "event": {
+      "event": "token",
+      "text": " class"
+     }
+    },
+    {
+     "t_ms": 13985,
+     "event": {
+      "event": "token",
+      "text": " actions"
+     }
+    },
+    {
+     "t_ms": 13985,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 13985,
+     "event": {
+      "event": "token",
+      "text": " derivative"
+     }
+    },
+    {
+     "t_ms": 13985,
+     "event": {
+      "event": "token",
+      "text": " actions"
+     }
+    },
+    {
+     "t_ms": 13985,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 13985,
+     "event": {
+      "event": "token",
+      "text": " investigations"
+     }
+    },
+    {
+     "t_ms": 13985,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14000,
+     "event": {
+      "event": "token",
+      "text": " enforcement"
+     }
+    },
+    {
+     "t_ms": 14000,
+     "event": {
+      "event": "token",
+      "text": " actions"
+     }
+    },
+    {
+     "t_ms": 14000,
+     "event": {
+      "event": "token",
+      "text": " that"
+     }
+    },
+    {
+     "t_ms": 14000,
+     "event": {
+      "event": "token",
+      "text": " could"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " lead"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " adverse"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " judgments"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " or"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " penalties"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "1"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "Reg"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "ulatory"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " investigations"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " Government"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "al"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " investigations"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " could"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " result"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " substantial"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " penalties"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " other"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " repercussions"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " affecting"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " operations"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " financial"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " condition"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "2"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "Compliance"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " &"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " jurisdiction"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "al"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 14015,
+     "event": {
+      "event": "token",
+      "text": " Higher"
+     }
+    },
+    {
+     "t_ms": 14031,
+     "event": {
+      "event": "token",
+      "text": " compliance"
+     }
+    },
+    {
+     "t_ms": 14031,
+     "event": {
+      "event": "token",
+      "text": " costs"
+     }
+    },
+    {
+     "t_ms": 14031,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14031,
+     "event": {
+      "event": "token",
+      "text": " operating"
+     }
+    },
+    {
+     "t_ms": 14031,
+     "event": {
+      "event": "token",
+      "text": " risks"
+     }
+    },
+    {
+     "t_ms": 14031,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 14031,
+     "event": {
+      "event": "token",
+      "text": " jurisdictions"
+     }
+    },
+    {
+     "t_ms": 14031,
+     "event": {
+      "event": "token",
+      "text": " with"
+     }
+    },
+    {
+     "t_ms": 14047,
+     "event": {
+      "event": "token",
+      "text": " less"
+     }
+    },
+    {
+     "t_ms": 14047,
+     "event": {
+      "event": "token",
+      "text": " predictable"
+     }
+    },
+    {
+     "t_ms": 14047,
+     "event": {
+      "event": "token",
+      "text": " legal"
+     }
+    },
+    {
+     "t_ms": 14047,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 14047,
+     "event": {
+      "event": "token",
+      "text": " regulatory"
+     }
+    },
+    {
+     "t_ms": 14047,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14047,
+     "event": {
+      "event": "token",
+      "text": " judicial"
+     }
+    },
+    {
+     "t_ms": 14047,
+     "event": {
+      "event": "token",
+      "text": " frameworks"
+     }
+    },
+    {
+     "t_ms": 14063,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 14063,
+     "event": {
+      "event": "token",
+      "text": "3"
+     }
+    },
+    {
+     "t_ms": 14063,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 14063,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 14063,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 14063,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 14063,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 14078,
+     "event": {
+      "event": "token",
+      "text": "Government"
+     }
+    },
+    {
+     "t_ms": 14078,
+     "event": {
+      "event": "token",
+      "text": "al"
+     }
+    },
+    {
+     "t_ms": 14078,
+     "event": {
+      "event": "token",
+      "text": " policy"
+     }
+    },
+    {
+     "t_ms": 14078,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 14093,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 14093,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 14093,
+     "event": {
+      "event": "token",
+      "text": " Business"
+     }
+    },
+    {
+     "t_ms": 14093,
+     "event": {
+      "event": "token",
+      "text": " could"
+     }
+    },
+    {
+     "t_ms": 14093,
+     "event": {
+      "event": "token",
+      "text": " be"
+     }
+    },
+    {
+     "t_ms": 14093,
+     "event": {
+      "event": "token",
+      "text": " negatively"
+     }
+    },
+    {
+     "t_ms": 14093,
+     "event": {
+      "event": "token",
+      "text": " affected"
+     }
+    },
+    {
+     "t_ms": 14093,
+     "event": {
+      "event": "token",
+      "text": " by"
+     }
+    },
+    {
+     "t_ms": 14093,
+     "event": {
+      "event": "token",
+      "text": " policies"
+     }
+    },
+    {
+     "t_ms": 14093,
+     "event": {
+      "event": "token",
+      "text": " that"
+     }
+    },
+    {
+     "t_ms": 14093,
+     "event": {
+      "event": "token",
+      "text": " discourage"
+     }
+    },
+    {
+     "t_ms": 14110,
+     "event": {
+      "event": "token",
+      "text": " or"
+     }
+    },
+    {
+     "t_ms": 14110,
+     "event": {
+      "event": "token",
+      "text": " penal"
+     }
+    },
+    {
+     "t_ms": 14110,
+     "event": {
+      "event": "token",
+      "text": "ize"
+     }
+    },
+    {
+     "t_ms": 14110,
+     "event": {
+      "event": "token",
+      "text": " certain"
+     }
+    },
+    {
+     "t_ms": 14110,
+     "event": {
+      "event": "token",
+      "text": " industries"
+     }
+    },
+    {
+     "t_ms": 14110,
+     "event": {
+      "event": "token",
+      "text": " or"
+     }
+    },
+    {
+     "t_ms": 14110,
+     "event": {
+      "event": "token",
+      "text": " require"
+     }
+    },
+    {
+     "t_ms": 14110,
+     "event": {
+      "event": "token",
+      "text": " specific"
+     }
+    },
+    {
+     "t_ms": 14125,
+     "event": {
+      "event": "token",
+      "text": " practices"
+     }
+    },
+    {
+     "t_ms": 14125,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 14125,
+     "event": {
+      "event": "token",
+      "text": "4"
+     }
+    },
+    {
+     "t_ms": 14125,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 14125,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 14125,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 14125,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 14140,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 14140,
+     "event": {
+      "event": "token",
+      "text": "Resolution"
+     }
+    },
+    {
+     "t_ms": 14140,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 14140,
+     "event": {
+      "event": "token",
+      "text": "plan"
+     }
+    },
+    {
+     "t_ms": 14140,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 14140,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 14140,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 14140,
+     "event": {
+      "event": "token",
+      "text": " Changes"
+     }
+    },
+    {
+     "t_ms": 14156,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 14156,
+     "event": {
+      "event": "token",
+      "text": " regulatory"
+     }
+    },
+    {
+     "t_ms": 14156,
+     "event": {
+      "event": "token",
+      "text": " evaluation"
+     }
+    },
+    {
+     "t_ms": 14156,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 14156,
+     "event": {
+      "event": "token",
+      "text": " its"
+     }
+    },
+    {
+     "t_ms": 14156,
+     "event": {
+      "event": "token",
+      "text": " resolution"
+     }
+    },
+    {
+     "t_ms": 14156,
+     "event": {
+      "event": "token",
+      "text": " plan"
+     }
+    },
+    {
+     "t_ms": 14156,
+     "event": {
+      "event": "token",
+      "text": " could"
+     }
+    },
+    {
+     "t_ms": 14172,
+     "event": {
+      "event": "token",
+      "text": " increase"
+     }
+    },
+    {
+     "t_ms": 14172,
+     "event": {
+      "event": "token",
+      "text": " funding"
+     }
+    },
+    {
+     "t_ms": 14172,
+     "event": {
+      "event": "token",
+      "text": " or"
+     }
+    },
+    {
+     "t_ms": 14172,
+     "event": {
+      "event": "token",
+      "text": " operational"
+     }
+    },
+    {
+     "t_ms": 14172,
+     "event": {
+      "event": "token",
+      "text": " costs"
+     }
+    },
+    {
+     "t_ms": 14172,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 14172,
+     "event": {
+      "event": "token",
+      "text": " or"
+     }
+    },
+    {
+     "t_ms": 14188,
+     "event": {
+      "event": "token",
+      "text": " require"
+     }
+    },
+    {
+     "t_ms": 14188,
+     "event": {
+      "event": "token",
+      "text": " restructuring"
+     }
+    },
+    {
+     "t_ms": 14188,
+     "event": {
+      "event": "token",
+      "text": "/"
+     }
+    },
+    {
+     "t_ms": 14188,
+     "event": {
+      "event": "token",
+      "text": "cur"
+     }
+    },
+    {
+     "t_ms": 14188,
+     "event": {
+      "event": "token",
+      "text": "tail"
+     }
+    },
+    {
+     "t_ms": 14188,
+     "event": {
+      "event": "token",
+      "text": "ment"
+     }
+    },
+    {
+     "t_ms": 14188,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 14188,
+     "event": {
+      "event": "token",
+      "text": " businesses"
+     }
+    },
+    {
+     "t_ms": 14203,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 14203,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 14203,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 14203,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 14203,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 14203,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 14203,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 14203,
+     "event": {
+      "event": "token",
+      "text": "Debt"
+     }
+    },
+    {
+     "t_ms": 14218,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 14218,
+     "event": {
+      "event": "token",
+      "text": "/"
+     }
+    },
+    {
+     "t_ms": 14218,
+     "event": {
+      "event": "token",
+      "text": "equ"
+     }
+    },
+    {
+     "t_ms": 14218,
+     "event": {
+      "event": "token",
+      "text": "ity"
+     }
+    },
+    {
+     "t_ms": 14218,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 14218,
+     "event": {
+      "event": "token",
+      "text": "loss"
+     }
+    },
+    {
+     "t_ms": 14218,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 14235,
+     "event": {
+      "event": "token",
+      "text": "abs"
+     }
+    },
+    {
+     "t_ms": 14235,
+     "event": {
+      "event": "token",
+      "text": "orption"
+     }
+    },
+    {
+     "t_ms": 14235,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 14235,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 14235,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 14235,
+     "event": {
+      "event": "token",
+      "text": " Hold"
+     }
+    },
+    {
+     "t_ms": 14235,
+     "event": {
+      "event": "token",
+      "text": "ers"
+     }
+    },
+    {
+     "t_ms": 14250,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 14250,
+     "event": {
+      "event": "token",
+      "text": " JPM"
+     }
+    },
+    {
+     "t_ms": 14250,
+     "event": {
+      "event": "token",
+      "text": "organ"
+     }
+    },
+    {
+     "t_ms": 14250,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 14250,
+     "event": {
+      "event": "token",
+      "text": "Ch"
+     }
+    },
+    {
+     "t_ms": 14250,
+     "event": {
+      "event": "token",
+      "text": "ase"
+     }
+    },
+    {
+     "t_ms": 14250,
+     "event": {
+      "event": "token",
+      "text": "’s"
+     }
+    },
+    {
+     "t_ms": 14250,
+     "event": {
+      "event": "token",
+      "text": " debt"
+     }
+    },
+    {
+     "t_ms": 14265,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14265,
+     "event": {
+      "event": "token",
+      "text": " equity"
+     }
+    },
+    {
+     "t_ms": 14265,
+     "event": {
+      "event": "token",
+      "text": " could"
+     }
+    },
+    {
+     "t_ms": 14265,
+     "event": {
+      "event": "token",
+      "text": " absorb"
+     }
+    },
+    {
+     "t_ms": 14265,
+     "event": {
+      "event": "token",
+      "text": " losses"
+     }
+    },
+    {
+     "t_ms": 14265,
+     "event": {
+      "event": "token",
+      "text": " if"
+     }
+    },
+    {
+     "t_ms": 14265,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 14265,
+     "event": {
+      "event": "token",
+      "text": " firm"
+     }
+    },
+    {
+     "t_ms": 14281,
+     "event": {
+      "event": "token",
+      "text": " entered"
+     }
+    },
+    {
+     "t_ms": 14281,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 14281,
+     "event": {
+      "event": "token",
+      "text": " resolution"
+     }
+    },
+    {
+     "t_ms": 14281,
+     "event": {
+      "event": "token",
+      "text": " without"
+     }
+    },
+    {
+     "t_ms": 14281,
+     "event": {
+      "event": "token",
+      "text": " extraordinary"
+     }
+    },
+    {
+     "t_ms": 14281,
+     "event": {
+      "event": "token",
+      "text": " government"
+     }
+    },
+    {
+     "t_ms": 14281,
+     "event": {
+      "event": "token",
+      "text": " support"
+     }
+    },
+    {
+     "t_ms": 14281,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 14297,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 14297,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 14297,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 14297,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 14297,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 14297,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 14297,
+     "event": {
+      "event": "token",
+      "text": "Ge"
+     }
+    },
+    {
+     "t_ms": 14313,
+     "event": {
+      "event": "token",
+      "text": "op"
+     }
+    },
+    {
+     "t_ms": 14313,
+     "event": {
+      "event": "token",
+      "text": "olitical"
+     }
+    },
+    {
+     "t_ms": 14313,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 14313,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 14313,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 14313,
+     "event": {
+      "event": "token",
+      "text": " Political"
+     }
+    },
+    {
+     "t_ms": 14313,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14328,
+     "event": {
+      "event": "token",
+      "text": " geopolitical"
+     }
+    },
+    {
+     "t_ms": 14328,
+     "event": {
+      "event": "token",
+      "text": " developments"
+     }
+    },
+    {
+     "t_ms": 14328,
+     "event": {
+      "event": "token",
+      "text": " could"
+     }
+    },
+    {
+     "t_ms": 14328,
+     "event": {
+      "event": "token",
+      "text": " create"
+     }
+    },
+    {
+     "t_ms": 14328,
+     "event": {
+      "event": "token",
+      "text": " economic"
+     }
+    },
+    {
+     "t_ms": 14328,
+     "event": {
+      "event": "token",
+      "text": " uncertainty"
+     }
+    },
+    {
+     "t_ms": 14328,
+     "event": {
+      "event": "token",
+      "text": " that"
+     }
+    },
+    {
+     "t_ms": 14328,
+     "event": {
+      "event": "token",
+      "text": " harms"
+     }
+    },
+    {
+     "t_ms": 14343,
+     "event": {
+      "event": "token",
+      "text": " results"
+     }
+    },
+    {
+     "t_ms": 14343,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 14343,
+     "event": {
+      "event": "token",
+      "text": " operations"
+     }
+    },
+    {
+     "t_ms": 14343,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 14343,
+     "event": {
+      "event": "token",
+      "text": "7"
+     }
+    },
+    {
+     "t_ms": 14360,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 14360,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 14360,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 14360,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 14360,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 14360,
+     "event": {
+      "event": "token",
+      "text": "Mac"
+     }
+    },
+    {
+     "t_ms": 14360,
+     "event": {
+      "event": "token",
+      "text": "roe"
+     }
+    },
+    {
+     "t_ms": 14360,
+     "event": {
+      "event": "token",
+      "text": "conomic"
+     }
+    },
+    {
+     "t_ms": 14360,
+     "event": {
+      "event": "token",
+      "text": " &"
+     }
+    },
+    {
+     "t_ms": 14360,
+     "event": {
+      "event": "token",
+      "text": " market"
+     }
+    },
+    {
+     "t_ms": 14375,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 14375,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 14375,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 14375,
+     "event": {
+      "event": "token",
+      "text": " Ad"
+     }
+    },
+    {
+     "t_ms": 14375,
+     "event": {
+      "event": "token",
+      "text": "verse"
+     }
+    },
+    {
+     "t_ms": 14375,
+     "event": {
+      "event": "token",
+      "text": " economic"
+     }
+    },
+    {
+     "t_ms": 14375,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14390,
+     "event": {
+      "event": "token",
+      "text": " market"
+     }
+    },
+    {
+     "t_ms": 14390,
+     "event": {
+      "event": "token",
+      "text": " conditions"
+     }
+    },
+    {
+     "t_ms": 14390,
+     "event": {
+      "event": "token",
+      "text": " ("
+     }
+    },
+    {
+     "t_ms": 14390,
+     "event": {
+      "event": "token",
+      "text": "e"
+     }
+    },
+    {
+     "t_ms": 14390,
+     "event": {
+      "event": "token",
+      "text": ".g"
+     }
+    },
+    {
+     "t_ms": 14390,
+     "event": {
+      "event": "token",
+      "text": ".,"
+     }
+    },
+    {
+     "t_ms": 14390,
+     "event": {
+      "event": "token",
+      "text": " U"
+     }
+    },
+    {
+     "t_ms": 14390,
+     "event": {
+      "event": "token",
+      "text": ".S"
+     }
+    },
+    {
+     "t_ms": 14406,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 14406,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14406,
+     "event": {
+      "event": "token",
+      "text": " global"
+     }
+    },
+    {
+     "t_ms": 14406,
+     "event": {
+      "event": "token",
+      "text": " economic"
+     }
+    },
+    {
+     "t_ms": 14406,
+     "event": {
+      "event": "token",
+      "text": " downturn"
+     }
+    },
+    {
+     "t_ms": 14406,
+     "event": {
+      "event": "token",
+      "text": "s"
+     }
+    },
+    {
+     "t_ms": 14422,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 14422,
+     "event": {
+      "event": "token",
+      "text": " investor"
+     }
+    },
+    {
+     "t_ms": 14422,
+     "event": {
+      "event": "token",
+      "text": "/"
+     }
+    },
+    {
+     "t_ms": 14422,
+     "event": {
+      "event": "token",
+      "text": "consumer"
+     }
+    },
+    {
+     "t_ms": 14438,
+     "event": {
+      "event": "token",
+      "text": " sentiment"
+     }
+    },
+    {
+     "t_ms": 14438,
+     "event": {
+      "event": "token",
+      "text": ")"
+     }
+    },
+    {
+     "t_ms": 14438,
+     "event": {
+      "event": "token",
+      "text": " could"
+     }
+    },
+    {
+     "t_ms": 14438,
+     "event": {
+      "event": "token",
+      "text": " negatively"
+     }
+    },
+    {
+     "t_ms": 14438,
+     "event": {
+      "event": "token",
+      "text": " affect"
+     }
+    },
+    {
+     "t_ms": 14438,
+     "event": {
+      "event": "token",
+      "text": " operations"
+     }
+    },
+    {
+     "t_ms": 14438,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14438,
+     "event": {
+      "event": "token",
+      "text": " investment"
+     }
+    },
+    {
+     "t_ms": 14438,
+     "event": {
+      "event": "token",
+      "text": "/"
+     }
+    },
+    {
+     "t_ms": 14438,
+     "event": {
+      "event": "token",
+      "text": "market"
+     }
+    },
+    {
+     "t_ms": 14438,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 14438,
+     "event": {
+      "event": "token",
+      "text": "making"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " positions"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "8"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "Consumer"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "business"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " Consumer"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " businesses"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " are"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " especially"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " vulnerable"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " adverse"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " economic"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " conditions"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " governmental"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " policy"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " impacts"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " on"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " income"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " distribution"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " unemployment"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " etc"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": ".【"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "9"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "Wholesale"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "business"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " Un"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "f"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "avorable"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " market"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " economic"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " conditions"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " could"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " reduce"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " transaction"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " volume"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " advisory"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " engagements"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " affecting"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " wholesale"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " revenue"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "10"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "Interest"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "rate"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " &"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " credit"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "spread"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " Changes"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " interest"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " rates"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " credit"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " spreads"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " could"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " adversely"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " affect"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " earnings"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " liquidity"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " capital"
+     }
+    },
+    {
+     "t_ms": 14640,
+     "event": {
+      "event": "token",
+      "text": " levels"
+     }
+    },
+    {
+     "t_ms": 14656,
+     "event": {
+      "event": "token",
+      "text": ";"
+     }
+    },
+    {
+     "t_ms": 14656,
+     "event": {
+      "event": "token",
+      "text": " higher"
+     }
+    },
+    {
+     "t_ms": 14656,
+     "event": {
+      "event": "token",
+      "text": " rates"
+     }
+    },
+    {
+     "t_ms": 14656,
+     "event": {
+      "event": "token",
+      "text": " can"
+     }
+    },
+    {
+     "t_ms": 14656,
+     "event": {
+      "event": "token",
+      "text": " also"
+     }
+    },
+    {
+     "t_ms": 14656,
+     "event": {
+      "event": "token",
+      "text": " suppress"
+     }
+    },
+    {
+     "t_ms": 14656,
+     "event": {
+      "event": "token",
+      "text": " loan"
+     }
+    },
+    {
+     "t_ms": 14656,
+     "event": {
+      "event": "token",
+      "text": " origin"
+     }
+    },
+    {
+     "t_ms": 14672,
+     "event": {
+      "event": "token",
+      "text": "ations"
+     }
+    },
+    {
+     "t_ms": 14672,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 14672,
+     "event": {
+      "event": "token",
+      "text": "11"
+     }
+    },
+    {
+     "t_ms": 14672,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 14672,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 14672,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 14672,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 14688,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 14688,
+     "event": {
+      "event": "token",
+      "text": "Market"
+     }
+    },
+    {
+     "t_ms": 14688,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 14688,
+     "event": {
+      "event": "token",
+      "text": "valuation"
+     }
+    },
+    {
+     "t_ms": 14688,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 14688,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 14688,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 14688,
+     "event": {
+      "event": "token",
+      "text": " Fl"
+     }
+    },
+    {
+     "t_ms": 14703,
+     "event": {
+      "event": "token",
+      "text": "uct"
+     }
+    },
+    {
+     "t_ms": 14703,
+     "event": {
+      "event": "token",
+      "text": "u"
+     }
+    },
+    {
+     "t_ms": 14703,
+     "event": {
+      "event": "token",
+      "text": "ations"
+     }
+    },
+    {
+     "t_ms": 14703,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 14703,
+     "event": {
+      "event": "token",
+      "text": " market"
+     }
+    },
+    {
+     "t_ms": 14703,
+     "event": {
+      "event": "token",
+      "text": " prices"
+     }
+    },
+    {
+     "t_ms": 14703,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14703,
+     "event": {
+      "event": "token",
+      "text": " valuation"
+     }
+    },
+    {
+     "t_ms": 14718,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 14718,
+     "event": {
+      "event": "token",
+      "text": " securities"
+     }
+    },
+    {
+     "t_ms": 14718,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 14718,
+     "event": {
+      "event": "token",
+      "text": " derivatives"
+     }
+    },
+    {
+     "t_ms": 14718,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14718,
+     "event": {
+      "event": "token",
+      "text": " other"
+     }
+    },
+    {
+     "t_ms": 14735,
+     "event": {
+      "event": "token",
+      "text": " financial"
+     }
+    },
+    {
+     "t_ms": 14735,
+     "event": {
+      "event": "token",
+      "text": " instruments"
+     }
+    },
+    {
+     "t_ms": 14735,
+     "event": {
+      "event": "token",
+      "text": " could"
+     }
+    },
+    {
+     "t_ms": 14735,
+     "event": {
+      "event": "token",
+      "text": " materially"
+     }
+    },
+    {
+     "t_ms": 14735,
+     "event": {
+      "event": "token",
+      "text": " affect"
+     }
+    },
+    {
+     "t_ms": 14735,
+     "event": {
+      "event": "token",
+      "text": " results"
+     }
+    },
+    {
+     "t_ms": 14735,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 14735,
+     "event": {
+      "event": "token",
+      "text": "12"
+     }
+    },
+    {
+     "t_ms": 14735,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 14750,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 14750,
+     "event": {
+      "event": "token",
+      "text": " |\n\n"
+     }
+    },
+    {
+     "t_ms": 14750,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 14750,
+     "event": {
+      "event": "token",
+      "text": "Overall"
+     }
+    },
+    {
+     "t_ms": 14750,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 14750,
+     "event": {
+      "event": "token",
+      "text": " picture"
+     }
+    },
+    {
+     "t_ms": 14750,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 14765,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 14765,
+     "event": {
+      "event": "token",
+      "text": " JPM"
+     }
+    },
+    {
+     "t_ms": 14765,
+     "event": {
+      "event": "token",
+      "text": "organ"
+     }
+    },
+    {
+     "t_ms": 14765,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 14765,
+     "event": {
+      "event": "token",
+      "text": "Ch"
+     }
+    },
+    {
+     "t_ms": 14765,
+     "event": {
+      "event": "token",
+      "text": "ase"
+     }
+    },
+    {
+     "t_ms": 14765,
+     "event": {
+      "event": "token",
+      "text": " reports"
+     }
+    },
+    {
+     "t_ms": 14781,
+     "event": {
+      "event": "token",
+      "text": " exposure"
+     }
+    },
+    {
+     "t_ms": 14781,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 14781,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 14781,
+     "event": {
+      "event": "token",
+      "text": " wide"
+     }
+    },
+    {
+     "t_ms": 14781,
+     "event": {
+      "event": "token",
+      "text": " array"
+     }
+    },
+    {
+     "t_ms": 14781,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 14781,
+     "event": {
+      "event": "token",
+      "text": " legal"
+     }
+    },
+    {
+     "t_ms": 14781,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 14797,
+     "event": {
+      "event": "token",
+      "text": " regulatory"
+     }
+    },
+    {
+     "t_ms": 14797,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 14797,
+     "event": {
+      "event": "token",
+      "text": " geopolitical"
+     }
+    },
+    {
+     "t_ms": 14797,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 14797,
+     "event": {
+      "event": "token",
+      "text": " macro"
+     }
+    },
+    {
+     "t_ms": 14797,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 14797,
+     "event": {
+      "event": "token",
+      "text": "economic"
+     }
+    },
+    {
+     "t_ms": 14813,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 14813,
+     "event": {
+      "event": "token",
+      "text": " interest"
+     }
+    },
+    {
+     "t_ms": 14813,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 14813,
+     "event": {
+      "event": "token",
+      "text": "rate"
+     }
+    },
+    {
+     "t_ms": 14813,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 14813,
+     "event": {
+      "event": "token",
+      "text": " market"
+     }
+    },
+    {
+     "t_ms": 14813,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 14813,
+     "event": {
+      "event": "token",
+      "text": "valuation"
+     }
+    },
+    {
+     "t_ms": 14828,
+     "event": {
+      "event": "token",
+      "text": " risks"
+     }
+    },
+    {
+     "t_ms": 14828,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 14828,
+     "event": {
+      "event": "token",
+      "text": " each"
+     }
+    },
+    {
+     "t_ms": 14828,
+     "event": {
+      "event": "token",
+      "text": " detailed"
+     }
+    },
+    {
+     "t_ms": 14828,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 14828,
+     "event": {
+      "event": "token",
+      "text": " its"
+     }
+    },
+    {
+     "t_ms": 14828,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 14828,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 14843,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 14843,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 14843,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 14843,
+     "event": {
+      "event": "token",
+      "text": "10"
+     }
+    },
+    {
+     "t_ms": 14843,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 14843,
+     "event": {
+      "event": "token",
+      "text": "K"
+     }
+    },
+    {
+     "t_ms": 14843,
+     "event": {
+      "event": "token",
+      "text": " filing"
+     }
+    },
+    {
+     "t_ms": 14843,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 14843,
+     "event": {
+      "event": "token",
+      "text": " No"
+     }
+    },
+    {
+     "t_ms": 14860,
+     "event": {
+      "event": "token",
+      "text": " additional"
+     }
+    },
+    {
+     "t_ms": 14860,
+     "event": {
+      "event": "token",
+      "text": " news"
+     }
+    },
+    {
+     "t_ms": 14860,
+     "event": {
+      "event": "token",
+      "text": " coverage"
+     }
+    },
+    {
+     "t_ms": 14860,
+     "event": {
+      "event": "token",
+      "text": " was"
+     }
+    },
+    {
+     "t_ms": 14860,
+     "event": {
+      "event": "token",
+      "text": " provided"
+     }
+    },
+    {
+     "t_ms": 14875,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 14875,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 14875,
+     "event": {
+      "event": "token",
+      "text": " data"
+     }
+    },
+    {
+     "t_ms": 14875,
+     "event": {
+      "event": "token",
+      "text": " checked"
+     }
+    },
+    {
+     "t_ms": 14875,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 14890,
+     "event": {
+      "event": "node",
+      "node": "synthesizer",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 14890,
+     "event": {
+      "event": "node",
+      "node": "finalize",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 29906,
+     "event": {
+      "event": "final",
+      "answer": "**JPMorgan Chase’s disclosed risk profile (FY 2025, ended 31 Dec 2025)**  \n\nThe company’s Form 10‑K filed 13 Feb 2026 lists a broad set of risk factors covering legal, regulatory, economic, market‑ and liquidity‑related exposures[1]. The key categories are:\n\n| Risk category | Summary of disclosed exposure |\n|---------------|--------------------------------|\n| **Legal & litigation** | Faces significant legal risks from civil and governmental proceedings, including class actions, derivative actions, investigations and enforcement actions that could lead to adverse judgments or penalties[1]. |\n| **Regulatory investigations** | Governmental investigations could result in substantial penalties and other repercussions, affecting operations and financial condition[2]. |\n| **Compliance & jurisdictional risk** | Higher compliance costs and operating risks in jurisdictions with less predictable legal, regulatory and judicial frameworks[3]. |\n| **Governmental policy risk** | Business could be negatively affected by policies that discourage or penalize certain industries or require specific practices[4]. |\n| **Resolution‑plan risk** | Changes in regulatory evaluation of its resolution plan could increase funding or operational costs, or require restructuring/curtailment of businesses[5]. |\n| **Debt‑/equity‑loss‑absorption risk** | Holders of JPMorgan Chase’s debt and equity could absorb losses if the firm entered a resolution without extraordinary government support[6]. |\n| **Geopolitical risk** | Political and geopolitical developments could create economic uncertainty that harms results of operations[7]. |\n| **Macroeconomic & market risk** | Adverse economic and market conditions (e.g., U.S. and global economic downturns, investor/consumer sentiment) could negatively affect operations and investment/market‑making positions[8]. |\n| **Consumer‑business risk** | Consumer businesses are especially vulnerable to adverse economic conditions and governmental policy impacts on income distribution, unemployment, etc.[9]. |\n| **Wholesale‑business risk** | Unfavorable market and economic conditions could reduce transaction volume and advisory engagements, affecting wholesale revenue[10]. |\n| **Interest‑rate & credit‑spread risk** | Changes in interest rates and credit spreads could adversely affect earnings, liquidity and capital levels; higher rates can also suppress loan originations[11]. |\n| **Market‑valuation risk** | Fluctuations in market prices and valuation of securities, derivatives and other financial instruments could materially affect results[12]. |\n\n**Overall risk picture** – JPMorgan Chase reports exposure to a wide array of legal, regulatory, geopolitical, macro‑economic, interest‑rate and market‑valuation risks, each detailed in its FY 2025 10‑K filing. No additional news coverage was provided in the data checked.\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*",
+      "citations": [
+       {
+        "n": 1,
+        "source_id": "rf:fc844880d6dace4e5cdb4beee2bd6718",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase faces significant legal risks from civil and governmental proceedings, including litigation, investigations and enforcement actions.",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm"
+       },
+       {
+        "n": 2,
+        "source_id": "rf:e97435edcccf22feac092d345a0325b3",
+        "title": "JPM 10-K FY2025 risk factor: Resolving an investigation by a governmental authority could subject JPMorganChase to significant penalties and other repercussions.",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm"
+       },
+       {
+        "n": 3,
+        "source_id": "rf:b4af47945efd62fb88c46d68941c2931",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s compliance risk and operating costs could be higher in jurisdictions with less predictable legal, regulatory and judicial frameworks.",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm"
+       },
+       {
+        "n": 4,
+        "source_id": "rf:6e0707cff5438aa71362b08bc2ca33b2",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase's business and operations could be negatively affected by governmental policies that discourage or penalize doing business with certain industries or that require specific business practices.",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm"
+       },
+       {
+        "n": 5,
+        "source_id": "rf:67ba365c998399ccab39fcc004921c6c",
+        "title": "JPM 10-K FY2025 risk factor: Changes in the requirements for the regulatory evaluation of JPMorganChase’s resolution plan could increase its funding or operational costs or require restructuring or curtailment of its businesses.",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm"
+       },
+       {
+        "n": 6,
+        "source_id": "rf:55c0de20e7ace44bfc4efcbf1e842434",
+        "title": "JPM 10-K FY2025 risk factor: Holders of JPMorgan Chase & Co.’s debt and equity securities will absorb losses if it were to enter into a resolution.",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm"
+       },
+       {
+        "n": 7,
+        "source_id": "rf:54de05c332160b58e65157986b814208",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s businesses could be negatively affected by economic uncertainty resulting from political and geopolitical developments.",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm"
+       },
+       {
+        "n": 8,
+        "source_id": "rf:779f8ea4361010bc746aca2a93942aa8",
+        "title": "JPM 10-K FY2025 risk factor: Adverse economic and market events and conditions could negatively affect JPMorganChase’s results of operations and investment and market-making positions.",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm"
+       },
+       {
+        "n": 9,
+        "source_id": "rf:9f877804d7a3df9fd8559c0259358907",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s consumer businesses could be negatively affected by adverse economic conditions and adverse impacts of governmental policies.",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm"
+       },
+       {
+        "n": 10,
+        "source_id": "rf:13a068dee8a5c7893937eed2ce3ab061",
+        "title": "JPM 10-K FY2025 risk factor: Unfavorable market and economic conditions could adversely affect JPMorganChase’s wholesale businesses.",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm"
+       },
+       {
+        "n": 11,
+        "source_id": "rf:b94d26c08231cf79c39813d3d5132287",
+        "title": "JPM 10-K FY2025 risk factor: Changes in interest rates and credit spreads could adversely affect JPMorganChase’s earnings or its liquidity and capital levels.",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm"
+       },
+       {
+        "n": 12,
+        "source_id": "rf:07b62b86cf6444a11fe6a038417a260f",
+        "title": "JPM 10-K FY2025 risk factor: JPMorganChase’s results could be materially affected by market fluctuations and significant changes in the valuation of financial instruments.",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm"
+       }
+      ],
+      "citation_check": {
+       "checked": 13,
+       "supported": 13,
+       "reattached": 0,
+       "dropped": 0,
+       "unverified_claims": 0,
+       "precision": 1.0
+      },
+      "renumbered": {
+       "1": 1,
+       "2": 2,
+       "3": 3,
+       "4": 4,
+       "5": 5,
+       "6": 6,
+       "7": 7,
+       "8": 8,
+       "9": 9,
+       "10": 10,
+       "11": 11,
+       "12": 12
+      }
+     }
+    },
+    {
+     "t_ms": 29906,
+     "event": {
+      "event": "node",
+      "node": "finalize",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    }
+   ]
+  }
+ ]
+}

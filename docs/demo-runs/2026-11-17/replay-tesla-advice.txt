@@ -1,0 +1,9 @@
+Recorded 2026-11-17T09:23:35.772447Z from https://api-production-08d8051f.up.railway.app (production, live runtime) with api.replay_recorder
+Question: Should I buy Tesla?
+Counted tokens (from /api/runs): 0
+Citation check: None
+
+I can't give investment advice, so I won't say whether to buy, sell or hold Tesla, Inc. What I can do is research it from SEC filings and recent news: its main risk factors, how they changed year over year, recent 8-K events, and reported financials. For example, ask: "What are TSLA's main risk factors and how did its revenue change last year?"
+
+---
+*Not investment advice.*

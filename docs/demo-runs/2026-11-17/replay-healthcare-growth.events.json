@@ -1,0 +1,5187 @@
+{
+ "slug": "healthcare-growth-regulation",
+ "question": "Which healthcare companies had the fastest revenue growth last fiscal year, and what are their main regulatory risks?",
+ "recorded_at": "2026-11-17T09:32:14.449382Z",
+ "source": "live",
+ "api_url": "https://api-production-08d8051f.up.railway.app",
+ "tokens": 27346,
+ "segments": [
+  {
+   "input": {
+    "kind": "run",
+    "text": "Which healthcare companies had the fastest revenue growth last fiscal year, and what are their main regulatory risks?"
+   },
+   "events": [
+    {
+     "t_ms": 422,
+     "event": {
+      "event": "run_started",
+      "run_id": "c56f8833-f564-418e-b4f6-614a82c436ef",
+      "thread_id": "c9321337-af16-40ad-b9e1-62048963e271",
+      "resumed": false
+     }
+    },
+    {
+     "t_ms": 422,
+     "event": {
+      "event": "node",
+      "node": "start_turn",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 422,
+     "event": {
+      "event": "node",
+      "node": "start_turn",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 422,
+     "event": {
+      "event": "node",
+      "node": "guardrail",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 422,
+     "event": {
+      "event": "node",
+      "node": "guardrail",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 422,
+     "event": {
+      "event": "node",
+      "node": "entity_resolver",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 422,
+     "event": {
+      "event": "node",
+      "node": "entity_resolver",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 422,
+     "event": {
+      "event": "node",
+      "node": "query_analyzer",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 2359,
+     "event": {
+      "event": "node",
+      "node": "query_analyzer",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 2359,
+     "event": {
+      "event": "node",
+      "node": "planner",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5750,
+     "event": {
+      "event": "plan_created",
+      "round": 1,
+      "steps": [
+       {
+        "id": "r1s1",
+        "goal": "Retrieve revenue for FY2024 and FY2025 for all listed healthcare tickers",
+        "agent": "financials",
+        "entities": [
+         "ABBV",
+         "ABT",
+         "AMGN",
+         "BMY",
+         "CVS",
+         "ELV",
+         "HCA",
+         "JNJ",
+         "LLY",
+         "MRK",
+         "PFE",
+         "UNH"
+        ],
+        "depends_on": [],
+        "tool_calls": [
+         {
+          "tool": "get_financial_metrics",
+          "args_json": "{\"tickers\": [\"ABBV\", \"ABT\", \"AMGN\", \"BMY\", \"CVS\", \"ELV\", \"HCA\", \"JNJ\", \"LLY\", \"MRK\", \"PFE\", \"UNH\"], \"metrics\": [\"revenue\"], \"years\": [2024, 2025]}"
+         }
+        ]
+       },
+       {
+        "id": "r1s2",
+        "goal": "Calculate revenue growth rates for FY2025 vs FY2024 for each ticker and identify the companies with the highest growth",
+        "agent": "financials",
+        "entities": [
+         "ABBV",
+         "ABT",
+         "AMGN",
+         "BMY",
+         "CVS",
+         "ELV",
+         "HCA",
+         "JNJ",
+         "LLY",
+         "MRK",
+         "PFE",
+         "UNH"
+        ],
+        "depends_on": [
+         "r1s1"
+        ],
+        "tool_calls": []
+       },
+       {
+        "id": "r1s3",
+        "goal": "Fetch main regulatory risk factors for the top revenue-growth healthcare companies identified in the previous step",
+        "agent": "filings",
+        "entities": [],
+        "depends_on": [
+         "r1s2"
+        ],
+        "tool_calls": []
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 5750,
+     "event": {
+      "event": "node",
+      "node": "planner",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5750,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5750,
+     "event": {
+      "event": "step_started",
+      "step_id": "r1s1",
+      "agent": "financials",
+      "mode": "direct"
+     }
+    },
+    {
+     "t_ms": 5750,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "node",
+      "node": "financials_agent",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:prepare",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:prepare",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:direct",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "tool_called",
+      "step_id": "r1s1",
+      "tool": "get_financial_metrics",
+      "args": {
+       "tickers": [
+        "ABBV",
+        "ABT",
+        "AMGN",
+        "BMY",
+        "CVS",
+        "ELV",
+        "HCA",
+        "JNJ",
+        "LLY",
+        "MRK",
+        "PFE",
+        "UNH"
+       ],
+       "metrics": [
+        "revenue"
+       ],
+       "years": [
+        2024,
+        2025
+       ]
+      },
+      "ok": true,
+      "evidence": 4,
+      "reused": false
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "evidence_added",
+      "step_id": "r1s1",
+      "sources": [
+       {
+        "source_id": "fact:200406:revenue:2025",
+        "source_type": "financial_fact",
+        "ticker": "JNJ",
+        "title": "JNJ revenue FY2025 (XBRL)",
+        "snippet": "JNJ revenue for the fiscal period ending 2025-12-28: 94,193,000,000.00 USD (us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax, 10-K XBRL)",
+        "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": null,
+        "filed_or_published": "2026-02-11",
+        "score": null
+       },
+       {
+        "source_id": "fact:200406:revenue:2024",
+        "source_type": "financial_fact",
+        "ticker": "JNJ",
+        "title": "JNJ revenue FY2024 (XBRL)",
+        "snippet": "JNJ revenue for the fiscal period ending 2024-12-29: 88,821,000,000.00 USD (us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax, 10-K XBRL)",
+        "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/",
+        "form_type": "10-K",
+        "fiscal_year": 2024,
+        "section": null,
+        "filed_or_published": "2026-02-11",
+        "score": null
+       },
+       {
+        "source_id": "fact:731766:revenue:2025",
+        "source_type": "financial_fact",
+        "ticker": "UNH",
+        "title": "UNH revenue FY2025 (XBRL)",
+        "snippet": "UNH revenue for the fiscal period ending 2025-12-31: 447,567,000,000.00 USD (us-gaap:Revenues, 10-K XBRL)",
+        "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000062/",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": null,
+        "filed_or_published": "2026-03-02",
+        "score": null
+       },
+       {
+        "source_id": "fact:731766:revenue:2024",
+        "source_type": "financial_fact",
+        "ticker": "UNH",
+        "title": "UNH revenue FY2024 (XBRL)",
+        "snippet": "UNH revenue for the fiscal period ending 2024-12-31: 400,278,000,000.00 USD (us-gaap:Revenues, 10-K XBRL)",
+        "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000062/",
+        "form_type": "10-K",
+        "fiscal_year": 2024,
+        "section": null,
+        "filed_or_published": "2026-03-02",
+        "score": null
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:direct",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:finish",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "step_completed",
+      "step_id": "r1s1",
+      "status": "done",
+      "mode": "direct",
+      "summary": "get_financial_metrics: 4 sources (direct calls)",
+      "error": null,
+      "reason": null,
+      "duration_ms": 9
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:finish",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "node",
+      "node": "financials_agent",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "node",
+      "node": "join",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "node",
+      "node": "join",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "step_started",
+      "step_id": "r1s2",
+      "agent": "financials",
+      "mode": "agentic"
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5765,
+     "event": {
+      "event": "node",
+      "node": "financials_agent",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5781,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:prepare",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5781,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:prepare",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5781,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:llm",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 6265,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:llm",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 6265,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:tools",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 6265,
+     "event": {
+      "event": "tool_called",
+      "step_id": "r1s2",
+      "tool": "get_financial_metrics",
+      "args": {
+       "metrics": [
+        "revenue"
+       ],
+       "tickers": [
+        "ABBV",
+        "ABT",
+        "AMGN",
+        "BMY",
+        "CVS",
+        "ELV",
+        "HCA",
+        "JNJ",
+        "LLY",
+        "MRK",
+        "PFE",
+        "UNH"
+       ],
+       "years": [
+        2024,
+        2025
+       ]
+      },
+      "ok": true,
+      "evidence": 4,
+      "reused": false
+     }
+    },
+    {
+     "t_ms": 6265,
+     "event": {
+      "event": "evidence_added",
+      "step_id": "r1s2",
+      "sources": [
+       {
+        "source_id": "fact:200406:revenue:2025",
+        "source_type": "financial_fact",
+        "ticker": "JNJ",
+        "title": "JNJ revenue FY2025 (XBRL)",
+        "snippet": "JNJ revenue for the fiscal period ending 2025-12-28: 94,193,000,000.00 USD (us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax, 10-K XBRL)",
+        "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": null,
+        "filed_or_published": "2026-02-11",
+        "score": null
+       },
+       {
+        "source_id": "fact:200406:revenue:2024",
+        "source_type": "financial_fact",
+        "ticker": "JNJ",
+        "title": "JNJ revenue FY2024 (XBRL)",
+        "snippet": "JNJ revenue for the fiscal period ending 2024-12-29: 88,821,000,000.00 USD (us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax, 10-K XBRL)",
+        "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/",
+        "form_type": "10-K",
+        "fiscal_year": 2024,
+        "section": null,
+        "filed_or_published": "2026-02-11",
+        "score": null
+       },
+       {
+        "source_id": "fact:731766:revenue:2025",
+        "source_type": "financial_fact",
+        "ticker": "UNH",
+        "title": "UNH revenue FY2025 (XBRL)",
+        "snippet": "UNH revenue for the fiscal period ending 2025-12-31: 447,567,000,000.00 USD (us-gaap:Revenues, 10-K XBRL)",
+        "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000062/",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": null,
+        "filed_or_published": "2026-03-02",
+        "score": null
+       },
+       {
+        "source_id": "fact:731766:revenue:2024",
+        "source_type": "financial_fact",
+        "ticker": "UNH",
+        "title": "UNH revenue FY2024 (XBRL)",
+        "snippet": "UNH revenue for the fiscal period ending 2024-12-31: 400,278,000,000.00 USD (us-gaap:Revenues, 10-K XBRL)",
+        "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000062/",
+        "form_type": "10-K",
+        "fiscal_year": 2024,
+        "section": null,
+        "filed_or_published": "2026-03-02",
+        "score": null
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 6281,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:tools",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 6281,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:llm",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 6781,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:llm",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 6781,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:tools",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 6781,
+     "event": {
+      "event": "tool_called",
+      "step_id": "r1s2",
+      "tool": "calculate",
+      "args": {
+       "expression": "pct_change(rev_2025, rev_2024)",
+       "variables": {
+        "rev_2024": 88821000000,
+        "rev_2025": 94193000000
+       }
+      },
+      "ok": true,
+      "evidence": 0,
+      "reused": false
+     }
+    },
+    {
+     "t_ms": 6781,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:tools",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 6781,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:llm",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 18281,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:llm",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 18281,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:tools",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 18281,
+     "event": {
+      "event": "tool_called",
+      "step_id": "r1s2",
+      "tool": "calculate",
+      "args": {
+       "expression": "pct_change(447567000000,400278000000)",
+       "variables": {}
+      },
+      "ok": true,
+      "evidence": 0,
+      "reused": false
+     }
+    },
+    {
+     "t_ms": 18281,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:tools",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 18281,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:llm",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 43359,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:llm",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 43359,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:finish",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 43359,
+     "event": {
+      "event": "step_completed",
+      "step_id": "r1s2",
+      "status": "done",
+      "mode": "agentic",
+      "summary": "The revenue data were available only for Johnson & Johnson (JNJ) and UnitedHealth Group (UNH).  \n\n- JNJ’s FY2025 revenue was $94.19 billion versus $88.82 billion in FY2024, a growth rate of **≈ 6.0 %**.  \n- UNH’s FY2025 revenue was $447.57 billion versus $400.28 billion in FY2024, a growth rate of *",
+      "error": null,
+      "reason": null,
+      "duration_ms": 37583
+     }
+    },
+    {
+     "t_ms": 43359,
+     "event": {
+      "event": "node",
+      "node": "financials_agent:finish",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 43375,
+     "event": {
+      "event": "node",
+      "node": "financials_agent",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 43375,
+     "event": {
+      "event": "node",
+      "node": "join",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 43375,
+     "event": {
+      "event": "node",
+      "node": "join",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 43375,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 43375,
+     "event": {
+      "event": "step_started",
+      "step_id": "r1s3",
+      "agent": "filings",
+      "mode": "agentic"
+     }
+    },
+    {
+     "t_ms": 43375,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 43375,
+     "event": {
+      "event": "node",
+      "node": "filings_agent",
+      "phase": "start",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 43375,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:prepare",
+      "phase": "start",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 43375,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:prepare",
+      "phase": "end",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 43375,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:llm",
+      "phase": "start",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 46031,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:llm",
+      "phase": "end",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 46031,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:tools",
+      "phase": "start",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 46047,
+     "event": {
+      "event": "tool_called",
+      "step_id": "r1s3",
+      "tool": "get_risk_factors",
+      "args": {
+       "category": "regulatory",
+       "limit": 20,
+       "ticker": "UNH"
+      },
+      "ok": true,
+      "evidence": 5,
+      "reused": false
+     }
+    },
+    {
+     "t_ms": 46047,
+     "event": {
+      "event": "evidence_added",
+      "step_id": "r1s3",
+      "sources": [
+       {
+        "source_id": "rf:79f5da2934d4dd9f756de203014d83af",
+        "source_type": "risk_factor",
+        "ticker": "UNH",
+        "title": "UNH 10-K FY2025 risk factor: Our business activities in the United States and other countries are highly regulated and new laws or regulations or changes in existing laws or regulations or their enforcement or application could materially and adversely affect our business.",
+        "snippet": "Our business activities in the United States and other countries are highly regulated and new laws or regulations or changes in existing laws or regulations or their enforcement or application could materially and adversely affect our business. We are regulated by federal, state and local governments in the United States and other countries where we do business. Our insurance and HMO subsidiaries must be licensed by and are subject to regulation in the jurisdictions in which they conduct business. For example, states require periodic financial reports and enforce minimum capital or…",
+        "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000062/unh-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-03-02",
+        "score": null
+       },
+       {
+        "source_id": "rf:972ef7f1015d4ad94fcb0b600ff61d46",
+        "source_type": "risk_factor",
+        "ticker": "UNH",
+        "title": "UNH 10-K FY2025 risk factor: As a result of our participation in various government health care programs, both as a payer and as a service provider to payers, we are exposed to additional risks associated with program funding, enrollments, payment adjustments, audits and government investigations wh",
+        "snippet": "As a result of our participation in various government health care programs, both as a payer and as a service provider to payers, we are exposed to additional risks associated with program funding, enrollments, payment adjustments, audits and government investigations which could materially and adversely affect our business, results of operations, financial position and cash flows. We participate in various federal, state and local government health care benefit programs, including as a payer in Medicare Advantage, Medicare Part D, various Medicaid programs and CHIP, and receive substantial…",
+        "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000062/unh-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-03-02",
+        "score": null
+       },
+       {
+        "source_id": "rf:da642cf3802261a75908957f12841f62",
+        "source_type": "risk_factor",
+        "ticker": "UNH",
+        "title": "UNH 10-K FY2025 risk factor: Our pharmacy care services businesses face regulatory and operational risks and uncertainties which may differ from the risks of our other businesses.",
+        "snippet": "Our pharmacy care services businesses face regulatory and operational risks and uncertainties which may differ from the risks of our other businesses. We provide pharmacy care services through our Optum Rx and UnitedHealthcare businesses. Each business is subject to federal and state anti-kickback, beneficiary inducement and other laws governing the relationships of the business with pharmaceutical manufacturers, physicians, pharmacies, customers and consumers. In addition, federal and state legislatures regularly consider new regulations for the industry which could materially affect…",
+        "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000062/unh-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-03-02",
+        "score": null
+       },
+       {
+        "source_id": "rf:c95dd2567560bdcd1036428b8af9e0d1",
+        "source_type": "risk_factor",
+        "ticker": "UNH",
+        "title": "UNH 10-K FY2025 risk factor: If we fail to comply with applicable privacy, security, technology and data laws, regulations and standards, including with respect to third-party service providers utilizing protected personal information on our behalf, our business, reputation, results of operations, f",
+        "snippet": "If we fail to comply with applicable privacy, security, technology and data laws, regulations and standards, including with respect to third-party service providers utilizing protected personal information on our behalf, our business, reputation, results of operations, financial position and cash flows could be materially and adversely affected. The collection, maintenance, protection, use, transmission, disclosure and disposal of protected personal information are regulated at the federal, state, international and industry levels and addressed in requirements of our customer contracts.…",
+        "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000062/unh-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-03-02",
+        "score": null
+       },
+       {
+        "source_id": "rf:68b1d89961c0636ca77fe28350543f02",
+        "source_type": "risk_factor",
+        "ticker": "UNH",
+        "title": "UNH 10-K FY2025 risk factor: Restrictions on our ability to obtain funds from our regulated subsidiaries could materially and adversely affect our ability to reinvest in our business, service our debt and return capital to our shareholders.",
+        "snippet": "Restrictions on our ability to obtain funds from our regulated subsidiaries could materially and adversely affect our ability to reinvest in our business, service our debt and return capital to our shareholders. Because we operate as a holding company, we are dependent on dividends and administrative expense reimbursements from our subsidiaries to fund our obligations. Many of these subsidiaries are regulated by state departments of insurance or similar regulatory authorities. We are also required by law or regulation to maintain specific prescribed minimum amounts of capital in these…",
+        "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000062/unh-20251231.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-03-02",
+        "score": null
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 46047,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:tools",
+      "phase": "end",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 46047,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:llm",
+      "phase": "start",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 71859,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:llm",
+      "phase": "end",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 71859,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:tools",
+      "phase": "start",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 71859,
+     "event": {
+      "event": "tool_called",
+      "step_id": "r1s3",
+      "tool": "get_risk_factors",
+      "args": {
+       "category": "regulatory",
+       "limit": 20,
+       "ticker": "JNJ"
+      },
+      "ok": true,
+      "evidence": 4,
+      "reused": false
+     }
+    },
+    {
+     "t_ms": 71859,
+     "event": {
+      "event": "evidence_added",
+      "step_id": "r1s3",
+      "sources": [
+       {
+        "source_id": "rf:82ff91c928d6ab419d4f71626795630a",
+        "source_type": "risk_factor",
+        "ticker": "JNJ",
+        "title": "JNJ 10-K FY2025 risk factor: Global sales in the Company’s Innovative Medicine and MedTech segments may be negatively impacted by healthcare reforms and increasing pricing pressures.",
+        "snippet": "Global sales in the Company’s Innovative Medicine and MedTech segments may be negatively impacted by healthcare reforms and increasing pricing pressures. Sales of the Company’s Innovative Medicine and MedTech products are significantly affected by reimbursements by third-party payors such as government healthcare programs, private insurance plans and managed care organizations. As part of various efforts to contain healthcare costs, these payors are putting downward pressure on prices at which products will be reimbursed. In the U.S., increased purchasing power of entities that negotiate on…",
+        "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/jnj-20251228.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-11",
+        "score": null
+       },
+       {
+        "source_id": "rf:3ac734746d758d24e214c895d89d59d8",
+        "source_type": "risk_factor",
+        "ticker": "JNJ",
+        "title": "JNJ 10-K FY2025 risk factor: The Company is subject to an increasing number of costly and complex governmental regulations in the countries in which operations are conducted which may have a material adverse affect on the Company’s financial condition and business operations.",
+        "snippet": "The Company is subject to an increasing number of costly and complex governmental regulations in the countries in which operations are conducted which may have a material adverse affect on the Company’s financial condition and business operations. As described in Item 1. Business, the Company is subject to an increasing number of extensive government laws and regulations, investigations and legal action by national, state and local government agencies in the U.S. and other countries in which it operates. For example, changes to the U.S. FDA’s timing or requirements for approval or clearance…",
+        "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/jnj-20251228.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-11",
+        "score": null
+       },
+       {
+        "source_id": "rf:00a0521103f5b1633567855d9a517168",
+        "source_type": "risk_factor",
+        "ticker": "JNJ",
+        "title": "JNJ 10-K FY2025 risk factor: The Company faces significant regulatory scrutiny, which imposes significant compliance costs and exposes the Company to government investigations, legal actions and penalties.",
+        "snippet": "The Company faces significant regulatory scrutiny, which imposes significant compliance costs and exposes the Company to government investigations, legal actions and penalties. The rapid increase in new government laws and regulations imposes significant compliance costs to the Company and a failure of the Company to timely implement changes to comply with these new laws may expose the Company to investigations, legal actions or penalties. Regulatory issues regarding compliance with current Good Manufacturing Practices (cGMP) (and comparable quality regulations in foreign countries) by…",
+        "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/jnj-20251228.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-11",
+        "score": null
+       },
+       {
+        "source_id": "rf:b469cc597942f0df77a5f2e138f1f2e9",
+        "source_type": "risk_factor",
+        "ticker": "JNJ",
+        "title": "JNJ 10-K FY2025 risk factor: A breach of privacy laws or unauthorized access, loss or misuse of personal data could have a negative impact on the Company’s business or reputation.",
+        "snippet": "A breach of privacy laws or unauthorized access, loss or misuse of personal data could have a negative impact on the Company’s business or reputation. The Company is subject to privacy and data protection laws and regulations across the globe that impose broad compliance obligations on the collection, possession, use, storage, access, disclosure, transfer, deletion and protection of personal data. Breach of the requirements of these laws and regulations could result in substantial fines, penalties, governmental actions, private right of actions, including class actions, and damage to our…",
+        "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/jnj-20251228.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-11",
+        "score": null
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 71859,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:tools",
+      "phase": "end",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 71859,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:llm",
+      "phase": "start",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 93297,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:llm",
+      "phase": "end",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 93297,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "start",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 93297,
+     "event": {
+      "event": "step_completed",
+      "step_id": "r1s3",
+      "status": "done",
+      "mode": "agentic",
+      "summary": "For UnitedHealth Group (UNH), the 2025 10‑K lists five main regulatory risk factors, including potential changes to insurance‑and‑healthcare regulations that could raise compliance costs, fluctuations in government program funding and audit exposure, new pharmacy‑care regulatory requirements, and pr",
+      "error": null,
+      "reason": null,
+      "duration_ms": 49889
+     }
+    },
+    {
+     "t_ms": 93297,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "end",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 93297,
+     "event": {
+      "event": "node",
+      "node": "filings_agent",
+      "phase": "end",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 93297,
+     "event": {
+      "event": "node",
+      "node": "join",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 93297,
+     "event": {
+      "event": "node",
+      "node": "join",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 93297,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 93297,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 93297,
+     "event": {
+      "event": "node",
+      "node": "critic",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 144436,
+     "event": {
+      "event": "critique",
+      "verdict": "ok",
+      "gaps": [],
+      "replanning": false
+     }
+    },
+    {
+     "t_ms": 144436,
+     "event": {
+      "event": "node",
+      "node": "critic",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 144436,
+     "event": {
+      "event": "node",
+      "node": "synthesizer",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": "Fast"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": "est"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": " revenue"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": " growth"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": "**\n\n"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": "United"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": "Health"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": " Group"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": " ("
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": "UN"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": "H"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": ")"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": " posted"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": " revenue"
+     }
+    },
+    {
+     "t_ms": 147281,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "$"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "447"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "57"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "b"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "illion"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": " versus"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "$"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "400"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "28"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "b"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "illion"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "4"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": " growth"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "≈"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "11"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "8"
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147297,
+     "event": {
+      "event": "token",
+      "text": "%"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " ("
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "Form"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "10"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "K"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " filed"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "2"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "Mar"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": ")"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "】【"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "7"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "Johnson"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "&"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "Johnson"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " ("
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "JN"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "J"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": ")"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " posted"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " revenue"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "$"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "94"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "19"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "b"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "illion"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " versus"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "$"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "88"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "82"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "b"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "illion"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "4"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " growth"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "≈"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "0"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "%"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " ("
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "Form"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "10"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "K"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " filed"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "11"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "Feb"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": ")"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "1"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "】【"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "3"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "  \n\n"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": "Among"
+     }
+    },
+    {
+     "t_ms": 147561,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " companies"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " with"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " available"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " data"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": "United"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": "Health"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " Group"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " had"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " highest"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " revenue"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " growth"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": ".\n\n"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " Company"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 147578,
+     "event": {
+      "event": "token",
+      "text": " Revenue"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "4"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " Revenue"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " Growth"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "---------"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "----------------"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "----------------"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "----------------"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "|\n"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " UN"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "H"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " $"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "447"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "57"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "bn"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " $"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "400"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "28"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "bn"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "≈"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "11"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "8"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "%"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " J"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "NJ"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": " $"
+     }
+    },
+    {
+     "t_ms": 147765,
+     "event": {
+      "event": "token",
+      "text": "94"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "19"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "bn"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " $"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "88"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "82"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "bn"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "≈"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "0"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "%"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " |\n\n"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "*"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "Sources"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": ":"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " UN"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "H"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " revenues"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "】【"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "7"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": ";"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " J"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "NJ"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " revenues"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "1"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "】【"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "3"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": ".*\n\n"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "---\n\n"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "###"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " Main"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " regulatory"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " risks"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "\n\n"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "United"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "Health"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " Group"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " ("
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "UN"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "H"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": ")**"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "10"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "K"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " factors"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": ":\n\n"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " Changes"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " insurance"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " healthcare"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " regulations"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " that"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " could"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " increase"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " compliance"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " costs"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "2"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " Exposure"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " program"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "fund"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "ing"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " enrollment"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " payment"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "adjust"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "ment"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " audit"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " government"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "invest"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "igation"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " risks"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " tied"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " participation"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " federal"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " state"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " local"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " health"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "care"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " programs"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "4"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " Regulatory"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " operational"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " risks"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " for"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " pharmacy"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "care"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " services"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " including"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " anti"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "kick"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "back"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " beneficiary"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "ind"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "uc"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "ement"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": " laws"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 148078,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 148172,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 148172,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 148172,
+     "event": {
+      "event": "token",
+      "text": " Privacy"
+     }
+    },
+    {
+     "t_ms": 148172,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 148172,
+     "event": {
+      "event": "token",
+      "text": " security"
+     }
+    },
+    {
+     "t_ms": 148172,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 148172,
+     "event": {
+      "event": "token",
+      "text": " data"
+     }
+    },
+    {
+     "t_ms": 148172,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 148186,
+     "event": {
+      "event": "token",
+      "text": "pro"
+     }
+    },
+    {
+     "t_ms": 148186,
+     "event": {
+      "event": "token",
+      "text": "tection"
+     }
+    },
+    {
+     "t_ms": 148186,
+     "event": {
+      "event": "token",
+      "text": " law"
+     }
+    },
+    {
+     "t_ms": 148186,
+     "event": {
+      "event": "token",
+      "text": " compliance"
+     }
+    },
+    {
+     "t_ms": 148186,
+     "event": {
+      "event": "token",
+      "text": " risks"
+     }
+    },
+    {
+     "t_ms": 148186,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "8"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": " Restrictions"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": " on"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": " obtaining"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": " funds"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": " from"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": " regulated"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": " subsidiaries"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": " affecting"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": " rein"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "vest"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "ment"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": " capital"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "return"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": " capacity"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "9"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": ".\n\n"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "Johnson"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "&"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "Johnson"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": " ("
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "JN"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": "J"
+     }
+    },
+    {
+     "t_ms": 148203,
+     "event": {
+      "event": "token",
+      "text": ")**"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "10"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "K"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " factors"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": ":\n\n"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " Imp"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "acts"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " from"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " health"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "care"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " reforms"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " pricing"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " pressures"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " on"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " innovative"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " medicine"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " Med"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "Tech"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " sales"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "10"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " An"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " increasing"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " number"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " costly"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " complex"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " governmental"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " regulations"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": " worldwide"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "11"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 148281,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " Height"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": "ened"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " regulatory"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " scrutiny"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " that"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " could"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " lead"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " investigations"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " penalties"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " or"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " product"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " recalls"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": "12"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " Potential"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " breaches"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " privacy"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " or"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " data"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": "pro"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": "tection"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": " laws"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": "13"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 148375,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 148390,
+     "event": {
+      "event": "node",
+      "node": "synthesizer",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 148390,
+     "event": {
+      "event": "node",
+      "node": "finalize",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 162984,
+     "event": {
+      "event": "final",
+      "answer": "**Fastest FY 2025 revenue growth**\n\nUnitedHealth Group (UNH) posted FY 2025 revenue of **$447.57 billion** versus **$400.28 billion** in FY 2024, a growth of **≈ 11.8 %** (Form 10‑K filed 2 Mar 2026)[1][2].  \nJohnson & Johnson (JNJ) posted FY 2025 revenue of **$94.19 billion** versus **$88.82 billion** in FY 2024, a growth of **≈ 6.0 %** (Form 10‑K filed 11 Feb 2026)[3][4].  \n\nAmong the companies with available data, **UnitedHealth Group had the highest FY 2025 revenue growth**.\n\n| Company | FY 2025 Revenue | FY 2024 Revenue | FY 2025 Growth |\n|---------|----------------|----------------|----------------|\n| UNH | $447.57 bn | $400.28 bn | ≈ 11.8 % |\n| JNJ | $94.19 bn | $88.82 bn | ≈ 6.0 % |\n\n*Sources: UNH revenues[1][2]; JNJ revenues[3][4].*\n\n---\n\n### Main regulatory risks\n\n**UnitedHealth Group (UNH)** – 2025 10‑K risk factors:\n\n- Changes in insurance and healthcare regulations that could increase compliance costs[5].  \n- Exposure to program‑funding, enrollment, payment‑adjustment, audit and government‑investigation risks tied to participation in federal, state and local health‑care programs[6].  \n- Regulatory and operational risks for pharmacy‑care services, including anti‑kickback and beneficiary‑inducement laws[7].  \n- Privacy, security and data‑protection law compliance risks[8].  \n- Restrictions on obtaining funds from regulated subsidiaries, affecting reinvestment and capital‑return capacity[9].\n\n**Johnson & Johnson (JNJ)** – 2025 10‑K risk factors:\n\n- Impacts from health‑care reforms and pricing pressures on innovative medicine and MedTech sales[10].  \n- An increasing number of costly and complex governmental regulations worldwide[11].  \n- Heightened regulatory scrutiny that could lead to investigations, penalties or product recalls[12].  \n- Potential breaches of privacy or data‑protection laws[13].\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*",
+      "citations": [
+       {
+        "n": 1,
+        "source_id": "fact:731766:revenue:2025",
+        "title": "UNH revenue FY2025 (XBRL)",
+        "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000062/"
+       },
+       {
+        "n": 2,
+        "source_id": "fact:731766:revenue:2024",
+        "title": "UNH revenue FY2024 (XBRL)",
+        "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000062/"
+       },
+       {
+        "n": 3,
+        "source_id": "fact:200406:revenue:2025",
+        "title": "JNJ revenue FY2025 (XBRL)",
+        "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/"
+       },
+       {
+        "n": 4,
+        "source_id": "fact:200406:revenue:2024",
+        "title": "JNJ revenue FY2024 (XBRL)",
+        "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/"
+       },
+       {
+        "n": 5,
+        "source_id": "rf:79f5da2934d4dd9f756de203014d83af",
+        "title": "UNH 10-K FY2025 risk factor: Our business activities in the United States and other countries are highly regulated and new laws or regulations or changes in existing laws or regulations or their enforcement or application could materially and adversely affect our business.",
+        "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000062/unh-20251231.htm"
+       },
+       {
+        "n": 6,
+        "source_id": "rf:972ef7f1015d4ad94fcb0b600ff61d46",
+        "title": "UNH 10-K FY2025 risk factor: As a result of our participation in various government health care programs, both as a payer and as a service provider to payers, we are exposed to additional risks associated with program funding, enrollments, payment adjustments, audits and government investigations wh",
+        "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000062/unh-20251231.htm"
+       },
+       {
+        "n": 7,
+        "source_id": "rf:da642cf3802261a75908957f12841f62",
+        "title": "UNH 10-K FY2025 risk factor: Our pharmacy care services businesses face regulatory and operational risks and uncertainties which may differ from the risks of our other businesses.",
+        "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000062/unh-20251231.htm"
+       },
+       {
+        "n": 8,
+        "source_id": "rf:c95dd2567560bdcd1036428b8af9e0d1",
+        "title": "UNH 10-K FY2025 risk factor: If we fail to comply with applicable privacy, security, technology and data laws, regulations and standards, including with respect to third-party service providers utilizing protected personal information on our behalf, our business, reputation, results of operations, f",
+        "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000062/unh-20251231.htm"
+       },
+       {
+        "n": 9,
+        "source_id": "rf:68b1d89961c0636ca77fe28350543f02",
+        "title": "UNH 10-K FY2025 risk factor: Restrictions on our ability to obtain funds from our regulated subsidiaries could materially and adversely affect our ability to reinvest in our business, service our debt and return capital to our shareholders.",
+        "url": "https://www.sec.gov/Archives/edgar/data/731766/000073176626000062/unh-20251231.htm"
+       },
+       {
+        "n": 10,
+        "source_id": "rf:82ff91c928d6ab419d4f71626795630a",
+        "title": "JNJ 10-K FY2025 risk factor: Global sales in the Company’s Innovative Medicine and MedTech segments may be negatively impacted by healthcare reforms and increasing pricing pressures.",
+        "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/jnj-20251228.htm"
+       },
+       {
+        "n": 11,
+        "source_id": "rf:3ac734746d758d24e214c895d89d59d8",
+        "title": "JNJ 10-K FY2025 risk factor: The Company is subject to an increasing number of costly and complex governmental regulations in the countries in which operations are conducted which may have a material adverse affect on the Company’s financial condition and business operations.",
+        "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/jnj-20251228.htm"
+       },
+       {
+        "n": 12,
+        "source_id": "rf:00a0521103f5b1633567855d9a517168",
+        "title": "JNJ 10-K FY2025 risk factor: The Company faces significant regulatory scrutiny, which imposes significant compliance costs and exposes the Company to government investigations, legal actions and penalties.",
+        "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/jnj-20251228.htm"
+       },
+       {
+        "n": 13,
+        "source_id": "rf:b469cc597942f0df77a5f2e138f1f2e9",
+        "title": "JNJ 10-K FY2025 risk factor: A breach of privacy laws or unauthorized access, loss or misuse of personal data could have a negative impact on the Company’s business or reputation.",
+        "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/jnj-20251228.htm"
+       }
+      ],
+      "citation_check": {
+       "checked": 17,
+       "supported": 17,
+       "reattached": 0,
+       "dropped": 0,
+       "unverified_claims": 0,
+       "precision": 1.0
+      },
+      "renumbered": {
+       "5": 1,
+       "7": 2,
+       "1": 3,
+       "3": 4,
+       "2": 5,
+       "4": 6,
+       "6": 7,
+       "8": 8,
+       "9": 9,
+       "10": 10,
+       "11": 11,
+       "12": 12,
+       "13": 13
+      }
+     }
+    },
+    {
+     "t_ms": 162984,
+     "event": {
+      "event": "node",
+      "node": "finalize",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    }
+   ]
+  }
+ ]
+}

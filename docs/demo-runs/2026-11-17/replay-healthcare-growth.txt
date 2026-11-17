@@ -1,0 +1,40 @@
+Recorded 2026-11-17T09:32:14.449382Z from https://api-production-08d8051f.up.railway.app (production, live runtime) with api.replay_recorder
+Question: Which healthcare companies had the fastest revenue growth last fiscal year, and what are their main regulatory risks?
+Counted tokens (from /api/runs): 27346
+Citation check: {'checked': 17, 'supported': 17, 'reattached': 0, 'dropped': 0, 'unverified_claims': 0, 'precision': 1.0}
+
+**Fastest FY 2025 revenue growth**
+
+UnitedHealth Group (UNH) posted FY 2025 revenue of **$447.57 billion** versus **$400.28 billion** in FY 2024, a growth of **≈ 11.8 %** (Form 10‑K filed 2 Mar 2026)[1][2].  
+Johnson & Johnson (JNJ) posted FY 2025 revenue of **$94.19 billion** versus **$88.82 billion** in FY 2024, a growth of **≈ 6.0 %** (Form 10‑K filed 11 Feb 2026)[3][4].  
+
+Among the companies with available data, **UnitedHealth Group had the highest FY 2025 revenue growth**.
+
+| Company | FY 2025 Revenue | FY 2024 Revenue | FY 2025 Growth |
+|---------|----------------|----------------|----------------|
+| UNH | $447.57 bn | $400.28 bn | ≈ 11.8 % |
+| JNJ | $94.19 bn | $88.82 bn | ≈ 6.0 % |
+
+*Sources: UNH revenues[1][2]; JNJ revenues[3][4].*
+
+---
+
+### Main regulatory risks
+
+**UnitedHealth Group (UNH)** – 2025 10‑K risk factors:
+
+- Changes in insurance and healthcare regulations that could increase compliance costs[5].  
+- Exposure to program‑funding, enrollment, payment‑adjustment, audit and government‑investigation risks tied to participation in federal, state and local health‑care programs[6].  
+- Regulatory and operational risks for pharmacy‑care services, including anti‑kickback and beneficiary‑inducement laws[7].  
+- Privacy, security and data‑protection law compliance risks[8].  
+- Restrictions on obtaining funds from regulated subsidiaries, affecting reinvestment and capital‑return capacity[9].
+
+**Johnson & Johnson (JNJ)** – 2025 10‑K risk factors:
+
+- Impacts from health‑care reforms and pricing pressures on innovative medicine and MedTech sales[10].  
+- An increasing number of costly and complex governmental regulations worldwide[11].  
+- Heightened regulatory scrutiny that could lead to investigations, penalties or product recalls[12].  
+- Potential breaches of privacy or data‑protection laws[13].
+
+---
+*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*

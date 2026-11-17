@@ -1,0 +1,32 @@
+Recorded 2026-11-17T09:24:45.465568Z from https://api-production-08d8051f.up.railway.app (production, live runtime) with api.replay_recorder
+Question: Compare the top risk factors NVIDIA and AMD disclosed in their latest 10-Ks. Does recent news support any of them?
+Counted tokens (from /api/runs): 13627
+Citation check: {'checked': 10, 'supported': 10, 'reattached': 0, 'dropped': 0, 'unverified_claims': 0, 'precision': 1.0}
+
+**AMD – FY2025 10‑K (Form 10‑K filed 4 Feb 2026)**  
+- The markets in which our products are sold are highly competitive and rapidly evolving[1].  
+- The semiconductor industry is highly cyclical and has experienced severe downturns that have materially adversely affected, and may continue to materially adversely affect, our business[2].  
+- The loss of a significant customer may have a material adverse effect on us[3].  
+
+**NVIDIA – FY2026 10‑K (Form 10‑K filed 25 Feb 2026)**  
+- Competition could adversely impact our market share and financial results[4].  
+- Long manufacturing lead times and uncertain supply and capacity availability, combined with a failure to estimate customer demand accurately, could lead to mismatches between supply and demand[5].  
+- Adverse economic conditions may harm our business[6].  
+
+### Recent news – support for disclosed risks  
+
+| Company | Risk factor (top) | Recent news that directly supports the risk | News date |
+|---------|-------------------|--------------------------------------------|-----------|
+| AMD | Competition | “AMD outperforms Nvidia by 53.2 points in five trading days” – highlights competitive dynamics in the market[7]. | 13 Nov 2026 |
+| AMD | Cyclicality / demand downturns | No direct news article specifically addresses semiconductor cyclical downturns in the period checked (through 15 Nov 2026). | – |
+| AMD | Customer concentration | No direct news article specifically addresses loss of a major customer in the period checked. | – |
+| NVIDIA | Competition | “Why Nvidia dominates AI, and what Huang’s scandal could cost the firm” – notes that competitive position could be affected by leadership controversy[8]. | 11 Nov 2026 |
+| NVIDIA | Supply‑chain lead times / component cost | “Nvidia RTX 5080 24 GB reportedly canceled in China due to soaring GDDR7 costs” – illustrates supply‑chain cost pressures and potential delays[9]. | 11 Nov 2026 |
+| NVIDIA | Economic conditions | “Baird cuts Nvidia price target to $200, cites AI slowdown concerns” – reflects market‑wide economic and demand uncertainty affecting the company[10]. | 11 Nov 2026 |
+
+**Summary**  
+Both companies flag competition as a primary risk, and recent news items (AMD outperforming Nvidia; Nvidia’s leadership scandal) provide concrete examples that support this concern. NVIDIA’s supply‑chain and macro‑economic risk factors are also reflected in recent reports about component‑cost‑driven product cancellations and analyst‑cited AI demand slowdown. AMD’s cyclical‑demand and customer‑concentration risks do not have direct news corroboration in the data checked through 15 Nov 2026.
+
+---
+*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*
+*Data: AMD news through 15 Nov 2026 (checked 16 Nov 2026); NVDA news through 15 Nov 2026 (checked 16 Nov 2026).*

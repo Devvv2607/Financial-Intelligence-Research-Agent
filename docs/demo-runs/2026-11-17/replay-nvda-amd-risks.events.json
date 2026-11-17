@@ -1,0 +1,6267 @@
+{
+ "slug": "nvda-amd-risks",
+ "question": "Compare the top risk factors NVIDIA and AMD disclosed in their latest 10-Ks. Does recent news support any of them?",
+ "recorded_at": "2026-11-17T09:24:45.465568Z",
+ "source": "live",
+ "api_url": "https://api-production-08d8051f.up.railway.app",
+ "tokens": 13627,
+ "segments": [
+  {
+   "input": {
+    "kind": "run",
+    "text": "Compare the top risk factors NVIDIA and AMD disclosed in their latest 10-Ks. Does recent news support any of them?"
+   },
+   "events": [
+    {
+     "t_ms": 436,
+     "event": {
+      "event": "run_started",
+      "run_id": "9da04005-0ce6-4528-a5c3-db00e0760e33",
+      "thread_id": "ddf1d6d3-c335-4290-a832-a1eea515379f",
+      "resumed": false
+     }
+    },
+    {
+     "t_ms": 436,
+     "event": {
+      "event": "node",
+      "node": "start_turn",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 436,
+     "event": {
+      "event": "node",
+      "node": "start_turn",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 436,
+     "event": {
+      "event": "node",
+      "node": "guardrail",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 436,
+     "event": {
+      "event": "node",
+      "node": "guardrail",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 436,
+     "event": {
+      "event": "node",
+      "node": "entity_resolver",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 436,
+     "event": {
+      "event": "node",
+      "node": "entity_resolver",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 436,
+     "event": {
+      "event": "node",
+      "node": "query_analyzer",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 1030,
+     "event": {
+      "event": "node",
+      "node": "query_analyzer",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 1030,
+     "event": {
+      "event": "node",
+      "node": "planner",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "plan_created",
+      "round": 1,
+      "steps": [
+       {
+        "id": "r1s1",
+        "goal": "Retrieve risk factors from AMD's latest 10-K",
+        "agent": "filings",
+        "entities": [
+         "AMD"
+        ],
+        "depends_on": [],
+        "tool_calls": [
+         {
+          "tool": "get_risk_factors",
+          "args_json": "{\"ticker\":\"AMD\"}"
+         }
+        ]
+       },
+       {
+        "id": "r1s2",
+        "goal": "Retrieve risk factors from NVIDIA's latest 10-K",
+        "agent": "filings",
+        "entities": [
+         "NVDA"
+        ],
+        "depends_on": [],
+        "tool_calls": [
+         {
+          "tool": "get_risk_factors",
+          "args_json": "{\"ticker\":\"NVDA\"}"
+         }
+        ]
+       },
+       {
+        "id": "r1s3",
+        "goal": "Collect recent news articles about AMD",
+        "agent": "news",
+        "entities": [
+         "AMD"
+        ],
+        "depends_on": [],
+        "tool_calls": [
+         {
+          "tool": "search_news",
+          "args_json": "{\"query\":\"AMD\",\"tickers\":[\"AMD\"],\"limit\":10}"
+         }
+        ]
+       },
+       {
+        "id": "r1s4",
+        "goal": "Collect recent news articles about NVIDIA",
+        "agent": "news",
+        "entities": [
+         "NVDA"
+        ],
+        "depends_on": [],
+        "tool_calls": [
+         {
+          "tool": "search_news",
+          "args_json": "{\"query\":\"NVIDIA\",\"tickers\":[\"NVDA\"],\"limit\":10}"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "node",
+      "node": "planner",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "step_started",
+      "step_id": "r1s1",
+      "agent": "filings",
+      "mode": "direct"
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "step_started",
+      "step_id": "r1s2",
+      "agent": "filings",
+      "mode": "direct"
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "step_started",
+      "step_id": "r1s3",
+      "agent": "news",
+      "mode": "direct"
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "step_started",
+      "step_id": "r1s4",
+      "agent": "news",
+      "mode": "direct"
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "node",
+      "node": "filings_agent",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "node",
+      "node": "filings_agent",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "node",
+      "node": "news_agent",
+      "phase": "start",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "node",
+      "node": "news_agent",
+      "phase": "start",
+      "step_id": "r1s4",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:prepare",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4343,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:prepare",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4358,
+     "event": {
+      "event": "node",
+      "node": "news_agent:prepare",
+      "phase": "start",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4358,
+     "event": {
+      "event": "node",
+      "node": "news_agent:prepare",
+      "phase": "start",
+      "step_id": "r1s4",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4358,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:prepare",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4358,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:direct",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4358,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:prepare",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4358,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:direct",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4358,
+     "event": {
+      "event": "node",
+      "node": "news_agent:prepare",
+      "phase": "end",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4358,
+     "event": {
+      "event": "node",
+      "node": "news_agent:direct",
+      "phase": "start",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4358,
+     "event": {
+      "event": "node",
+      "node": "news_agent:prepare",
+      "phase": "end",
+      "step_id": "r1s4",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4358,
+     "event": {
+      "event": "node",
+      "node": "news_agent:direct",
+      "phase": "start",
+      "step_id": "r1s4",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4405,
+     "event": {
+      "event": "tool_called",
+      "step_id": "r1s1",
+      "tool": "get_risk_factors",
+      "args": {
+       "ticker": "AMD"
+      },
+      "ok": true,
+      "evidence": 42,
+      "reused": false
+     }
+    },
+    {
+     "t_ms": 4483,
+     "event": {
+      "event": "evidence_added",
+      "step_id": "r1s1",
+      "sources": [
+       {
+        "source_id": "rf:571121341fd3da2ef5d82eb0badc2171",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: The markets in which our products are sold are highly competitive and rapidly evolving.",
+        "snippet": "The markets in which our products are sold are highly competitive and rapidly evolving. Delivering the latest and best products to market on time is critical to revenue growth. The competitiveness of our products depends on a number of factors including, performance, total cost of ownership, timely product introductions, product quality and reliability, product features and capabilities, energy efficiency (including power consumption and battery life, given their impact on total cost of ownership), size (or form factor), selling price, cost, adherence to industry standards (and the creation…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:c926f59d777f8a9297d4034d37b547f7",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: The semiconductor industry is highly cyclical and has experienced severe downturns that have materially adversely affected, and may continue to materially adversely affect, our business in the future.",
+        "snippet": "The semiconductor industry is highly cyclical and has experienced severe downturns that have materially adversely affected, and may continue to materially adversely affect, our business in the future. The semiconductor industry is highly cyclical and has experienced significant downturns, often alongside constant and rapid technological change, wide fluctuations in supply and demand, continuous new product introductions, price erosion and declines in general economic conditions. The growth of AI is further creating pressure on the semiconductor industry to timely design, manufacture and…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:44413e84dd962386c7f9cd4565fb1888",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: The demand for our products depends in part on the market conditions in the industries into which they are sold. Fluctuations in demand for our products or a market decline in any of these industries could have a material adverse effect on our results of operations.",
+        "snippet": "The demand for our products depends in part on the market conditions in the industries into which they are sold. Fluctuations in demand for our products or a market decline in any of these industries could have a material adverse effect on our results of operations. Industry-wide fluctuations in the computer marketplace have materially adversely affected us in the past and may materially adversely affect us in the future. We offer products that are used in different end markets and the demand for our products can vary among our Data Center, Client, Gaming and Embedded end markets. In our…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:90de29a18c808a0430f6728d4b739eaf",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: The success of our business depends on our ability to introduce products on a timely basis with features and performance levels that provide value to our customers while supporting and coinciding with significant industry transitions.",
+        "snippet": "The success of our business depends on our ability to introduce products on a timely basis with features and performance levels that provide value to our customers while supporting and coinciding with significant industry transitions. Our success depends to a significant extent on the development, qualification, implementation and acceptance of new product designs and improvements that provide value to our customers. Our ability to identify industry changes, and adapt our strategy to develop, qualify and distribute, and have manufactured, new products and related technologies to meet…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:176324c61b144a102f989c17d952cf24",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: The loss of a significant customer may have a material adverse effect on us.",
+        "snippet": "The loss of a significant customer may have a material adverse effect on us. We depend on a small number of customers for a substantial portion of our business and we expect that a small number of customers will continue to account for a significant part of our revenue and receivables in the future. If one of our key customers decides to stop buying our products, materially reduces its operations or its demand for our products, or has operations that are materially impaired for a significant period of time such that it is unable to receive or utilize our products, or pay its liabilities, our…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:19c48464a18b8903fc5890b8dffab2dd",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Economic and market uncertainty may adversely impact our business and operating results.",
+        "snippet": "Economic and market uncertainty may adversely impact our business and operating results. Uncertain global or regional economic conditions have and may in the future adversely impact our business. Uncertainty in the economic environment or other unfavorable changes in economic conditions, such as inflation, fluctuating interest rates, recession, slowing growth, increased unemployment, tighter credit markets, changes or uncertainty in fiscal monetary or trade policy, implementation of new or increased tariffs, retaliatory tariffs by other countries or other trade restrictions, or currency…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:5f04d4f63b09baea8ad4af58fbbb07b5",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Our operating results are subject to quarterly and seasonal sales patterns.",
+        "snippet": "Our operating results are subject to quarterly and seasonal sales patterns. The profile of our sales may be weighted differently during the year. A large portion of our quarterly sales have historically been made in the last month of the quarter. This uneven sales pattern makes prediction of revenue for each financial period difficult and increases the risk of unanticipated variations in quarterly results and financial condition. In addition, our operating results tend to vary seasonally with the markets in which our products are sold. For example, historically, our net revenue has been…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:f1e1e9508718f0afa549614c0c38cc88",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: If we cannot adequately protect our technology or other intellectual property in the United States and abroad, through patents, copyrights, trade secrets, trademarks and other measures, we may lose a competitive advantage and incur significant expenses.",
+        "snippet": "If we cannot adequately protect our technology or other intellectual property in the United States and abroad, through patents, copyrights, trade secrets, trademarks and other measures, we may lose a competitive advantage and incur significant expenses. We rely on a combination of protections provided by contracts, including confidentiality and nondisclosure agreements, copyrights, patents, trademarks and common law rights, such as trade secrets, to protect our intellectual property. However, we cannot assure you that we will be able to adequately protect our technology or other intellectual…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:524cd4028bdd94026cf2a946ef7fb35a",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Unfavorable currency exchange rate fluctuations could adversely affect us.",
+        "snippet": "Unfavorable currency exchange rate fluctuations could adversely affect us. We have costs, assets and liabilities that are denominated in foreign currencies. As a consequence, movements in exchange rates could cause our foreign currency denominated expenses to increase as a percentage of revenue, affecting our profitability and cash flows. Whenever we believe appropriate, we hedge a portion of our foreign currency exposure to protect against fluctuations in currency exchange rates. We determine our total foreign currency exposure using projections of long-term expenditures for items such as…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:c122f9fd21f7a58cf8f703a5e35607e8",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: We rely on third parties to manufacture our products, and if they are unable to do so on a timely basis in sufficient quantities and using competitive technologies, our business could be materially adversely affected.",
+        "snippet": "We rely on third parties to manufacture our products, and if they are unable to do so on a timely basis in sufficient quantities and using competitive technologies, our business could be materially adversely affected. We utilize third-party wafer foundries to fabricate the silicon wafers for all of our products. We rely on Taiwan Semiconductor Manufacturing Company Limited (TSMC) for the production of all wafers for microprocessor and GPU products at 7 nanometer (nm) or smaller nodes, and we rely primarily on GLOBALFOUNDRIES Inc. (GF) for wafers for microprocessor and GPU products…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:c7241d5e8a61d524f768d7098978e622",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: If essential equipment, materials, substrates or manufacturing processes are not available to manufacture our products, we could be materially adversely affected.",
+        "snippet": "If essential equipment, materials, substrates or manufacturing processes are not available to manufacture our products, we could be materially adversely affected. We may purchase equipment, materials and substrates for use by our back-end manufacturing service providers from a number of suppliers and our operations depend upon obtaining deliveries of adequate supplies of equipment and materials of acceptable quality on a timely basis. Our third-party suppliers also depend on the same timely delivery of adequate quantities of equipment and materials of acceptable quality in the manufacture of…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:ee285bf2ef8209e43c3c465bd89690b1",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Failure to achieve expected manufacturing yields for our products could negatively impact our results of operations.",
+        "snippet": "Failure to achieve expected manufacturing yields for our products could negatively impact our results of operations. Semiconductor manufacturing yields are a result of product design, process technology and packaging technology, which is typically proprietary to the manufacturer, and low yields can result from design failures, packaging technology failures, process technology failures or a combination of some or all of these. Our third-party manufacturers are responsible for the process technologies used to fabricate silicon wafers. If our third-party manufacturers experience manufacturing…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:db6d3243950618b30dea0f102d594346",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Our revenue from our semi-custom SoC products is dependent upon our semi-custom SoC products being incorporated into customers’ products and the success of those products.",
+        "snippet": "Our revenue from our semi-custom SoC products is dependent upon our semi-custom SoC products being incorporated into customers’ products and the success of those products. The revenue that we receive from our semi-custom SoC products is in the form of non-recurring engineering fees charged to third parties for design and development services and revenue received in connection with sales of our semi-custom SoC products to these third parties. As a result, our ability to generate revenue from our semi-custom products depends on our ability to secure customers for our semi-custom design…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:8d50248e01eeb158dbbc06f42b79a2e2",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Our products may be subject to security vulnerabilities that could have a material adverse effect on us.",
+        "snippet": "Our products may be subject to security vulnerabilities that could have a material adverse effect on us. The products that we sell are complex and have been and may in the future be subject to security vulnerabilities that could result in, among other things, the loss, corruption, theft or misuse of confidential data or system performance issues. Our efforts to prevent and address security vulnerabilities may decrease performance, be only partially effective or not successful at all. We may depend on vendors to create mitigations to their technology that we incorporate into our products and…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:d4d1d97ab3de420412f041e13b5d69c9",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: IT outages, data loss, data breaches and cyberattacks could disrupt operations and compromise our intellectual property or other sensitive information, be costly to remediate or cause significant damage to our business, reputation, financial condition and results of oper",
+        "snippet": "IT outages, data loss, data breaches and cyberattacks could disrupt operations and compromise our intellectual property or other sensitive information, be costly to remediate or cause significant damage to our business, reputation, financial condition and results of operations. Our business relies on technology hardware, software, cloud services, infrastructure, networks and systems (collectively, IT Systems). We own and manage some IT Systems but also rely on critical third-party IT Systems, products and services. In the ordinary course of business, we and various third-party providers and…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:801919e475b3163c2aa45268df98d9a5",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Uncertainties involving the ordering and shipment of our products could materially adversely affect us.",
+        "snippet": "Uncertainties involving the ordering and shipment of our products could materially adversely affect us. We typically sell our products pursuant to individual purchase orders. We generally do not have long-term supply arrangements with our customers or minimum purchase requirements except that orders generally must be for standard pack quantities. Generally, our customers may cancel orders for standard products more than 30 days prior to shipment without incurring significant fees. We base our inventory levels in part on customers’ estimates of demand for their products, which may not…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:fc9e08862bf3cc370527526f1a3b288a",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Our ability to design and introduce new products in a timely manner includes the use of third-party intellectual property.",
+        "snippet": "Our ability to design and introduce new products in a timely manner includes the use of third-party intellectual property. In the design and development of new and enhanced products, we rely on third-party intellectual property such as development and testing tools for software and hardware. Furthermore, certain product features may rely on intellectual property acquired from third parties that we incorporate into our software or hardware. The design requirements necessary to meet customer demand for more features and greater functionality from semiconductor products may exceed the…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:dd5d4fcd26d97d8e75fe61fb16bedc9d",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: We depend on third-party companies for the design, manufacture and supply of motherboards, software, memory and other computer platform components to support our business and products.",
+        "snippet": "We depend on third-party companies for the design, manufacture and supply of motherboards, software, memory and other computer platform components to support our business and products. We depend on third-party companies for the design, manufacture and supply of motherboards, graphics cards, software (e.g., BIOS, operating systems, drivers, AI models or tools), memory and other components that we use to design, support and sell, and our customers utilize to support and/or use our product offerings. We also rely on our AIB partners to support our products. In addition, our microprocessors are…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:2f3fb71fcac977d1d768afacdfa7d2ca",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: If we lose Microsoft Corporation’s support for our products or other software vendors do not design and develop software to run on our products, our ability to sell our products could be materially adversely affected.",
+        "snippet": "If we lose Microsoft Corporation’s support for our products or other software vendors do not design and develop software to run on our products, our ability to sell our products could be materially adversely affected. Our ability to innovate beyond the x86 instruction set controlled by Intel depends partially on Microsoft designing and developing its operating systems to run on or support our x86-based microprocessor products. With respect to our graphics products, we depend in part on Microsoft to design and develop its operating system to run on or support our graphics products. Similarly,…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:8615c9327fb266d4be4bd3fc07c88b57",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Our reliance on third-party distributors and AIB partners subjects us to certain risks.",
+        "snippet": "Our reliance on third-party distributors and AIB partners subjects us to certain risks. We market and sell our products directly and through third-party distributors and AIB partners pursuant to agreements that can generally be terminated for convenience by either party upon prior notice. These agreements are non-exclusive and permit both our distributors and AIB partners to offer our competitors’ products. We are dependent on our distributors and AIB partners to supplement our direct marketing and sales efforts. If any significant distributor or AIB partner or a substantial number of our…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:6271beb7543f11bc7a9eabadc9e243a9",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Our business depends on the proper functioning of our internal business processes and information systems and modification or interruption of such systems may disrupt our business, processes and internal controls.",
+        "snippet": "Our business depends on the proper functioning of our internal business processes and information systems and modification or interruption of such systems may disrupt our business, processes and internal controls. We rely upon a number of internal business processes and information systems to support key business functions, and the efficient operation of these processes and systems is critical to our business. Our business processes and information systems need to be sufficiently scalable to support the growth of our business and may require modifications or upgrades that expose us to a…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:e85026ac2a2d54a3e2069caa06264962",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: If our products are not compatible with some or all industry-standard software and hardware, we could be materially adversely affected.",
+        "snippet": "If our products are not compatible with some or all industry-standard software and hardware, we could be materially adversely affected. Our products may not be fully compatible with some or all industry-standard software and hardware. Further, we may be unsuccessful in correcting any such compatibility problems in a timely manner. If our customers are unable to achieve compatibility with software or hardware, we could be materially adversely affected. In addition, the mere announcement of an incompatibility problem relating to our products could have a material adverse effect on our business.",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:10202181a6a4d91c5aed5330eff57344",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Costs related to defective products could have a material adverse effect on us.",
+        "snippet": "Costs related to defective products could have a material adverse effect on us. Products as complex as those we offer may contain defects or failures when first introduced or when new versions or enhancements to existing products are released. We cannot assure you that, despite our testing procedures, errors will not be found in new products or releases after commencement of commercial shipments in the future, which could result in loss of or delay in market acceptance of our products, material recall and replacement costs, loss of revenue, writing down the inventory of defective products,…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:294d4b0513b79d2f54fd1a4807366f72",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: If we fail to maintain the efficiency of our supply chain as we respond to changes in customer demand for our products, our business could be materially adversely affected.",
+        "snippet": "If we fail to maintain the efficiency of our supply chain as we respond to changes in customer demand for our products, our business could be materially adversely affected. Our ability to meet customer demand for our products depends, in part, on our ability to deliver the products our customers want on a timely basis. Accordingly, we rely on our supply chain for the manufacturing, distribution and fulfillment of our products. As we continue to grow our business, expand to high-growth adjacent markets, acquire new customers and strengthen relationships with existing customers, the efficiency…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:ac67c4c6c2a0f677a1a0920d81dbf926",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: We outsource to third parties certain supply-chain logistics functions, including portions of our product distribution, transportation management and information technology support services.",
+        "snippet": "We outsource to third parties certain supply-chain logistics functions, including portions of our product distribution, transportation management and information technology support services. We rely on third-party providers to operate our regional product distribution centers and to manage the transportation of our work-in-process and finished products among our facilities, to our third-party manufacturers and to our customers. In addition, we rely on third parties to provide certain information technology services to us, including help desk support, desktop application services, business…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:204fcad2a8b1a3970615ed8cd6713b66",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Our inability to effectively control the sales of our products on the gray market could have a material adverse effect on us.",
+        "snippet": "Our inability to effectively control the sales of our products on the gray market could have a material adverse effect on us. We market and sell our products through a global, multi-tier network of authorized distributors, resellers and OEMs. Despite programmatic controls, audits and contractual restrictions, our pricing programs may be misused, and unauthorized resellers or unauthorized resale can occur on the “gray market”. Gray market activities could result in customer satisfaction issues because any time products are purchased outside our authorized distribution channels there is a risk…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:94f2e733c8a41aebfda0babf77c16908",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Climate change may have an impact on our business.",
+        "snippet": "Climate change may have an impact on our business. Climate change may adversely affect our business, as well as that of our suppliers and customers. Increasing frequency and severity of natural disasters and climate-related events could impact the major regions where we have operations and could disrupt our business and that of our customers and suppliers. Our headquarters and some of our operations and facilities are located in areas that are susceptible to earthquakes and tsunamis, wildfires, extreme storms, flooding, extreme heat, drought, freezing, tropical cyclones and other natural…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:b103da8aa032a745fb68f20969690326",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Government actions and regulations such as export regulations, import tariffs, and trade protection measures may limit our ability to export our products to certain customers.",
+        "snippet": "Government actions and regulations such as export regulations, import tariffs, and trade protection measures may limit our ability to export our products to certain customers. We are subject to U.S. laws and regulations, including the Export Administration Regulations (EAR) administered by the Bureau of Industry and Security (BIS) of the U.S. Department of Commerce, which restrict the export of certain products and technologies to certain countries, including China, Russia, and Belarus, among others. These restrictions may limit our ability to sell certain products or technologies in these…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:1105b74e6dba3909ec3f4dfbfa2c4e1d",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: If we cannot realize our deferred tax assets, our results of operations could be adversely affected.",
+        "snippet": "If we cannot realize our deferred tax assets, our results of operations could be adversely affected. Our deferred tax assets include tax credit carryforwards that can be used to offset taxable income and reduce income taxes payable in future periods. Each quarter, we consider both positive and negative evidence to determine whether all or a portion of the deferred tax assets are more likely than not to be realized. If we determine that some or all of our deferred tax assets are not realizable, it could result in a material expense in the period in which this determination is made which may…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:960f9031ad4a86067df6af8fc74cdffd",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Our business is subject to potential tax liabilities, and exposure to greater-than-anticipated income tax liabilities as a result of changes in tax rules and regulations, changes in interpretation of tax rules and regulations, or unfavorable assessments from tax audits, ",
+        "snippet": "Our business is subject to potential tax liabilities, and exposure to greater-than-anticipated income tax liabilities as a result of changes in tax rules and regulations, changes in interpretation of tax rules and regulations, or unfavorable assessments from tax audits, could affect our effective tax rates, financial condition, and results of operations. We are a U.S.-based multinational company subject to income tax, indirect tax or other tax claims in multiple U.S. and foreign tax jurisdictions in which we conduct business. Significant judgment is required in determining our worldwide…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:46b019203ca151358db348a1f48d1343",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: We are party to litigation and may become a party to other claims or litigation that could cause us to incur substantial costs or pay substantial damages or prohibit us from selling our products.",
+        "snippet": "We are party to litigation and may become a party to other claims or litigation that could cause us to incur substantial costs or pay substantial damages or prohibit us from selling our products. From time to time, we are a defendant or plaintiff in various legal actions, as described in Note 12 - Commitments and Contingencies of the Notes to our Consolidated Financial Statements. For example, we have been subject to certain claims concerning federal securities laws and corporate governance. Our products are purchased by and/or used by consumers, which could increase our exposure to consumer…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:f3b574a8604da77839504305d1a8b199",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: We are subject to environmental laws, conflict minerals regulations, as well as a variety of other laws or regulations that could result in additional costs and liabilities.",
+        "snippet": "We are subject to environmental laws, conflict minerals regulations, as well as a variety of other laws or regulations that could result in additional costs and liabilities. Our operations and properties are subject to various United States and foreign laws and regulations, including those relating to materials used in our products and the manufacturing processes of our products, discharge of pollutants into the environment, the treatment, transport, storage and disposal of solid and hazardous wastes and remediation of contamination. In addition, our operations and those of our suppliers are…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:d76867ae7f1c04acae990e2b48079bf6",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Evolving expectations from governments, investors, customers and other stakeholders regarding corporate responsibility matters could result in additional costs, harm to our reputation and a loss of customers.",
+        "snippet": "Evolving expectations from governments, investors, customers and other stakeholders regarding corporate responsibility matters could result in additional costs, harm to our reputation and a loss of customers. There are evolving expectations from governments, investors, customers and other stakeholders regarding corporate responsibility matters including those involving the environment and climate, energy and water consumption, diversity and inclusion, human rights, governance and cybersecurity. Additionally, we are and expect to continue to be subject to various new and proposed…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:4fb3a52b69b7d3e43e3aecf626788619",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Issues related to the responsible use of AI may result in reputational, competitive and financial harm and liability.",
+        "snippet": "Issues related to the responsible use of AI may result in reputational, competitive and financial harm and liability. We offer products that include capabilities to support AI deployment and we expect this part of our business to grow. As with many new emerging technologies, AI presents risks and challenges and increasing legal, social and ethical concerns relating to its responsible use that could affect the adoption of AI, and thus our business. Third-party misuse of AI applications, models, or solutions, or ineffective or inadequate AI development or deployment practices by us or our…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:1070b1a241908ad6b203d6d08e2ff01f",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: The agreements governing our notes, our guarantee of the Assumed Xilinx Notes and the Revolving Credit Agreement impose restrictions on us that may adversely affect our ability to operate our business.",
+        "snippet": "The agreements governing our notes, our guarantee of the Assumed Xilinx Notes and the Revolving Credit Agreement impose restrictions on us that may adversely affect our ability to operate our business. The indentures governing our 3.924% Senior Notes due 2032, 4.393% Senior Notes due 2052, 4.212% Senior Notes due 2026 and 4.319% Senior Notes due 2028 contain various covenants that limit our ability to, among other things: create liens on certain assets to secure debt, enter into certain sale and leaseback transactions; and consolidate with, merge into or sell, convey or lease all or…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:9ede2e69f1eba400daf7f4be9197e6ee",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: We may be required to satisfy financial obligations under guarantees and other commercial commitments.",
+        "snippet": "We may be required to satisfy financial obligations under guarantees and other commercial commitments. From time to time, we enter into commercial arrangements such as long-term capacity purchase agreements, financial guarantees and leases to support customers’ or commercial partners’ infrastructure development. These arrangements may increase our exposure to counterparty risk, such as their inability to secure the necessary capital or financing, delays in project execution and downturns in their business, including insolvency. If we are required to satisfy our financial obligations under…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:9a4aab9d026fe5bf4d1f8b1a90473ce7",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Acquisitions, joint ventures, and/or investments, and the failure to integrate acquired businesses, may fail to materialize their anticipated benefits and could disrupt our business, which could adversely affect our results of operation and financial condition.",
+        "snippet": "Acquisitions, joint ventures, and/or investments, and the failure to integrate acquired businesses, may fail to materialize their anticipated benefits and could disrupt our business, which could adversely affect our results of operation and financial condition. We have acquired and invested in businesses, and may continue to do so, that offer products, services and technologies that we believe will help expand our product offerings and services and grow our business in response to changing technologies, customer demands and competitive pressures. Acquisitions and joint ventures include…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:9715bcc0647a0b409b4df571fe6b6a06",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Any impairment of our tangible, definite-lived intangible or indefinite-lived intangible assets, including goodwill, may adversely impact our financial position and results of operations.",
+        "snippet": "Any impairment of our tangible, definite-lived intangible or indefinite-lived intangible assets, including goodwill, may adversely impact our financial position and results of operations. We account for certain acquisitions using the acquisition method of accounting under the provisions of ASC 805, Business Combinations, with AMD as the accounting acquirer. We record assets acquired, including identifiable intangible assets, and liabilities assumed, at their respective fair values at the acquisition date. Any excess of the purchase price over the net fair value of such assets and liabilities…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:0f7c75e2607fcac459582ee93c0d745c",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Our worldwide operations are subject to political, legal and economic risks and natural disasters, which could have a material adverse effect on us.",
+        "snippet": "Our worldwide operations are subject to political, legal and economic risks and natural disasters, which could have a material adverse effect on us. We maintain operations around the world, including in the United States, Canada, Europe, Australia, Latin America and Asia. We rely on third-party wafer foundries in the United States, Europe and Asia. Nearly all product assembly and final testing of our products is performed at third-party operated manufacturing facilities, in China, Malaysia and Taiwan. Our shipping services are provided by third-party subcontractors. We also have…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:8901aced5d2292fe84d6b05a395ba589",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: We may incur future impairments of our technology license purchases.",
+        "snippet": "We may incur future impairments of our technology license purchases. We license certain third-party technologies and tools for the design and production of our products. We report the value of those licenses as other non-current assets on our Consolidated Balance Sheets and we periodically evaluate the carrying value of those licenses based on their future economic benefit to us. Factors such as the life of the assets, changes in competing technologies, and changes to the business strategy may represent an indicator of impairment. The occurrence of any of these events may require us to…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:e5f0a4c5c55a35d7980118db26d1eed4",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Our inability to continue to attract and retain key employees may hinder our business.",
+        "snippet": "Our inability to continue to attract and retain key employees may hinder our business. Our success depends upon the continued service of numerous qualified engineering, marketing, sales and executive employees. The market for qualified and skilled executives and employees in the technology industry, especially in the areas of AI and machine learning, is highly competitive. Our competitors have targeted individuals in our organization that have desired skills and experience. If we are unable to continue to attract, develop and retain our leadership team and our qualified employees necessary…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       },
+       {
+        "source_id": "rf:1eb928b8689dac49f1bac0d71d522d6e",
+        "source_type": "risk_factor",
+        "ticker": "AMD",
+        "title": "AMD 10-K FY2025 risk factor: Our stock price is subject to volatility.",
+        "snippet": "Our stock price is subject to volatility. Our stock price has experienced price and volume fluctuations and could be subject to wide fluctuations in the future. The trading price of our stock may fluctuate widely due to various factors including: actual or anticipated fluctuations in our financial conditions and operating results; failure to meet expectations related to future growth; changes in financial estimates by us or financial estimates and ratings by securities analysts; changes in our capital structure, including issuance of additional debt or equity to the public; competitive…",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-04",
+        "score": null
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 4483,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:direct",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4483,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4483,
+     "event": {
+      "event": "step_completed",
+      "step_id": "r1s1",
+      "status": "done",
+      "mode": "direct",
+      "summary": "get_risk_factors: 42 sources (direct calls)",
+      "error": null,
+      "reason": null,
+      "duration_ms": 33
+     }
+    },
+    {
+     "t_ms": 4483,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 4561,
+     "event": {
+      "event": "tool_called",
+      "step_id": "r1s2",
+      "tool": "get_risk_factors",
+      "args": {
+       "ticker": "NVDA"
+      },
+      "ok": true,
+      "evidence": 23,
+      "reused": false
+     }
+    },
+    {
+     "t_ms": 4561,
+     "event": {
+      "event": "evidence_added",
+      "step_id": "r1s2",
+      "sources": [
+       {
+        "source_id": "rf:bc20b06a21dfbb6478638301f3727c90",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: Competition could adversely impact our market share and financial results.",
+        "snippet": "Competition could adversely impact our market share and financial results. Our target markets remain competitive, and competition may intensify with expanding and changing product and service offerings, industry standards, customer and market needs, new entrants and consolidations. Our competitors’ products, services and technologies, including those mentioned above in this Annual Report on Form 10-K, may be cheaper or provide better functionality or features than ours, which has resulted and may in the future result in lower-than-expected selling prices or demand for our products. Some of…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:b1e81729aaca223f8276c43996695107",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: Long manufacturing lead times and uncertain supply and capacity availability, combined with a failure to estimate customer demand accurately, has led and could lead to mismatches between supply and demand.",
+        "snippet": "Long manufacturing lead times and uncertain supply and capacity availability, combined with a failure to estimate customer demand accurately, has led and could lead to mismatches between supply and demand. We have long manufacturing lead times and build finished products and maintain inventory in advance of anticipated demand. In periods of shortages impacting the semiconductor industry and/or limited supply or capacity in our supply chain, the lead times for certain supply may be extended. We have previously experienced and may continue to experience extended lead times of more than 12…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:1159d86b5fc397ebf068d1e347214df8",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: Dependency on third-party suppliers and their technology to manufacture, assemble, test, or package our products reduces our control over product quantity and quality, manufacturing yields, and product delivery schedules and could harm our business.",
+        "snippet": "Dependency on third-party suppliers and their technology to manufacture, assemble, test, or package our products reduces our control over product quantity and quality, manufacturing yields, and product delivery schedules and could harm our business. We depend on foundries to manufacture our semiconductor wafers using their fabrication equipment and techniques. We do not assemble, test, or package our products, but instead contract with independent subcontractors. These subcontractors assist with procuring components used in our systems, boards, and products. We face risks which have…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:02c30448af800aa159c877dd713a26a7",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: Defects in our products have caused and could cause us to incur significant expenses to remediate, which can damage our reputation and cause us to lose market share.",
+        "snippet": "Defects in our products have caused and could cause us to incur significant expenses to remediate, which can damage our reputation and cause us to lose market share. Our hardware and software product and service offerings are complex. They have in the past and may in the future contain defects, security vulnerabilities, experience failures, or unsatisfactory performance due to issues in design, fabrication, packaging, materials, bugs and/or use within a system. These risks may also increase when our products are introduced into new devices, markets, technologies and applications, or new…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:e353350995d5da8a43782278a409e09a",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: Adverse economic conditions may harm our business.",
+        "snippet": "Adverse economic conditions may harm our business. Economic and industry uncertainty or changes, including recession or slowing growth, inflation, changes or uncertainty in fiscal, monetary, or trade policy, disruptions to capital markets and the banking system, currency fluctuations, higher interest rates, tighter credit, lower capital expenditures by businesses, including on IT infrastructure, increases in unemployment, labor shortages, and lower consumer confidence and spending, global supply chain constraints, and global economic and geopolitical developments, including the…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:5ade38156541eca99809fa893783d2bc",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: International sales and operations are a significant part of our business, which exposes us to risks that could harm our business.",
+        "snippet": "International sales and operations are a significant part of our business, which exposes us to risks that could harm our business. We sell our products internationally, and we also have operations and conduct business internationally. Our semiconductor wafers are manufactured, assembled, tested and packaged by third parties located outside of the United States, and we generated 31% of our revenue in fiscal year 2026 from sales outside the United States. The market in China, where our offerings are limited by export controls, is highly competitive and we expect it to remain competitive going…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:8f0f09f006764d2a09abdc220fa9ac74",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: Product, system security, and data protection incidents or breaches, as well as cyber-attacks, could disrupt our operations, reduce our expected revenue, increase our expenses, and significantly harm our business and reputation.",
+        "snippet": "Product, system security, and data protection incidents or breaches, as well as cyber-attacks, could disrupt our operations, reduce our expected revenue, increase our expenses, and significantly harm our business and reputation. Security breaches, computer malware, social-engineering attacks, denial-of-service attacks, software bugs, server malfunctions, software or hardware failures, loss of data or other information technology assets, and other cyber-attacks are becoming increasingly sophisticated, making it more difficult to successfully detect, defend against them or implement adequate…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:a913153c0a563b08a202886dbcda915b",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: Business disruptions could harm our operations, lead to a decline in revenue and increase our costs.",
+        "snippet": "Business disruptions could harm our operations, lead to a decline in revenue and increase our costs. Factors that have caused and/or could in the future cause disruptions to our worldwide operations include: natural disasters, extreme weather conditions, power or water shortages, critical infrastructure failures, telecommunications failures, supplier disruptions, terrorist attacks, acts of violence, political and/or civil unrest, acts of war or other military actions, epidemics or pandemics, abrupt regulatory changes, and other natural or man-made disasters and catastrophic events. Our…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:2e768108337ead442dd1e1d30beba2b2",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: Climate change may have a long-term impact on our business.",
+        "snippet": "Climate change may have a long-term impact on our business. Climate change may have an increasingly adverse impact on our business and on our customers, partners and vendors. Water and energy availability and reliability in the regions where we conduct business is critical, and certain of our facilities may be vulnerable to the impacts of extreme weather events. Extreme heat and wind coupled with dry conditions in Northern California may lead to power safety shut offs due to wildfire risk, which can have adverse implications for our Santa Clara, California headquarter offices and data…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:9ef59dcfc990092f07d24fc5931bebbb",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: We may not be able to realize the potential benefits of business investments or acquisitions, and we may not be able to successfully integrate acquired companies, which could hurt our ability to grow our business, develop new products or sell our products.",
+        "snippet": "We may not be able to realize the potential benefits of business investments or acquisitions, and we may not be able to successfully integrate acquired companies, which could hurt our ability to grow our business, develop new products or sell our products. We acquire and invest in businesses that offer products, services and technologies that we believe will help expand or enhance our strategic objectives. Acquisitions or investments involve significant challenges and risks and could impair our ability to grow our business, develop new products or sell our products and ultimately could have…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:d5a5113ee6da98085dcc5ed93bcf0ec5",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: We receive a significant amount of our revenue from a limited number of partners and distributors and we have a concentration of sales to customers who purchase directly or indirectly from us, and our revenue could be adversely affected if we lose or are prevented from ",
+        "snippet": "We receive a significant amount of our revenue from a limited number of partners and distributors and we have a concentration of sales to customers who purchase directly or indirectly from us, and our revenue could be adversely affected if we lose or are prevented from selling to any of these customers. We have experienced periods where we receive a significant amount of our revenue from a limited number of customers, and this trend may continue. For fiscal year 2026, sales to one direct customer represented 22% of total revenue and sales to another direct customer represented 14% of total…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:d0b9bcd4266141bfa196033a987eedbb",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: Commercial arrangements expose us to counterparty risks.",
+        "snippet": "Commercial arrangements expose us to counterparty risks. We have entered and may in the future enter into commercial arrangements, including long-term capacity purchase obligations and financial guarantees, and have been asked to offer financing arrangements to support our customers’ and partners’ buildout of datacenter infrastructure. We have not entered into any financing arrangements. Commercial arrangements expose us to counterparty risk, including customers' or partners' inability to fulfill their financial commitments and secure necessary financing or infrastructure, the occurrence of…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:8c4138ccc988df73f47fbfe226a9f15f",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: If we are unable to attract, retain and motivate our executives and key employees, our business may be harmed.",
+        "snippet": "If we are unable to attract, retain and motivate our executives and key employees, our business may be harmed. To remain competitive and successfully execute our business strategy, we must attract, retain, and motivate our executives and key employees, as well as recruit and develop exceptional talent. However, labor is subject to external factors that are beyond our control, including our industry’s increasingly highly competitive market for skilled workers and leaders, and workforce participation rates. Changes in immigration and work permit regulations, or in their administration or…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:24d90beb27053cc9ddb24038703fdf58",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: Our business is dependent upon the proper functioning of our business processes and information systems and modification or interruption of such systems may disrupt our business and internal controls.",
+        "snippet": "Our business is dependent upon the proper functioning of our business processes and information systems and modification or interruption of such systems may disrupt our business and internal controls. We rely upon internal processes and information systems to support key business functions, including our assessment of internal controls over financial reporting as required by Section 404 of the Sarbanes-Oxley Act. The efficient operation and scalability of these processes and systems is critical to support our growth. We continue to design and implement updated accounting functionality…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:ef55323f489f3b57ce2b04ffbf29a72f",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: Our operating results have in the past fluctuated and may in the future fluctuate, and if our operating results are below the expectations of securities analysts or investors, our stock price could decline.",
+        "snippet": "Our operating results have in the past fluctuated and may in the future fluctuate, and if our operating results are below the expectations of securities analysts or investors, our stock price could decline. Our operating results have in the past fluctuated and may continue to fluctuate due to a number of factors. Therefore, investors should not rely on our past results of operations as an indication of our future performance. Factors that could affect our results of operations include, but are not limited to: •our ability to adjust spending due to the multi-year development cycle for some of…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:04d71424346d17b5a51104b1526fe6d2",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: We are subject to complex laws, rules, regulations, and political and other actions, including restrictions on the export of our products, which may adversely impact our business.",
+        "snippet": "We are subject to complex laws, rules, regulations, and political and other actions, including restrictions on the export of our products, which may adversely impact our business. We are subject to laws and regulations domestically and worldwide, affecting our operations in areas including, but not limited to, IP ownership and infringement; taxes; import and export requirements and tariffs; anti-corruption, including the Foreign Corrupt Practices Act; business acquisitions; foreign exchange controls and cash repatriation restrictions; foreign ownership and investment; data privacy…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:f3f3ad2d594e0b582a25fed7f951117b",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: Scrutiny from shareholders, regulators and others regarding our corporate sustainability practices could result in additional costs or risks and adversely impact our reputation and willingness of customers and suppliers to do business with us.",
+        "snippet": "Scrutiny from shareholders, regulators and others regarding our corporate sustainability practices could result in additional costs or risks and adversely impact our reputation and willingness of customers and suppliers to do business with us. Certain shareholder advocacy groups, investment funds, shareholders and other market participants, customers and government regulators have focused on corporate sustainability practices and disclosures, including those associated with climate change and human rights. Stakeholders may not be satisfied with our corporate sustainability practices and…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:ebf62446f33b9e60aa2f7d0f60c0db0d",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: Issues relating to the responsible use of our technologies, including AI in our offerings, may result in reputational or financial harm and liability.",
+        "snippet": "Issues relating to the responsible use of our technologies, including AI in our offerings, may result in reputational or financial harm and liability. Concerns relating to the responsible use of new and evolving technologies, such as AI, in our products and services may result in reputational or financial harm and liability and may cause us to incur costs to resolve such issues. We are increasingly building AI capabilities and protections into many of our products and services, and we also offer stand-alone AI applications. AI poses emerging legal, social, and ethical issues and presents…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:4746aae57741f732ceae8119963099b4",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: Actions to adequately protect our IP rights could result in substantial costs to us and our ability to compete could be harmed if we are unsuccessful or if we are prohibited from making or selling our products.",
+        "snippet": "Actions to adequately protect our IP rights could result in substantial costs to us and our ability to compete could be harmed if we are unsuccessful or if we are prohibited from making or selling our products. From time to time, we are involved in lawsuits or other legal proceedings alleging patent infringement or other IP rights violations by us, our employees or parties that we have agreed to indemnify. An unfavorable ruling could include significant damages, invalidation of one or more patents, indemnification of third parties, payment of lost profits, or injunctive relief. Claims that…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:4cfc3922239a538e5aa095ee99008d07",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: We are subject to stringent and changing data privacy and security laws, rules, regulations and other obligations. These areas could damage our reputation, deter current and potential customers, affect our product design, or result in legal or regulatory proceedings and",
+        "snippet": "We are subject to stringent and changing data privacy and security laws, rules, regulations and other obligations. These areas could damage our reputation, deter current and potential customers, affect our product design, or result in legal or regulatory proceedings and liability. We process sensitive, confidential or personal data or information that is subject to privacy and security laws, regulations, industry standards, external and internal policies, contracts and other obligations that govern the processing of such data by us and on our behalf. Concerns about our practices or the…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:b4cb9b0f20263ceca9f363d0ffefee8c",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: We may have exposure to additional tax liabilities and our operating results may be adversely impacted by changes in tax laws, higher than expected tax rates and other tax-related factors.",
+        "snippet": "We may have exposure to additional tax liabilities and our operating results may be adversely impacted by changes in tax laws, higher than expected tax rates and other tax-related factors. We are subject to complex income tax laws and regulations, as well as non-income-based taxes, in various jurisdictions. Significant judgment is required in determining our worldwide provision for income taxes and other tax liabilities. We are regularly under audit by tax authorities in different jurisdictions. Although we believe our tax estimates are reasonable, any adverse outcome could increase our…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:4e825bf02db14648a48c20fb39a2cfba",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: Our business is exposed to the burden and risks associated with litigation, investigations and regulatory proceedings.",
+        "snippet": "Our business is exposed to the burden and risks associated with litigation, investigations and regulatory proceedings. We currently and will likely continue to face legal, administrative and regulatory proceedings, claims, demands and/or investigations involving shareholder, consumer, competition, intellectual property and/or other issues relating to our business. For example, we are defending a securities class action lawsuit from multiple shareholders asserting claims that we and certain of our officers made false and/or misleading statements related to channel inventory and the impact of…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       },
+       {
+        "source_id": "rf:3ad30c07571f7f6c42b376cca159ba8c",
+        "source_type": "risk_factor",
+        "ticker": "NVDA",
+        "title": "NVDA 10-K FY2026 risk factor: Delaware law and our certificate of incorporation, bylaws and agreement with Microsoft could delay or prevent a change in control.",
+        "snippet": "Delaware law and our certificate of incorporation, bylaws and agreement with Microsoft could delay or prevent a change in control. The anti-takeover provisions of the Delaware General Corporation Law may discourage, delay, or prevent a change in control. Provisions in our certificate of incorporation and bylaws could make it more difficult for a third party to acquire a majority of our outstanding stock. These provisions include the ability of our Board of Directors to create and issue preferred stock, change the number of directors, and to make, amend or repeal our bylaws without prior…",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-02-25",
+        "score": null
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 5218,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:direct",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5218,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "start",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5218,
+     "event": {
+      "event": "step_completed",
+      "step_id": "r1s2",
+      "status": "done",
+      "mode": "direct",
+      "summary": "get_risk_factors: 23 sources (direct calls)",
+      "error": null,
+      "reason": null,
+      "duration_ms": 833
+     }
+    },
+    {
+     "t_ms": 5375,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5389,
+     "event": {
+      "event": "tool_called",
+      "step_id": "r1s4",
+      "tool": "search_news",
+      "args": {
+       "query": "NVIDIA",
+       "tickers": [
+        "NVDA"
+       ],
+       "limit": 10
+      },
+      "ok": true,
+      "evidence": 10,
+      "reused": false
+     }
+    },
+    {
+     "t_ms": 5389,
+     "event": {
+      "event": "evidence_added",
+      "step_id": "r1s4",
+      "sources": [
+       {
+        "source_id": "news:3754a7788a48718c8ad9b9feb815d33e",
+        "source_type": "news",
+        "ticker": "NVDA",
+        "title": "Why Nvidia dominates AI, and what Huang's scandal could cost the firm",
+        "snippet": "Why Nvidia dominates AI, and what Huang's scandal could cost the firm. Nvidia is the world's biggest supplier of the high-end chips used for AI and data centres, with some estimates putting its market share over 80%",
+        "url": "https://www.business-standard.com/world-news/why-nvidia-dominates-ai-and-what-huang-s-scandal-could-cost-the-firm-126111100466_1.html",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-11T06:33:05Z",
+        "score": 0.813
+       },
+       {
+        "source_id": "news:fb49fee0b017243c4e06987d6cfb3cab",
+        "source_type": "news",
+        "ticker": "NVDA",
+        "title": "Nvidia has no clear successor to Jensen Huang. Who could take over?",
+        "snippet": "Nvidia has no clear successor to Jensen Huang. Who could take over?. An investigation into whether Huang was targeted by a foreign intelligence effort following reports of his affair has brought Nvidia's succession plans into focus",
+        "url": "https://www.business-standard.com/world-news/nvidia-has-no-clear-successor-to-jensen-huang-who-could-take-over-126111100336_1.html",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-11T05:46:54Z",
+        "score": 0.792
+       },
+       {
+        "source_id": "news:f51165feb734faca3d378dab5454e402",
+        "source_type": "news",
+        "ticker": "NVDA",
+        "title": "Nvidia RTX 5080 24 GB reportedly canceled in China due to soaring GDDR7 costs",
+        "snippet": "Nvidia RTX 5080 24 GB reportedly canceled in China due to soaring GDDR7 costs. Nvidia has reportedly abandoned the planned January 2027 Chinese launch of its GeForce RTX 5080 24 GB, according to a new supply-chain leak. Prohibitively expensive 3 GB GDDR7 memory modules are allegedly responsible, prompting Nvidia to continue offering the…",
+        "url": "https://www.notebookcheck.net/Nvidia-RTX-5080-24-GB-reportedly-canceled-in-China-due-to-soaring-GDDR7-costs.1447776.0.html",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-11T09:02:00Z",
+        "score": 0.791
+       },
+       {
+        "source_id": "news:47efab5be35355003f1724cb6fa58de3",
+        "source_type": "news",
+        "ticker": "NVDA",
+        "title": "Robotics engineer leaves Nvidia over lack of transparency around Jensen Huang’s exit, details decision",
+        "snippet": "Robotics engineer leaves Nvidia over lack of transparency around Jensen Huang’s exit, details decision. Dai's post shows how much Nvidia employees looked up to the former CEO.",
+        "url": "https://www.tomshardware.com/tech-industry/robotics-engineer-leaves-nvidia-over-lack-of-transparency-around-jensen-huangs-exit-details-decision-joins-chorus-of-disgruntled-staff-as-petition-to-reinstate-former-ceo-passes-150-000-signatures",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-15T17:56:15Z",
+        "score": 0.788
+       },
+       {
+        "source_id": "news:fab8700f8435c0b85f416bcc0e61ef98",
+        "source_type": "news",
+        "ticker": "NVDA",
+        "title": "Baird cuts Nvidia price target to $200, cites AI slowdown concerns",
+        "snippet": "Baird cuts Nvidia price target to $200, cites AI slowdown concerns. Nvidia's growth outlook faces uncertainty, potentially impacting investor confidence and market dynamics amid AI and supply chain challenges. The post Baird cuts Nvidia price target to $200, cites AI slowdown concerns appeared first on Crypto Briefing.",
+        "url": "https://cryptobriefing.com/baird-cuts-nvidia-price-target-to-200-cites-ai-slowdown-concerns/",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-11T11:44:42Z",
+        "score": 0.787
+       },
+       {
+        "source_id": "news:6105156079087030e1f1de537225fe13",
+        "source_type": "news",
+        "ticker": "NVDA",
+        "title": "Rumored GPU price spikes could see Nvidia RTX 5080 rise as high as $3,000",
+        "snippet": "Rumored GPU price spikes could see Nvidia RTX 5080 rise as high as $3,000. Nvidia abandons planned 24GB GDDR7 RTX 5080 variant as memory costs soar, leaving gamers facing longer waits.",
+        "url": "https://www.makeuseof.com/rumored-gpu-price-spikes-could-see-nvidia-rtx-5080-rise-as-high-as-3000/",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-11T11:15:32Z",
+        "score": 0.786
+       },
+       {
+        "source_id": "news:73b24254057269987c5d08d113bd8742",
+        "source_type": "news",
+        "ticker": "NVDA",
+        "title": "Nvidia earnings report on Nov. 17 amid leadership change and AI demand focus",
+        "snippet": "Nvidia earnings report on Nov. 17 amid leadership change and AI demand focus. Nvidia's leadership shift and AI demand scrutiny could reshape its strategic path, impacting market dynamics and competitive positioning. The post Nvidia earnings report on Nov. 17 amid leadership change and AI demand focus appeared first on Crypto Briefing.",
+        "url": "https://cryptobriefing.com/nvidia-earnings-report-on-nov-17-amid-leadership-change-and-ai-demand-focus/",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-15T17:33:49Z",
+        "score": 0.784
+       },
+       {
+        "source_id": "news:1f418377afb316d7d146674803e53d0d",
+        "source_type": "news",
+        "ticker": "NVDA",
+        "title": "PLA-linked Chinese university bought Nvidia H200 chips despite US blacklist, records show",
+        "snippet": "PLA-linked Chinese university bought Nvidia H200 chips despite US blacklist, records show. China's blacklisted Northwestern Polytechnical University bought Nvidia's H200 AI chips despite US export controls, procurement records show.",
+        "url": "https://nypost.com/2026/11/11/business/pla-linked-chinese-university-bought-nvidia-h200-chips-despite-us-blacklist-records-show/",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-11T08:31:00Z",
+        "score": 0.782
+       },
+       {
+        "source_id": "news:8fb26654e521a3c5a9c04709d4450478",
+        "source_type": "news",
+        "ticker": "NVDA",
+        "title": "Asus launches Nvidia RTX Spark-powered ProArt series laptops: Hands-on",
+        "snippet": "Asus launches Nvidia RTX Spark-powered ProArt series laptops: Hands-on. Asus ProArt Laptops: Asus has launched the ProArt P14 and P16 in India with Nvidia RTX Spark N1X computing, OLED touchscreens and up to 128GB unified memory, targeting content creators and AI developers",
+        "url": "https://www.business-standard.com/technology/gadgets/asus-launches-nvidia-rtx-spark-powered-proart-series-laptops-hands-on-126110300959_1.html",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-03T09:18:52Z",
+        "score": 0.781
+       },
+       {
+        "source_id": "news:d890b987e35db27a862691d9226fbde5",
+        "source_type": "news",
+        "ticker": "NVDA",
+        "title": "Nvidia faces deepening scrutiny over China chip ties, CEO affair",
+        "snippet": "Nvidia faces deepening scrutiny over China chip ties, CEO affair. The controversy surrounding Nvidia CEO Jensen Huang's affair with a suspected Chinese spy escalated on several fronts on Tuesday (Nov 10) as allegations emerged that his relationship with Alice Huang aided at least US$7.5 billion in Nvidia chip shipments to C…",
+        "url": "https://www.channelnewsasia.com/world/jensen-huang-nvidia-affair-scrutiny-china-alice-6539171",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-11T10:17:03Z",
+        "score": 0.779
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 5389,
+     "event": {
+      "event": "node",
+      "node": "news_agent:direct",
+      "phase": "end",
+      "step_id": "r1s4",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5389,
+     "event": {
+      "event": "node",
+      "node": "news_agent:finish",
+      "phase": "start",
+      "step_id": "r1s4",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5389,
+     "event": {
+      "event": "step_completed",
+      "step_id": "r1s4",
+      "status": "done",
+      "mode": "direct",
+      "summary": "search_news: 10 sources (direct calls)",
+      "error": null,
+      "reason": null,
+      "duration_ms": 1025
+     }
+    },
+    {
+     "t_ms": 5389,
+     "event": {
+      "event": "tool_called",
+      "step_id": "r1s3",
+      "tool": "search_news",
+      "args": {
+       "query": "AMD",
+       "tickers": [
+        "AMD"
+       ],
+       "limit": 10
+      },
+      "ok": true,
+      "evidence": 10,
+      "reused": false
+     }
+    },
+    {
+     "t_ms": 5389,
+     "event": {
+      "event": "evidence_added",
+      "step_id": "r1s3",
+      "sources": [
+       {
+        "source_id": "news:02245dc7ef60ac58896eef48fd8a1f1a",
+        "source_type": "news",
+        "ticker": "AMD",
+        "title": "(PR) AMD Showcases 6th Gen EPYC Server SP7 Processors Based on the New Zen 6 Architecture",
+        "snippet": "(PR) AMD Showcases 6th Gen EPYC Server SP7 Processors Based on the New Zen 6 Architecture. AMD (NASDAQ: AMD) today announced the general availability of the 6th Gen AMD EPYC server SP7 processors, based on the new \"Zen 6\" architecture, extending its historical server CPU performance leadership as AI creates new demands across the data center. Syste…",
+        "url": "https://www.techpowerup.com/354657/amd-showcases-6th-gen-epyc-server-sp7-processors-based-on-the-new-zen-6-architecture",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-10T17:56:44Z",
+        "score": 0.826
+       },
+       {
+        "source_id": "news:801b18a4b5235ce7784f94a863b7e37d",
+        "source_type": "news",
+        "ticker": "AMD",
+        "title": "AMD brings Zen 6 architecture muscle to embedded systems with new EPYC 9006 series chips",
+        "snippet": "AMD brings Zen 6 architecture muscle to embedded systems with new EPYC 9006 series chips. Advanced Micro Devices Inc. is delivering a massive compute upgrade to the specialized embedded systems used to validate semiconductor technologies with the launch of its 6th Gen AMD EPYC Embedded 9006 Series SP7 processors. Announced today, the new chips are…",
+        "url": "https://siliconangle.com/2026/11/10/amd-brings-zen-6-architecture-muscle-to-embedded-systems-with-new-epyc-9006-series-chips/",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-10T17:00:43Z",
+        "score": 0.815
+       },
+       {
+        "source_id": "news:72540aafbc44cb70966093d5edada8b8",
+        "source_type": "news",
+        "ticker": "AMD",
+        "title": "AMD lands a key role in Google’s new TPU 8tx AI system",
+        "snippet": "AMD lands a key role in Google’s new TPU 8tx AI system. AMD's enhanced security features in confidential computing could set a precedent for cloud providers, potentially expanding its market influence. The post AMD lands a key role in Google’s new TPU 8tx AI system appeared first on Crypto Briefing.",
+        "url": "https://cryptobriefing.com/amd-google-tpu-8tx-epyc-partnership/",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-15T13:28:57Z",
+        "score": 0.807
+       },
+       {
+        "source_id": "news:e73f4e4245a707f3d3c1487dc5ff6ce6",
+        "source_type": "news",
+        "ticker": "AMD",
+        "title": "AMD outperforms Nvidia by 53.2 points in five trading days",
+        "snippet": "AMD outperforms Nvidia by 53.2 points in five trading days. The significant market shift suggests evolving investor confidence in AMD's growth potential, challenging Nvidia's dominance in AI hardware. The post AMD outperforms Nvidia by 53.2 points in five trading days appeared first on Crypto Briefing.",
+        "url": "https://cryptobriefing.com/amd-outperforms-nvidia-53-points-five-days/",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-13T15:00:31Z",
+        "score": 0.801
+       },
+       {
+        "source_id": "news:5fd428c91123b80ba6747c67a35972d7",
+        "source_type": "news",
+        "ticker": "AMD",
+        "title": "(PR) AMD Unveils 6th Gen EPYC Embedded Processors",
+        "snippet": "(PR) AMD Unveils 6th Gen EPYC Embedded Processors. What's the News? AMD announced the AMD EPYC Embedded 9006 Series SP7 CPUs, expanding its x86 processor portfolio optimized for embedded customer requirements and deployments. Advanced by the high-performance \"Zen 6\" core architecture, AMD EPYC Embedded 9006 C…",
+        "url": "https://www.techpowerup.com/354660/amd-unveils-6th-gen-epyc-embedded-processors",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-10T18:49:03Z",
+        "score": 0.798
+       },
+       {
+        "source_id": "news:a0807d1c02a2b9757d18a142712ecfcd",
+        "source_type": "news",
+        "ticker": "AMD",
+        "title": "AMD Unveils MEXT Memory Solution: Leverages Flash To Mitigate DRAM Costs While Expanding Capacities & Retaining Similar Performance Even With 50% Cut In DDR5",
+        "snippet": "AMD Unveils MEXT Memory Solution: Leverages Flash To Mitigate DRAM Costs While Expanding Capacities & Retaining Similar Performance Even With 50% Cut In DDR5. AMD MEXT is a brand new memory solution that utilizes Flash to mitigate DRAM costs and supply concerns across EPYC CPUs. AMD MEXT Aims To Address The Ongoing DRAM Crisis Through An Innovative \"Flash-Based\" Memory Solution The memory supercycle continues to ra…",
+        "url": "https://wccftech.com/amd-mext-memory-solution-flash-repaces-dram-same-performance/",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-10T17:00:37Z",
+        "score": 0.794
+       },
+       {
+        "source_id": "news:db3211188bea9a10af53d5a66590fdc9",
+        "source_type": "news",
+        "ticker": "AMD",
+        "title": "AMD's 'Zen 6' Architecture Detailed: EPYC Data Center Chips Get Dibs, But Ryzens Might Benefit, Too",
+        "snippet": "AMD's 'Zen 6' Architecture Detailed: EPYC Data Center Chips Get Dibs, But Ryzens Might Benefit, Too. AMD outlines its new microarchitecture, with the potential for 12-core chiplets, more L3 cache, and PCI Express 6.0 support. Expect it first in upcoming EPYC server chips, but here's what future Ryzens might tap into. AMD is leveling up its Zen microarchitect…",
+        "url": "https://me.pcmag.com/en/processors/38588/amds-zen-6-architecture-detailed-epyc-data-center-chips-get-dibs-but-ryzens-might-benefit-too",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-11T04:08:55Z",
+        "score": 0.79
+       },
+       {
+        "source_id": "news:6685bef7c852771258607ad136507d26",
+        "source_type": "news",
+        "ticker": "AMD",
+        "title": "Intel Earnings, AMD Earnings, Intel and AMD’s Divergence",
+        "snippet": "Intel Earnings, AMD Earnings, Intel and AMD’s Divergence. Intel and AMD's diverging earnings point to fundamental historical differences, and make me wonder if Intel needs to find a new (old) path.",
+        "url": "https://stratechery.com/2026/intel-earnings-amd-earnings-intel-and-amds-divergence/",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-11T11:00:00Z",
+        "score": 0.788
+       },
+       {
+        "source_id": "news:fca7298de5e66eac2a937d29e4f843f6",
+        "source_type": "news",
+        "ticker": "AMD",
+        "title": "AMD vs. Nvidia stock: AMD beats NVDA by a record 53.2 percentage points in five days as Jensen Huang crisis shakes AI stocks – should investors buy AMD after its rally or Nvidia after the selloff?",
+        "snippet": "AMD vs. Nvidia stock: AMD beats NVDA by a record 53.2 percentage points in five days as Jensen Huang crisis shakes AI stocks – should investors buy AMD after its rally or Nvidia after the selloff?. AMD vs. Nvidia stock: AMD has beaten Nvidia by a record 53.2 percentage points in five trading sessions, gaining 44.7% as Nvidia lost 8.5%. Jensen Huang’s sudden exit has shaken investor confidence in Nvidia. AMD’s record rally faces fresh pressure after Frid…",
+        "url": "https://economictimes.indiatimes.com/news/international/us/amd-vs-nvidia-stock-amd-beats-nvda-by-a-record-53-2-percentage-points-in-five-days-as-jensen-huang-crisis-shakes-ai-stocks-should-investors-buy-amd-after-its-rally-or-nvidia-after-the-selloff/articleshow/135809391.cms",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-13T16:32:19Z",
+        "score": 0.778
+       },
+       {
+        "source_id": "news:6f9613498dc08373c06bf83ba43257ef",
+        "source_type": "news",
+        "ticker": "AMD",
+        "title": "AMD set to report Q3 results as AI hopes collide with a chip selloff",
+        "snippet": "AMD set to report Q3 results as AI hopes collide with a chip selloff. AMD's Q3 results will be pivotal in gauging AI-driven growth potential amid sector volatility, influencing broader chip market sentiment. The post AMD set to report Q3 results as AI hopes collide with a chip selloff appeared first on Crypto Briefing.",
+        "url": "https://cryptobriefing.com/amd-q3-earnings-ai-growth-expectations/",
+        "form_type": null,
+        "fiscal_year": null,
+        "section": null,
+        "filed_or_published": "2026-11-02T22:27:55Z",
+        "score": 0.777
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 5389,
+     "event": {
+      "event": "node",
+      "node": "news_agent:finish",
+      "phase": "end",
+      "step_id": "r1s4",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5389,
+     "event": {
+      "event": "node",
+      "node": "news_agent:direct",
+      "phase": "end",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5389,
+     "event": {
+      "event": "node",
+      "node": "news_agent:finish",
+      "phase": "start",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5389,
+     "event": {
+      "event": "step_completed",
+      "step_id": "r1s3",
+      "status": "done",
+      "mode": "direct",
+      "summary": "search_news: 10 sources (direct calls)",
+      "error": null,
+      "reason": null,
+      "duration_ms": 1030
+     }
+    },
+    {
+     "t_ms": 5389,
+     "event": {
+      "event": "node",
+      "node": "news_agent:finish",
+      "phase": "end",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5608,
+     "event": {
+      "event": "node",
+      "node": "filings_agent",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5608,
+     "event": {
+      "event": "node",
+      "node": "filings_agent",
+      "phase": "end",
+      "step_id": "r1s2",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5608,
+     "event": {
+      "event": "node",
+      "node": "news_agent",
+      "phase": "end",
+      "step_id": "r1s3",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5608,
+     "event": {
+      "event": "node",
+      "node": "news_agent",
+      "phase": "end",
+      "step_id": "r1s4",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5608,
+     "event": {
+      "event": "node",
+      "node": "join",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5608,
+     "event": {
+      "event": "node",
+      "node": "join",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5608,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5608,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 5608,
+     "event": {
+      "event": "node",
+      "node": "critic",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 6875,
+     "event": {
+      "event": "critique",
+      "verdict": "ok",
+      "gaps": [],
+      "replanning": false
+     }
+    },
+    {
+     "t_ms": 6875,
+     "event": {
+      "event": "node",
+      "node": "critic",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 6875,
+     "event": {
+      "event": "node",
+      "node": "synthesizer",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "AMD"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "10"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "K"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": " ("
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "Form"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "10"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "K"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": " filed"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "4"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "Feb"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": ")**"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": " The"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": " markets"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 35686,
+     "event": {
+      "event": "token",
+      "text": " which"
+     }
+    },
+    {
+     "t_ms": 35702,
+     "event": {
+      "event": "token",
+      "text": " our"
+     }
+    },
+    {
+     "t_ms": 35702,
+     "event": {
+      "event": "token",
+      "text": " products"
+     }
+    },
+    {
+     "t_ms": 35702,
+     "event": {
+      "event": "token",
+      "text": " are"
+     }
+    },
+    {
+     "t_ms": 35702,
+     "event": {
+      "event": "token",
+      "text": " sold"
+     }
+    },
+    {
+     "t_ms": 35702,
+     "event": {
+      "event": "token",
+      "text": " are"
+     }
+    },
+    {
+     "t_ms": 35702,
+     "event": {
+      "event": "token",
+      "text": " highly"
+     }
+    },
+    {
+     "t_ms": 35702,
+     "event": {
+      "event": "token",
+      "text": " competitive"
+     }
+    },
+    {
+     "t_ms": 35702,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 35718,
+     "event": {
+      "event": "token",
+      "text": " rapidly"
+     }
+    },
+    {
+     "t_ms": 35718,
+     "event": {
+      "event": "token",
+      "text": " evolving"
+     }
+    },
+    {
+     "t_ms": 35718,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 35718,
+     "event": {
+      "event": "token",
+      "text": "1"
+     }
+    },
+    {
+     "t_ms": 35718,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 35718,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 35733,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 35733,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 35733,
+     "event": {
+      "event": "token",
+      "text": " The"
+     }
+    },
+    {
+     "t_ms": 35733,
+     "event": {
+      "event": "token",
+      "text": " semiconductor"
+     }
+    },
+    {
+     "t_ms": 35733,
+     "event": {
+      "event": "token",
+      "text": " industry"
+     }
+    },
+    {
+     "t_ms": 35733,
+     "event": {
+      "event": "token",
+      "text": " is"
+     }
+    },
+    {
+     "t_ms": 35733,
+     "event": {
+      "event": "token",
+      "text": " highly"
+     }
+    },
+    {
+     "t_ms": 35733,
+     "event": {
+      "event": "token",
+      "text": " cyc"
+     }
+    },
+    {
+     "t_ms": 35750,
+     "event": {
+      "event": "token",
+      "text": "lical"
+     }
+    },
+    {
+     "t_ms": 35750,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 35750,
+     "event": {
+      "event": "token",
+      "text": " has"
+     }
+    },
+    {
+     "t_ms": 35750,
+     "event": {
+      "event": "token",
+      "text": " experienced"
+     }
+    },
+    {
+     "t_ms": 35750,
+     "event": {
+      "event": "token",
+      "text": " severe"
+     }
+    },
+    {
+     "t_ms": 35750,
+     "event": {
+      "event": "token",
+      "text": " downturn"
+     }
+    },
+    {
+     "t_ms": 35750,
+     "event": {
+      "event": "token",
+      "text": "s"
+     }
+    },
+    {
+     "t_ms": 35750,
+     "event": {
+      "event": "token",
+      "text": " that"
+     }
+    },
+    {
+     "t_ms": 35750,
+     "event": {
+      "event": "token",
+      "text": " have"
+     }
+    },
+    {
+     "t_ms": 35764,
+     "event": {
+      "event": "token",
+      "text": " materially"
+     }
+    },
+    {
+     "t_ms": 35764,
+     "event": {
+      "event": "token",
+      "text": " adversely"
+     }
+    },
+    {
+     "t_ms": 35764,
+     "event": {
+      "event": "token",
+      "text": " affected"
+     }
+    },
+    {
+     "t_ms": 35764,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 35764,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 35764,
+     "event": {
+      "event": "token",
+      "text": " may"
+     }
+    },
+    {
+     "t_ms": 35764,
+     "event": {
+      "event": "token",
+      "text": " continue"
+     }
+    },
+    {
+     "t_ms": 35780,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 35780,
+     "event": {
+      "event": "token",
+      "text": " materially"
+     }
+    },
+    {
+     "t_ms": 35780,
+     "event": {
+      "event": "token",
+      "text": " adversely"
+     }
+    },
+    {
+     "t_ms": 35780,
+     "event": {
+      "event": "token",
+      "text": " affect"
+     }
+    },
+    {
+     "t_ms": 35780,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 35780,
+     "event": {
+      "event": "token",
+      "text": " our"
+     }
+    },
+    {
+     "t_ms": 35780,
+     "event": {
+      "event": "token",
+      "text": " business"
+     }
+    },
+    {
+     "t_ms": 35780,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 35796,
+     "event": {
+      "event": "token",
+      "text": "3"
+     }
+    },
+    {
+     "t_ms": 35796,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 35796,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 35796,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 35796,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 35796,
+     "event": {
+      "event": "token",
+      "text": " The"
+     }
+    },
+    {
+     "t_ms": 35796,
+     "event": {
+      "event": "token",
+      "text": " loss"
+     }
+    },
+    {
+     "t_ms": 35811,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 35811,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 35811,
+     "event": {
+      "event": "token",
+      "text": " significant"
+     }
+    },
+    {
+     "t_ms": 35811,
+     "event": {
+      "event": "token",
+      "text": " customer"
+     }
+    },
+    {
+     "t_ms": 35811,
+     "event": {
+      "event": "token",
+      "text": " may"
+     }
+    },
+    {
+     "t_ms": 35811,
+     "event": {
+      "event": "token",
+      "text": " have"
+     }
+    },
+    {
+     "t_ms": 35811,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 35811,
+     "event": {
+      "event": "token",
+      "text": " material"
+     }
+    },
+    {
+     "t_ms": 35827,
+     "event": {
+      "event": "token",
+      "text": " adverse"
+     }
+    },
+    {
+     "t_ms": 35827,
+     "event": {
+      "event": "token",
+      "text": " effect"
+     }
+    },
+    {
+     "t_ms": 35827,
+     "event": {
+      "event": "token",
+      "text": " on"
+     }
+    },
+    {
+     "t_ms": 35827,
+     "event": {
+      "event": "token",
+      "text": " us"
+     }
+    },
+    {
+     "t_ms": 35827,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 35827,
+     "event": {
+      "event": "token",
+      "text": "9"
+     }
+    },
+    {
+     "t_ms": 35827,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 35843,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 35843,
+     "event": {
+      "event": "token",
+      "text": "  \n\n"
+     }
+    },
+    {
+     "t_ms": 35843,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 35843,
+     "event": {
+      "event": "token",
+      "text": "N"
+     }
+    },
+    {
+     "t_ms": 35843,
+     "event": {
+      "event": "token",
+      "text": "VIDIA"
+     }
+    },
+    {
+     "t_ms": 35843,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 35843,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 35843,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 35858,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 35858,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 35858,
+     "event": {
+      "event": "token",
+      "text": "10"
+     }
+    },
+    {
+     "t_ms": 35858,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 35858,
+     "event": {
+      "event": "token",
+      "text": "K"
+     }
+    },
+    {
+     "t_ms": 35858,
+     "event": {
+      "event": "token",
+      "text": " ("
+     }
+    },
+    {
+     "t_ms": 35858,
+     "event": {
+      "event": "token",
+      "text": "Form"
+     }
+    },
+    {
+     "t_ms": 35875,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 35875,
+     "event": {
+      "event": "token",
+      "text": "10"
+     }
+    },
+    {
+     "t_ms": 35875,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 35875,
+     "event": {
+      "event": "token",
+      "text": "K"
+     }
+    },
+    {
+     "t_ms": 35875,
+     "event": {
+      "event": "token",
+      "text": " filed"
+     }
+    },
+    {
+     "t_ms": 35875,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": "25"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": "Feb"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": ")**"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": " Competition"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": " could"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": " adversely"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": " impact"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": " our"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": " market"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": " share"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": " financial"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": " results"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": "2"
+     }
+    },
+    {
+     "t_ms": 35921,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 35936,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 35936,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 35936,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 35936,
+     "event": {
+      "event": "token",
+      "text": " Long"
+     }
+    },
+    {
+     "t_ms": 35936,
+     "event": {
+      "event": "token",
+      "text": " manufacturing"
+     }
+    },
+    {
+     "t_ms": 35936,
+     "event": {
+      "event": "token",
+      "text": " lead"
+     }
+    },
+    {
+     "t_ms": 35936,
+     "event": {
+      "event": "token",
+      "text": " times"
+     }
+    },
+    {
+     "t_ms": 35952,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 35952,
+     "event": {
+      "event": "token",
+      "text": " uncertain"
+     }
+    },
+    {
+     "t_ms": 35952,
+     "event": {
+      "event": "token",
+      "text": " supply"
+     }
+    },
+    {
+     "t_ms": 35952,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 35952,
+     "event": {
+      "event": "token",
+      "text": " capacity"
+     }
+    },
+    {
+     "t_ms": 35952,
+     "event": {
+      "event": "token",
+      "text": " availability"
+     }
+    },
+    {
+     "t_ms": 35952,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 35952,
+     "event": {
+      "event": "token",
+      "text": " combined"
+     }
+    },
+    {
+     "t_ms": 35952,
+     "event": {
+      "event": "token",
+      "text": " with"
+     }
+    },
+    {
+     "t_ms": 35952,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 35968,
+     "event": {
+      "event": "token",
+      "text": " failure"
+     }
+    },
+    {
+     "t_ms": 35968,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 35968,
+     "event": {
+      "event": "token",
+      "text": " estimate"
+     }
+    },
+    {
+     "t_ms": 35968,
+     "event": {
+      "event": "token",
+      "text": " customer"
+     }
+    },
+    {
+     "t_ms": 35968,
+     "event": {
+      "event": "token",
+      "text": " demand"
+     }
+    },
+    {
+     "t_ms": 35968,
+     "event": {
+      "event": "token",
+      "text": " accurately"
+     }
+    },
+    {
+     "t_ms": 35968,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 35968,
+     "event": {
+      "event": "token",
+      "text": " could"
+     }
+    },
+    {
+     "t_ms": 35968,
+     "event": {
+      "event": "token",
+      "text": " lead"
+     }
+    },
+    {
+     "t_ms": 35983,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 35983,
+     "event": {
+      "event": "token",
+      "text": " mism"
+     }
+    },
+    {
+     "t_ms": 35983,
+     "event": {
+      "event": "token",
+      "text": "atches"
+     }
+    },
+    {
+     "t_ms": 35983,
+     "event": {
+      "event": "token",
+      "text": " between"
+     }
+    },
+    {
+     "t_ms": 35983,
+     "event": {
+      "event": "token",
+      "text": " supply"
+     }
+    },
+    {
+     "t_ms": 35983,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 35983,
+     "event": {
+      "event": "token",
+      "text": " demand"
+     }
+    },
+    {
+     "t_ms": 36000,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 36000,
+     "event": {
+      "event": "token",
+      "text": "4"
+     }
+    },
+    {
+     "t_ms": 36000,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 36000,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 36000,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 36000,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 36000,
+     "event": {
+      "event": "token",
+      "text": " Ad"
+     }
+    },
+    {
+     "t_ms": 36000,
+     "event": {
+      "event": "token",
+      "text": "verse"
+     }
+    },
+    {
+     "t_ms": 36014,
+     "event": {
+      "event": "token",
+      "text": " economic"
+     }
+    },
+    {
+     "t_ms": 36014,
+     "event": {
+      "event": "token",
+      "text": " conditions"
+     }
+    },
+    {
+     "t_ms": 36014,
+     "event": {
+      "event": "token",
+      "text": " may"
+     }
+    },
+    {
+     "t_ms": 36014,
+     "event": {
+      "event": "token",
+      "text": " harm"
+     }
+    },
+    {
+     "t_ms": 36014,
+     "event": {
+      "event": "token",
+      "text": " our"
+     }
+    },
+    {
+     "t_ms": 36014,
+     "event": {
+      "event": "token",
+      "text": " business"
+     }
+    },
+    {
+     "t_ms": 36014,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 36030,
+     "event": {
+      "event": "token",
+      "text": "10"
+     }
+    },
+    {
+     "t_ms": 36030,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 36030,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 36030,
+     "event": {
+      "event": "token",
+      "text": "  \n\n"
+     }
+    },
+    {
+     "t_ms": 36030,
+     "event": {
+      "event": "token",
+      "text": "###"
+     }
+    },
+    {
+     "t_ms": 36030,
+     "event": {
+      "event": "token",
+      "text": " Recent"
+     }
+    },
+    {
+     "t_ms": 36046,
+     "event": {
+      "event": "token",
+      "text": " news"
+     }
+    },
+    {
+     "t_ms": 36046,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 36046,
+     "event": {
+      "event": "token",
+      "text": " support"
+     }
+    },
+    {
+     "t_ms": 36046,
+     "event": {
+      "event": "token",
+      "text": " for"
+     }
+    },
+    {
+     "t_ms": 36046,
+     "event": {
+      "event": "token",
+      "text": " disclosed"
+     }
+    },
+    {
+     "t_ms": 36046,
+     "event": {
+      "event": "token",
+      "text": " risks"
+     }
+    },
+    {
+     "t_ms": 36046,
+     "event": {
+      "event": "token",
+      "text": "  \n\n"
+     }
+    },
+    {
+     "t_ms": 36046,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 36046,
+     "event": {
+      "event": "token",
+      "text": " Company"
+     }
+    },
+    {
+     "t_ms": 36061,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36061,
+     "event": {
+      "event": "token",
+      "text": " Risk"
+     }
+    },
+    {
+     "t_ms": 36061,
+     "event": {
+      "event": "token",
+      "text": " factor"
+     }
+    },
+    {
+     "t_ms": 36061,
+     "event": {
+      "event": "token",
+      "text": " ("
+     }
+    },
+    {
+     "t_ms": 36061,
+     "event": {
+      "event": "token",
+      "text": "top"
+     }
+    },
+    {
+     "t_ms": 36061,
+     "event": {
+      "event": "token",
+      "text": ")"
+     }
+    },
+    {
+     "t_ms": 36061,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36061,
+     "event": {
+      "event": "token",
+      "text": " Recent"
+     }
+    },
+    {
+     "t_ms": 36077,
+     "event": {
+      "event": "token",
+      "text": " news"
+     }
+    },
+    {
+     "t_ms": 36077,
+     "event": {
+      "event": "token",
+      "text": " that"
+     }
+    },
+    {
+     "t_ms": 36077,
+     "event": {
+      "event": "token",
+      "text": " directly"
+     }
+    },
+    {
+     "t_ms": 36077,
+     "event": {
+      "event": "token",
+      "text": " supports"
+     }
+    },
+    {
+     "t_ms": 36077,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 36077,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 36077,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36093,
+     "event": {
+      "event": "token",
+      "text": " News"
+     }
+    },
+    {
+     "t_ms": 36093,
+     "event": {
+      "event": "token",
+      "text": " date"
+     }
+    },
+    {
+     "t_ms": 36093,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 36093,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 36093,
+     "event": {
+      "event": "token",
+      "text": "---------"
+     }
+    },
+    {
+     "t_ms": 36093,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 36093,
+     "event": {
+      "event": "token",
+      "text": "----------------"
+     }
+    },
+    {
+     "t_ms": 36093,
+     "event": {
+      "event": "token",
+      "text": "---"
+     }
+    },
+    {
+     "t_ms": 36108,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 36108,
+     "event": {
+      "event": "token",
+      "text": "--------------------------------"
+     }
+    },
+    {
+     "t_ms": 36108,
+     "event": {
+      "event": "token",
+      "text": "------------"
+     }
+    },
+    {
+     "t_ms": 36108,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 36108,
+     "event": {
+      "event": "token",
+      "text": "-----------"
+     }
+    },
+    {
+     "t_ms": 36108,
+     "event": {
+      "event": "token",
+      "text": "|\n"
+     }
+    },
+    {
+     "t_ms": 36108,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 36125,
+     "event": {
+      "event": "token",
+      "text": " AMD"
+     }
+    },
+    {
+     "t_ms": 36125,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36125,
+     "event": {
+      "event": "token",
+      "text": " Competition"
+     }
+    },
+    {
+     "t_ms": 36125,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36125,
+     "event": {
+      "event": "token",
+      "text": " “"
+     }
+    },
+    {
+     "t_ms": 36125,
+     "event": {
+      "event": "token",
+      "text": "AMD"
+     }
+    },
+    {
+     "t_ms": 36125,
+     "event": {
+      "event": "token",
+      "text": " out"
+     }
+    },
+    {
+     "t_ms": 36125,
+     "event": {
+      "event": "token",
+      "text": "per"
+     }
+    },
+    {
+     "t_ms": 36139,
+     "event": {
+      "event": "token",
+      "text": "forms"
+     }
+    },
+    {
+     "t_ms": 36139,
+     "event": {
+      "event": "token",
+      "text": " Nvidia"
+     }
+    },
+    {
+     "t_ms": 36139,
+     "event": {
+      "event": "token",
+      "text": " by"
+     }
+    },
+    {
+     "t_ms": 36139,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36139,
+     "event": {
+      "event": "token",
+      "text": "53"
+     }
+    },
+    {
+     "t_ms": 36139,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 36139,
+     "event": {
+      "event": "token",
+      "text": "2"
+     }
+    },
+    {
+     "t_ms": 36155,
+     "event": {
+      "event": "token",
+      "text": " points"
+     }
+    },
+    {
+     "t_ms": 36155,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 36155,
+     "event": {
+      "event": "token",
+      "text": " five"
+     }
+    },
+    {
+     "t_ms": 36155,
+     "event": {
+      "event": "token",
+      "text": " trading"
+     }
+    },
+    {
+     "t_ms": 36155,
+     "event": {
+      "event": "token",
+      "text": " days"
+     }
+    },
+    {
+     "t_ms": 36155,
+     "event": {
+      "event": "token",
+      "text": "”"
+     }
+    },
+    {
+     "t_ms": 36155,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 36171,
+     "event": {
+      "event": "token",
+      "text": " highlights"
+     }
+    },
+    {
+     "t_ms": 36171,
+     "event": {
+      "event": "token",
+      "text": " competitive"
+     }
+    },
+    {
+     "t_ms": 36171,
+     "event": {
+      "event": "token",
+      "text": " dynamics"
+     }
+    },
+    {
+     "t_ms": 36171,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 36171,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 36171,
+     "event": {
+      "event": "token",
+      "text": " market"
+     }
+    },
+    {
+     "t_ms": 36186,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 36186,
+     "event": {
+      "event": "token",
+      "text": "23"
+     }
+    },
+    {
+     "t_ms": 36186,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 36186,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 36186,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36186,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36186,
+     "event": {
+      "event": "token",
+      "text": "13"
+     }
+    },
+    {
+     "t_ms": 36186,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36186,
+     "event": {
+      "event": "token",
+      "text": "Nov"
+     }
+    },
+    {
+     "t_ms": 36202,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36202,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 36202,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 36202,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 36202,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 36202,
+     "event": {
+      "event": "token",
+      "text": " AMD"
+     }
+    },
+    {
+     "t_ms": 36202,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36202,
+     "event": {
+      "event": "token",
+      "text": " Cy"
+     }
+    },
+    {
+     "t_ms": 36218,
+     "event": {
+      "event": "token",
+      "text": "clic"
+     }
+    },
+    {
+     "t_ms": 36218,
+     "event": {
+      "event": "token",
+      "text": "ality"
+     }
+    },
+    {
+     "t_ms": 36218,
+     "event": {
+      "event": "token",
+      "text": " /"
+     }
+    },
+    {
+     "t_ms": 36218,
+     "event": {
+      "event": "token",
+      "text": " demand"
+     }
+    },
+    {
+     "t_ms": 36218,
+     "event": {
+      "event": "token",
+      "text": " downturn"
+     }
+    },
+    {
+     "t_ms": 36233,
+     "event": {
+      "event": "token",
+      "text": "s"
+     }
+    },
+    {
+     "t_ms": 36233,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36233,
+     "event": {
+      "event": "token",
+      "text": " No"
+     }
+    },
+    {
+     "t_ms": 36233,
+     "event": {
+      "event": "token",
+      "text": " direct"
+     }
+    },
+    {
+     "t_ms": 36233,
+     "event": {
+      "event": "token",
+      "text": " news"
+     }
+    },
+    {
+     "t_ms": 36233,
+     "event": {
+      "event": "token",
+      "text": " article"
+     }
+    },
+    {
+     "t_ms": 36233,
+     "event": {
+      "event": "token",
+      "text": " specifically"
+     }
+    },
+    {
+     "t_ms": 36233,
+     "event": {
+      "event": "token",
+      "text": " addresses"
+     }
+    },
+    {
+     "t_ms": 36233,
+     "event": {
+      "event": "token",
+      "text": " semiconductor"
+     }
+    },
+    {
+     "t_ms": 36233,
+     "event": {
+      "event": "token",
+      "text": " cyc"
+     }
+    },
+    {
+     "t_ms": 36233,
+     "event": {
+      "event": "token",
+      "text": "lical"
+     }
+    },
+    {
+     "t_ms": 36250,
+     "event": {
+      "event": "token",
+      "text": " downturn"
+     }
+    },
+    {
+     "t_ms": 36250,
+     "event": {
+      "event": "token",
+      "text": "s"
+     }
+    },
+    {
+     "t_ms": 36250,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 36250,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 36250,
+     "event": {
+      "event": "token",
+      "text": " period"
+     }
+    },
+    {
+     "t_ms": 36250,
+     "event": {
+      "event": "token",
+      "text": " checked"
+     }
+    },
+    {
+     "t_ms": 36264,
+     "event": {
+      "event": "token",
+      "text": " ("
+     }
+    },
+    {
+     "t_ms": 36264,
+     "event": {
+      "event": "token",
+      "text": "through"
+     }
+    },
+    {
+     "t_ms": 36264,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36264,
+     "event": {
+      "event": "token",
+      "text": "15"
+     }
+    },
+    {
+     "t_ms": 36264,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36264,
+     "event": {
+      "event": "token",
+      "text": "Nov"
+     }
+    },
+    {
+     "t_ms": 36264,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36264,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 36280,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 36280,
+     "event": {
+      "event": "token",
+      "text": ")."
+     }
+    },
+    {
+     "t_ms": 36280,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36280,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 36280,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 36280,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 36280,
+     "event": {
+      "event": "token",
+      "text": " AMD"
+     }
+    },
+    {
+     "t_ms": 36280,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36296,
+     "event": {
+      "event": "token",
+      "text": " Customer"
+     }
+    },
+    {
+     "t_ms": 36296,
+     "event": {
+      "event": "token",
+      "text": " concentration"
+     }
+    },
+    {
+     "t_ms": 36296,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36296,
+     "event": {
+      "event": "token",
+      "text": " No"
+     }
+    },
+    {
+     "t_ms": 36296,
+     "event": {
+      "event": "token",
+      "text": " direct"
+     }
+    },
+    {
+     "t_ms": 36296,
+     "event": {
+      "event": "token",
+      "text": " news"
+     }
+    },
+    {
+     "t_ms": 36296,
+     "event": {
+      "event": "token",
+      "text": " article"
+     }
+    },
+    {
+     "t_ms": 36296,
+     "event": {
+      "event": "token",
+      "text": " specifically"
+     }
+    },
+    {
+     "t_ms": 36311,
+     "event": {
+      "event": "token",
+      "text": " addresses"
+     }
+    },
+    {
+     "t_ms": 36311,
+     "event": {
+      "event": "token",
+      "text": " loss"
+     }
+    },
+    {
+     "t_ms": 36311,
+     "event": {
+      "event": "token",
+      "text": " of"
+     }
+    },
+    {
+     "t_ms": 36311,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 36311,
+     "event": {
+      "event": "token",
+      "text": " major"
+     }
+    },
+    {
+     "t_ms": 36311,
+     "event": {
+      "event": "token",
+      "text": " customer"
+     }
+    },
+    {
+     "t_ms": 36311,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 36327,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 36327,
+     "event": {
+      "event": "token",
+      "text": " period"
+     }
+    },
+    {
+     "t_ms": 36327,
+     "event": {
+      "event": "token",
+      "text": " checked"
+     }
+    },
+    {
+     "t_ms": 36327,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 36327,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " NVIDIA"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " Competition"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " “"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "Why"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " Nvidia"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " dominates"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " AI"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " what"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " Huang"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "’s"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " scandal"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " could"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " cost"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " firm"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "”"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " notes"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " that"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " competitive"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " position"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " could"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " be"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " affected"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " by"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " leadership"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " controversy"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "18"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "11"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "Nov"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " NVIDIA"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " Supply"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "chain"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " lead"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " times"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " /"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " component"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " cost"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " “"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "N"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "vidia"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " RTX"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "508"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "0"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "24"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "GB"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " reportedly"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " canceled"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " China"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " due"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " soaring"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " G"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "DDR"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "7"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " costs"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "”"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " illustrates"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " supply"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "chain"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " cost"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " pressures"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " potential"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": " delays"
+     }
+    },
+    {
+     "t_ms": 36514,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 36530,
+     "event": {
+      "event": "token",
+      "text": "22"
+     }
+    },
+    {
+     "t_ms": 36530,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 36530,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 36530,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36530,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36530,
+     "event": {
+      "event": "token",
+      "text": "11"
+     }
+    },
+    {
+     "t_ms": 36530,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36530,
+     "event": {
+      "event": "token",
+      "text": "Nov"
+     }
+    },
+    {
+     "t_ms": 36546,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36546,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 36546,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 36546,
+     "event": {
+      "event": "token",
+      "text": " |\n"
+     }
+    },
+    {
+     "t_ms": 36546,
+     "event": {
+      "event": "token",
+      "text": "|"
+     }
+    },
+    {
+     "t_ms": 36546,
+     "event": {
+      "event": "token",
+      "text": " NVIDIA"
+     }
+    },
+    {
+     "t_ms": 36546,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36561,
+     "event": {
+      "event": "token",
+      "text": " Economic"
+     }
+    },
+    {
+     "t_ms": 36561,
+     "event": {
+      "event": "token",
+      "text": " conditions"
+     }
+    },
+    {
+     "t_ms": 36561,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36561,
+     "event": {
+      "event": "token",
+      "text": " “"
+     }
+    },
+    {
+     "t_ms": 36561,
+     "event": {
+      "event": "token",
+      "text": "B"
+     }
+    },
+    {
+     "t_ms": 36561,
+     "event": {
+      "event": "token",
+      "text": "aird"
+     }
+    },
+    {
+     "t_ms": 36561,
+     "event": {
+      "event": "token",
+      "text": " cuts"
+     }
+    },
+    {
+     "t_ms": 36561,
+     "event": {
+      "event": "token",
+      "text": " Nvidia"
+     }
+    },
+    {
+     "t_ms": 36577,
+     "event": {
+      "event": "token",
+      "text": " price"
+     }
+    },
+    {
+     "t_ms": 36577,
+     "event": {
+      "event": "token",
+      "text": " target"
+     }
+    },
+    {
+     "t_ms": 36577,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 36577,
+     "event": {
+      "event": "token",
+      "text": " $"
+     }
+    },
+    {
+     "t_ms": 36577,
+     "event": {
+      "event": "token",
+      "text": "200"
+     }
+    },
+    {
+     "t_ms": 36577,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 36593,
+     "event": {
+      "event": "token",
+      "text": " cites"
+     }
+    },
+    {
+     "t_ms": 36593,
+     "event": {
+      "event": "token",
+      "text": " AI"
+     }
+    },
+    {
+     "t_ms": 36593,
+     "event": {
+      "event": "token",
+      "text": " slowdown"
+     }
+    },
+    {
+     "t_ms": 36593,
+     "event": {
+      "event": "token",
+      "text": " concerns"
+     }
+    },
+    {
+     "t_ms": 36593,
+     "event": {
+      "event": "token",
+      "text": "”"
+     }
+    },
+    {
+     "t_ms": 36593,
+     "event": {
+      "event": "token",
+      "text": " –"
+     }
+    },
+    {
+     "t_ms": 36593,
+     "event": {
+      "event": "token",
+      "text": " reflects"
+     }
+    },
+    {
+     "t_ms": 36593,
+     "event": {
+      "event": "token",
+      "text": " market"
+     }
+    },
+    {
+     "t_ms": 36593,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 36608,
+     "event": {
+      "event": "token",
+      "text": "wide"
+     }
+    },
+    {
+     "t_ms": 36608,
+     "event": {
+      "event": "token",
+      "text": " economic"
+     }
+    },
+    {
+     "t_ms": 36608,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 36608,
+     "event": {
+      "event": "token",
+      "text": " demand"
+     }
+    },
+    {
+     "t_ms": 36608,
+     "event": {
+      "event": "token",
+      "text": " uncertainty"
+     }
+    },
+    {
+     "t_ms": 36608,
+     "event": {
+      "event": "token",
+      "text": " affecting"
+     }
+    },
+    {
+     "t_ms": 36608,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 36625,
+     "event": {
+      "event": "token",
+      "text": " company"
+     }
+    },
+    {
+     "t_ms": 36625,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 36625,
+     "event": {
+      "event": "token",
+      "text": "26"
+     }
+    },
+    {
+     "t_ms": 36625,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 36625,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 36625,
+     "event": {
+      "event": "token",
+      "text": " |"
+     }
+    },
+    {
+     "t_ms": 36625,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36639,
+     "event": {
+      "event": "token",
+      "text": "11"
+     }
+    },
+    {
+     "t_ms": 36639,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36639,
+     "event": {
+      "event": "token",
+      "text": "Nov"
+     }
+    },
+    {
+     "t_ms": 36639,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36639,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 36639,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 36639,
+     "event": {
+      "event": "token",
+      "text": " |\n\n"
+     }
+    },
+    {
+     "t_ms": 36639,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 36655,
+     "event": {
+      "event": "token",
+      "text": "Summary"
+     }
+    },
+    {
+     "t_ms": 36655,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 36655,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 36655,
+     "event": {
+      "event": "token",
+      "text": "Both"
+     }
+    },
+    {
+     "t_ms": 36655,
+     "event": {
+      "event": "token",
+      "text": " companies"
+     }
+    },
+    {
+     "t_ms": 36655,
+     "event": {
+      "event": "token",
+      "text": " flag"
+     }
+    },
+    {
+     "t_ms": 36671,
+     "event": {
+      "event": "token",
+      "text": " competition"
+     }
+    },
+    {
+     "t_ms": 36671,
+     "event": {
+      "event": "token",
+      "text": " as"
+     }
+    },
+    {
+     "t_ms": 36671,
+     "event": {
+      "event": "token",
+      "text": " a"
+     }
+    },
+    {
+     "t_ms": 36671,
+     "event": {
+      "event": "token",
+      "text": " primary"
+     }
+    },
+    {
+     "t_ms": 36671,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 36671,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 36671,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 36671,
+     "event": {
+      "event": "token",
+      "text": " recent"
+     }
+    },
+    {
+     "t_ms": 36671,
+     "event": {
+      "event": "token",
+      "text": " news"
+     }
+    },
+    {
+     "t_ms": 36686,
+     "event": {
+      "event": "token",
+      "text": " items"
+     }
+    },
+    {
+     "t_ms": 36686,
+     "event": {
+      "event": "token",
+      "text": " ("
+     }
+    },
+    {
+     "t_ms": 36686,
+     "event": {
+      "event": "token",
+      "text": "AMD"
+     }
+    },
+    {
+     "t_ms": 36686,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36686,
+     "event": {
+      "event": "token",
+      "text": "out"
+     }
+    },
+    {
+     "t_ms": 36686,
+     "event": {
+      "event": "token",
+      "text": "perform"
+     }
+    },
+    {
+     "t_ms": 36686,
+     "event": {
+      "event": "token",
+      "text": "ing"
+     }
+    },
+    {
+     "t_ms": 36686,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36702,
+     "event": {
+      "event": "token",
+      "text": "N"
+     }
+    },
+    {
+     "t_ms": 36702,
+     "event": {
+      "event": "token",
+      "text": "vidia"
+     }
+    },
+    {
+     "t_ms": 36702,
+     "event": {
+      "event": "token",
+      "text": ";"
+     }
+    },
+    {
+     "t_ms": 36718,
+     "event": {
+      "event": "token",
+      "text": " Nvidia"
+     }
+    },
+    {
+     "t_ms": 36718,
+     "event": {
+      "event": "token",
+      "text": "’s"
+     }
+    },
+    {
+     "t_ms": 36718,
+     "event": {
+      "event": "token",
+      "text": " leadership"
+     }
+    },
+    {
+     "t_ms": 36718,
+     "event": {
+      "event": "token",
+      "text": " scandal"
+     }
+    },
+    {
+     "t_ms": 36718,
+     "event": {
+      "event": "token",
+      "text": ")"
+     }
+    },
+    {
+     "t_ms": 36718,
+     "event": {
+      "event": "token",
+      "text": " provide"
+     }
+    },
+    {
+     "t_ms": 36718,
+     "event": {
+      "event": "token",
+      "text": " concrete"
+     }
+    },
+    {
+     "t_ms": 36718,
+     "event": {
+      "event": "token",
+      "text": " examples"
+     }
+    },
+    {
+     "t_ms": 36718,
+     "event": {
+      "event": "token",
+      "text": " that"
+     }
+    },
+    {
+     "t_ms": 36718,
+     "event": {
+      "event": "token",
+      "text": " support"
+     }
+    },
+    {
+     "t_ms": 36718,
+     "event": {
+      "event": "token",
+      "text": " this"
+     }
+    },
+    {
+     "t_ms": 36718,
+     "event": {
+      "event": "token",
+      "text": " concern"
+     }
+    },
+    {
+     "t_ms": 36733,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 36733,
+     "event": {
+      "event": "token",
+      "text": " NVIDIA"
+     }
+    },
+    {
+     "t_ms": 36733,
+     "event": {
+      "event": "token",
+      "text": "’s"
+     }
+    },
+    {
+     "t_ms": 36733,
+     "event": {
+      "event": "token",
+      "text": " supply"
+     }
+    },
+    {
+     "t_ms": 36733,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 36733,
+     "event": {
+      "event": "token",
+      "text": "chain"
+     }
+    },
+    {
+     "t_ms": 36733,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 36733,
+     "event": {
+      "event": "token",
+      "text": " macro"
+     }
+    },
+    {
+     "t_ms": 36750,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 36750,
+     "event": {
+      "event": "token",
+      "text": "economic"
+     }
+    },
+    {
+     "t_ms": 36750,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 36750,
+     "event": {
+      "event": "token",
+      "text": " factors"
+     }
+    },
+    {
+     "t_ms": 36750,
+     "event": {
+      "event": "token",
+      "text": " are"
+     }
+    },
+    {
+     "t_ms": 36750,
+     "event": {
+      "event": "token",
+      "text": " also"
+     }
+    },
+    {
+     "t_ms": 36750,
+     "event": {
+      "event": "token",
+      "text": " reflected"
+     }
+    },
+    {
+     "t_ms": 36764,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 36764,
+     "event": {
+      "event": "token",
+      "text": " recent"
+     }
+    },
+    {
+     "t_ms": 36764,
+     "event": {
+      "event": "token",
+      "text": " reports"
+     }
+    },
+    {
+     "t_ms": 36780,
+     "event": {
+      "event": "token",
+      "text": " about"
+     }
+    },
+    {
+     "t_ms": 36780,
+     "event": {
+      "event": "token",
+      "text": " component"
+     }
+    },
+    {
+     "t_ms": 36780,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 36780,
+     "event": {
+      "event": "token",
+      "text": "cost"
+     }
+    },
+    {
+     "t_ms": 36780,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 36780,
+     "event": {
+      "event": "token",
+      "text": "dr"
+     }
+    },
+    {
+     "t_ms": 36780,
+     "event": {
+      "event": "token",
+      "text": "iven"
+     }
+    },
+    {
+     "t_ms": 36780,
+     "event": {
+      "event": "token",
+      "text": " product"
+     }
+    },
+    {
+     "t_ms": 36780,
+     "event": {
+      "event": "token",
+      "text": " cancellations"
+     }
+    },
+    {
+     "t_ms": 36780,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 36780,
+     "event": {
+      "event": "token",
+      "text": " analyst"
+     }
+    },
+    {
+     "t_ms": 36780,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 36796,
+     "event": {
+      "event": "token",
+      "text": "c"
+     }
+    },
+    {
+     "t_ms": 36796,
+     "event": {
+      "event": "token",
+      "text": "ited"
+     }
+    },
+    {
+     "t_ms": 36796,
+     "event": {
+      "event": "token",
+      "text": " AI"
+     }
+    },
+    {
+     "t_ms": 36796,
+     "event": {
+      "event": "token",
+      "text": " demand"
+     }
+    },
+    {
+     "t_ms": 36796,
+     "event": {
+      "event": "token",
+      "text": " slowdown"
+     }
+    },
+    {
+     "t_ms": 36796,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 36796,
+     "event": {
+      "event": "token",
+      "text": " AMD"
+     }
+    },
+    {
+     "t_ms": 36796,
+     "event": {
+      "event": "token",
+      "text": "’s"
+     }
+    },
+    {
+     "t_ms": 36811,
+     "event": {
+      "event": "token",
+      "text": " cyc"
+     }
+    },
+    {
+     "t_ms": 36811,
+     "event": {
+      "event": "token",
+      "text": "lical"
+     }
+    },
+    {
+     "t_ms": 36811,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 36811,
+     "event": {
+      "event": "token",
+      "text": "d"
+     }
+    },
+    {
+     "t_ms": 36811,
+     "event": {
+      "event": "token",
+      "text": "emand"
+     }
+    },
+    {
+     "t_ms": 36811,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 36827,
+     "event": {
+      "event": "token",
+      "text": " customer"
+     }
+    },
+    {
+     "t_ms": 36827,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 36827,
+     "event": {
+      "event": "token",
+      "text": "con"
+     }
+    },
+    {
+     "t_ms": 36827,
+     "event": {
+      "event": "token",
+      "text": "centration"
+     }
+    },
+    {
+     "t_ms": 36827,
+     "event": {
+      "event": "token",
+      "text": " risks"
+     }
+    },
+    {
+     "t_ms": 36827,
+     "event": {
+      "event": "token",
+      "text": " do"
+     }
+    },
+    {
+     "t_ms": 36827,
+     "event": {
+      "event": "token",
+      "text": " not"
+     }
+    },
+    {
+     "t_ms": 36827,
+     "event": {
+      "event": "token",
+      "text": " have"
+     }
+    },
+    {
+     "t_ms": 36843,
+     "event": {
+      "event": "token",
+      "text": " direct"
+     }
+    },
+    {
+     "t_ms": 36843,
+     "event": {
+      "event": "token",
+      "text": " news"
+     }
+    },
+    {
+     "t_ms": 36843,
+     "event": {
+      "event": "token",
+      "text": " corrobor"
+     }
+    },
+    {
+     "t_ms": 36843,
+     "event": {
+      "event": "token",
+      "text": "ation"
+     }
+    },
+    {
+     "t_ms": 36843,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 36843,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 36843,
+     "event": {
+      "event": "token",
+      "text": " data"
+     }
+    },
+    {
+     "t_ms": 36843,
+     "event": {
+      "event": "token",
+      "text": " checked"
+     }
+    },
+    {
+     "t_ms": 36858,
+     "event": {
+      "event": "token",
+      "text": " through"
+     }
+    },
+    {
+     "t_ms": 36858,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36858,
+     "event": {
+      "event": "token",
+      "text": "15"
+     }
+    },
+    {
+     "t_ms": 36858,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36858,
+     "event": {
+      "event": "token",
+      "text": "Nov"
+     }
+    },
+    {
+     "t_ms": 36858,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36858,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 36875,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 36875,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 36889,
+     "event": {
+      "event": "node",
+      "node": "synthesizer",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 36889,
+     "event": {
+      "event": "node",
+      "node": "finalize",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 52983,
+     "event": {
+      "event": "final",
+      "answer": "**AMD – FY2025 10‑K (Form 10‑K filed 4 Feb 2026)**  \n- The markets in which our products are sold are highly competitive and rapidly evolving[1].  \n- The semiconductor industry is highly cyclical and has experienced severe downturns that have materially adversely affected, and may continue to materially adversely affect, our business[2].  \n- The loss of a significant customer may have a material adverse effect on us[3].  \n\n**NVIDIA – FY2026 10‑K (Form 10‑K filed 25 Feb 2026)**  \n- Competition could adversely impact our market share and financial results[4].  \n- Long manufacturing lead times and uncertain supply and capacity availability, combined with a failure to estimate customer demand accurately, could lead to mismatches between supply and demand[5].  \n- Adverse economic conditions may harm our business[6].  \n\n### Recent news – support for disclosed risks  \n\n| Company | Risk factor (top) | Recent news that directly supports the risk | News date |\n|---------|-------------------|--------------------------------------------|-----------|\n| AMD | Competition | “AMD outperforms Nvidia by 53.2 points in five trading days” – highlights competitive dynamics in the market[7]. | 13 Nov 2026 |\n| AMD | Cyclicality / demand downturns | No direct news article specifically addresses semiconductor cyclical downturns in the period checked (through 15 Nov 2026). | – |\n| AMD | Customer concentration | No direct news article specifically addresses loss of a major customer in the period checked. | – |\n| NVIDIA | Competition | “Why Nvidia dominates AI, and what Huang’s scandal could cost the firm” – notes that competitive position could be affected by leadership controversy[8]. | 11 Nov 2026 |\n| NVIDIA | Supply‑chain lead times / component cost | “Nvidia RTX 5080 24 GB reportedly canceled in China due to soaring GDDR7 costs” – illustrates supply‑chain cost pressures and potential delays[9]. | 11 Nov 2026 |\n| NVIDIA | Economic conditions | “Baird cuts Nvidia price target to $200, cites AI slowdown concerns” – reflects market‑wide economic and demand uncertainty affecting the company[10]. | 11 Nov 2026 |\n\n**Summary**  \nBoth companies flag competition as a primary risk, and recent news items (AMD outperforming Nvidia; Nvidia’s leadership scandal) provide concrete examples that support this concern. NVIDIA’s supply‑chain and macro‑economic risk factors are also reflected in recent reports about component‑cost‑driven product cancellations and analyst‑cited AI demand slowdown. AMD’s cyclical‑demand and customer‑concentration risks do not have direct news corroboration in the data checked through 15 Nov 2026.\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*\n*Data: AMD news through 15 Nov 2026 (checked 16 Nov 2026); NVDA news through 15 Nov 2026 (checked 16 Nov 2026).*",
+      "citations": [
+       {
+        "n": 1,
+        "source_id": "rf:571121341fd3da2ef5d82eb0badc2171",
+        "title": "AMD 10-K FY2025 risk factor: The markets in which our products are sold are highly competitive and rapidly evolving.",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm"
+       },
+       {
+        "n": 2,
+        "source_id": "rf:c926f59d777f8a9297d4034d37b547f7",
+        "title": "AMD 10-K FY2025 risk factor: The semiconductor industry is highly cyclical and has experienced severe downturns that have materially adversely affected, and may continue to materially adversely affect, our business in the future.",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm"
+       },
+       {
+        "n": 3,
+        "source_id": "rf:176324c61b144a102f989c17d952cf24",
+        "title": "AMD 10-K FY2025 risk factor: The loss of a significant customer may have a material adverse effect on us.",
+        "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm"
+       },
+       {
+        "n": 4,
+        "source_id": "rf:bc20b06a21dfbb6478638301f3727c90",
+        "title": "NVDA 10-K FY2026 risk factor: Competition could adversely impact our market share and financial results.",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm"
+       },
+       {
+        "n": 5,
+        "source_id": "rf:b1e81729aaca223f8276c43996695107",
+        "title": "NVDA 10-K FY2026 risk factor: Long manufacturing lead times and uncertain supply and capacity availability, combined with a failure to estimate customer demand accurately, has led and could lead to mismatches between supply and demand.",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm"
+       },
+       {
+        "n": 6,
+        "source_id": "rf:e353350995d5da8a43782278a409e09a",
+        "title": "NVDA 10-K FY2026 risk factor: Adverse economic conditions may harm our business.",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm"
+       },
+       {
+        "n": 7,
+        "source_id": "news:e73f4e4245a707f3d3c1487dc5ff6ce6",
+        "title": "AMD outperforms Nvidia by 53.2 points in five trading days",
+        "url": "https://cryptobriefing.com/amd-outperforms-nvidia-53-points-five-days/"
+       },
+       {
+        "n": 8,
+        "source_id": "news:3754a7788a48718c8ad9b9feb815d33e",
+        "title": "Why Nvidia dominates AI, and what Huang's scandal could cost the firm",
+        "url": "https://www.business-standard.com/world-news/why-nvidia-dominates-ai-and-what-huang-s-scandal-could-cost-the-firm-126111100466_1.html"
+       },
+       {
+        "n": 9,
+        "source_id": "news:f51165feb734faca3d378dab5454e402",
+        "title": "Nvidia RTX 5080 24 GB reportedly canceled in China due to soaring GDDR7 costs",
+        "url": "https://www.notebookcheck.net/Nvidia-RTX-5080-24-GB-reportedly-canceled-in-China-due-to-soaring-GDDR7-costs.1447776.0.html"
+       },
+       {
+        "n": 10,
+        "source_id": "news:fab8700f8435c0b85f416bcc0e61ef98",
+        "title": "Baird cuts Nvidia price target to $200, cites AI slowdown concerns",
+        "url": "https://cryptobriefing.com/baird-cuts-nvidia-price-target-to-200-cites-ai-slowdown-concerns/"
+       }
+      ],
+      "citation_check": {
+       "checked": 10,
+       "supported": 10,
+       "reattached": 0,
+       "dropped": 0,
+       "unverified_claims": 0,
+       "precision": 1.0
+      },
+      "renumbered": {
+       "1": 1,
+       "3": 2,
+       "9": 3,
+       "2": 4,
+       "4": 5,
+       "10": 6,
+       "23": 7,
+       "18": 8,
+       "22": 9,
+       "26": 10
+      }
+     }
+    },
+    {
+     "t_ms": 52983,
+     "event": {
+      "event": "node",
+      "node": "finalize",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    }
+   ]
+  }
+ ]
+}

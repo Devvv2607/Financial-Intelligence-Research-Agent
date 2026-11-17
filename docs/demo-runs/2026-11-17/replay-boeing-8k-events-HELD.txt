@@ -1,0 +1,22 @@
+Recorded 2026-11-17T09:34:25.219467Z from https://api-production-08d8051f.up.railway.app (production, live runtime) with api.replay_recorder
+Question: What material events has Boeing reported in 8-Ks this year?
+Counted tokens (from /api/runs): 7942
+Citation check: {'checked': 7, 'supported': 7, 'reattached': 0, 'dropped': 0, 'unverified_claims': 0, 'precision': 1.0}
+
+**Boeing’s material events reported in Form 8‑K filings during 2026**
+
+| Filing date | Items disclosed | Brief description of the material event |
+|-------------|----------------|------------------------------------------|
+| 27 Oct 2026 | 2.02 – Results of operations and financial condition; 9.01 – Financial statements and exhibits | The company issued a press release reporting its financial results for the third quarter of 2026 and furnished the release as Exhibit 99.1 [1] |
+| 28 Aug 2026 | 1.01 – Entry into a material definitive agreement; 2.03 – Creation of a direct financial obligation or off‑balance‑sheet arrangement; 9.01 – Financial statements and exhibits | Boeing entered into a $3.0 billion, 364‑day revolving credit agreement and disclosed the related obligation and accompanying exhibits [2] |
+| 21 Aug 2026 | 5.02 – Departure or appointment of directors or officers; compensation arrangements | The Board reported the departure of certain officers and the appointment of new directors/officers, together with related compensation arrangements [3] |
+| 28 Jul 2026 | 2.02 – Results of operations and financial condition; 9.01 – Financial statements and exhibits | The company issued a press release reporting its financial results for the second quarter of 2026 and furnished the release as Exhibit 99.1 [4] |
+| 22 Apr 2026 | 2.02 – Results of operations and financial condition; 9.01 – Financial statements and exhibits | The company issued a press release reporting its financial results for the first quarter of 2026 and furnished the release as Exhibit 99.1 [5] |
+| 17 Apr 2026 | 5.07 – Submission of matters to a vote of security holders | Boeing held its Annual Meeting of Shareholders and disclosed the final voting results for each matter submitted to shareholders [6] |
+| 27 Jan 2026 | 2.02 – Results of operations and financial condition; 9.01 – Financial statements and exhibits | The company issued a press release reporting its financial results for the fourth quarter of 2025 and furnished the release as Exhibit 99.1 [7] |
+
+**Limits** – No additional material events were found in the SEC filings checked through 16 Nov 2026.
+
+---
+*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*
+*Data: SEC filings checked 16 Nov 2026 (latest 8-K filed 27 Oct 2026).*
