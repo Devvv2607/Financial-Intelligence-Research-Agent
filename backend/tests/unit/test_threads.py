@@ -59,8 +59,8 @@ class _TrackingStore(PostgresThreadStore):
         super().__init__(engine)  # type: ignore[arg-type]
         self.created: list[uuid.UUID] = []
 
-    async def create(self, title: str | None):  # type: ignore[no-untyped-def]
-        t = await super().create(title)
+    async def create(self, title: str | None, visitor_id: str | None = None):  # type: ignore[no-untyped-def]
+        t = await super().create(title, visitor_id)
         self.created.append(t.id)
         return t
 
@@ -70,7 +70,8 @@ class _TrackingStore(PostgresThreadStore):
 
 
 async def test_every_status_change_moves_updated_at(store: ThreadStore) -> None:
-    t0 = await store.create(None)
+    me = str(uuid.uuid4())
+    t0 = await store.create(None, me)
     assert t0.status == "idle" and t0.updated_at >= t0.created_at
     stamps = [t0.updated_at]
     run = uuid.uuid4()
@@ -89,7 +90,7 @@ async def test_every_status_change_moves_updated_at(store: ThreadStore) -> None:
     titled = await store.get(t0.id)
     assert titled is not None and titled.title == "First question"
     assert titled.updated_at > stamps[-1]
-    assert (await store.recent(5))[0].id == t0.id  # most recently updated first
+    assert (await store.recent(5, me))[0].id == t0.id  # most recently updated first
 
 
 async def test_ensure_registers_once_and_keeps_the_first_title(store: ThreadStore) -> None:
@@ -99,6 +100,20 @@ async def test_ensure_registers_once_and_keeps_the_first_title(store: ThreadStor
     assert first.id == again.id == tid
     assert again.title == "How risky is the bank?"
     assert again.created_at == first.created_at
+
+
+async def test_threads_are_scoped_to_their_visitor(store: ThreadStore) -> None:
+    alice, bob = str(uuid.uuid4()), str(uuid.uuid4())
+    a = await store.create("alice's", alice)
+    b = await store.create("bob's", bob)
+    orphan = await store.ensure(uuid.uuid4(), "an old CLI thread")  # no owner
+
+    assert [t.id for t in await store.recent(50, alice)] == [a.id]
+    assert [t.id for t in await store.recent(50, bob)] == [b.id]
+    assert await store.get_for(a.id, alice) is not None
+    assert await store.get_for(a.id, bob) is None
+    assert await store.get_for(orphan.id, alice) is None  # ownerless: nobody's
+    assert await store.get(orphan.id) is not None  # still there (the CLI reads it)
 
 
 @pytest.mark.integration

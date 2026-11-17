@@ -11,6 +11,7 @@ depend on them).
 
 import asyncio
 import json
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -47,7 +48,12 @@ async def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     async with (
         app.router.lifespan_context(app),
-        httpx.AsyncClient(transport=transport, base_url="http://x", timeout=60) as c,
+        httpx.AsyncClient(
+            transport=transport,
+            base_url="http://x",
+            timeout=60,
+            headers={"X-Visitor-Id": str(uuid.uuid4())},
+        ) as c,
     ):
 
         async def run(q: str) -> tuple[str, list[list[Any]]]:

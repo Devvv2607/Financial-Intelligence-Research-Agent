@@ -1755,6 +1755,22 @@
               "title": "Limit",
               "type": "integer"
             }
+          },
+          {
+            "in": "header",
+            "name": "x-visitor-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Visitor-Id"
+            }
           }
         ],
         "responses": {
@@ -1790,6 +1806,24 @@
       },
       "post": {
         "operationId": "create_thread_api_threads_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-visitor-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Visitor-Id"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1840,6 +1874,22 @@
               "format": "uuid",
               "title": "Thread Id",
               "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-visitor-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Visitor-Id"
             }
           }
         ],
@@ -1938,6 +1988,22 @@
               ],
               "title": "Last-Event-Id"
             }
+          },
+          {
+            "in": "header",
+            "name": "x-visitor-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Visitor-Id"
+            }
           }
         ],
         "responses": {
@@ -1980,6 +2046,22 @@
               "format": "uuid",
               "title": "Thread Id",
               "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-visitor-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Visitor-Id"
             }
           }
         ],
@@ -2033,6 +2115,22 @@
               "format": "uuid",
               "title": "Thread Id",
               "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-visitor-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Visitor-Id"
             }
           }
         ],

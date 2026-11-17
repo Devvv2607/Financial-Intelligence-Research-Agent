@@ -1,4 +1,5 @@
 import type { GraphJSON, Thread, ThreadDetail } from "./types";
+import { visitorHeaders } from "./visitor";
 
 // Base URL of the FastAPI service as seen from the browser.
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -24,7 +25,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     cache: "no-store",
     ...init,
-    headers: { "content-type": "application/json", ...init?.headers },
+    headers: { "content-type": "application/json", ...visitorHeaders(), ...init?.headers },
   });
   if (!res.ok) throw await toError(res);
   return (await res.json()) as T;

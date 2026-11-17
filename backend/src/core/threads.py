@@ -44,10 +44,11 @@ def _values(clock: Any, **changes: Any) -> dict[str, Any]:
 
 
 class ThreadStore(Protocol):
-    async def create(self, title: str | None) -> Thread: ...
+    async def create(self, title: str | None, visitor_id: str | None = None) -> Thread: ...
     async def ensure(self, thread_id: uuid.UUID, title: str) -> Thread: ...
     async def get(self, thread_id: uuid.UUID) -> Thread | None: ...
-    async def recent(self, limit: int) -> list[Thread]: ...
+    async def get_for(self, thread_id: uuid.UUID, visitor_id: str) -> Thread | None: ...
+    async def recent(self, limit: int, visitor_id: str) -> list[Thread]: ...
     async def set_title_if_empty(self, thread_id: uuid.UUID, title: str) -> None: ...
     async def set_status(
         self, thread_id: uuid.UUID, status: ThreadStatus, run_id: uuid.UUID | None = None
@@ -59,8 +60,12 @@ class PostgresThreadStore:
     def __init__(self, engine: AsyncEngine) -> None:
         self._engine = engine
 
-    async def create(self, title: str | None) -> Thread:
-        stmt = insert(threads).values(id=uuid.uuid4(), title=title or "").returning(threads)
+    async def create(self, title: str | None, visitor_id: str | None = None) -> Thread:
+        stmt = (
+            insert(threads)
+            .values(id=uuid.uuid4(), title=title or "", visitor_id=visitor_id)
+            .returning(threads)
+        )
         async with self._engine.begin() as conn:
             row = (await conn.execute(stmt)).mappings().one()
         return Thread.model_validate(dict(row))
@@ -76,16 +81,24 @@ class PostgresThreadStore:
         return thread
 
     async def get(self, thread_id: uuid.UUID) -> Thread | None:
+        return await self._one(threads.c.id == thread_id)
+
+    async def get_for(self, thread_id: uuid.UUID, visitor_id: str) -> Thread | None:
+        """The thread only if this visitor owns it (threads without an owner: nobody)."""
+        return await self._one(threads.c.id == thread_id, threads.c.visitor_id == visitor_id)
+
+    async def _one(self, *where: Any) -> Thread | None:
         async with self._engine.connect() as conn:
-            row = (
-                (await conn.execute(select(threads).where(threads.c.id == thread_id)))
-                .mappings()
-                .one_or_none()
-            )
+            row = (await conn.execute(select(threads).where(*where))).mappings().one_or_none()
         return Thread.model_validate(dict(row)) if row else None
 
-    async def recent(self, limit: int) -> list[Thread]:
-        stmt = select(threads).order_by(threads.c.updated_at.desc()).limit(limit)
+    async def recent(self, limit: int, visitor_id: str) -> list[Thread]:
+        stmt = (
+            select(threads)
+            .where(threads.c.visitor_id == visitor_id)
+            .order_by(threads.c.updated_at.desc())
+            .limit(limit)
+        )
         async with self._engine.connect() as conn:
             rows = (await conn.execute(stmt)).mappings().all()
         return [Thread.model_validate(dict(r)) for r in rows]
@@ -126,10 +139,14 @@ class MemoryThreadStore:
 
     def __init__(self, recorded: list[dict[str, Any]] | None = None) -> None:
         self._threads: dict[uuid.UUID, Thread] = {}
+        self._owners: dict[uuid.UUID, str] = {}
         self._recorded = recorded if recorded is not None else []
 
-    async def create(self, title: str | None) -> Thread:
-        return await self.ensure(uuid.uuid4(), title or "")
+    async def create(self, title: str | None, visitor_id: str | None = None) -> Thread:
+        thread = await self.ensure(uuid.uuid4(), title or "")
+        if visitor_id is not None:
+            self._owners[thread.id] = visitor_id
+        return thread
 
     async def ensure(self, thread_id: uuid.UUID, title: str) -> Thread:
         if thread_id not in self._threads:
@@ -143,8 +160,12 @@ class MemoryThreadStore:
     async def get(self, thread_id: uuid.UUID) -> Thread | None:
         return self._threads.get(thread_id)
 
-    async def recent(self, limit: int) -> list[Thread]:
-        return sorted(self._threads.values(), key=lambda t: t.updated_at, reverse=True)[:limit]
+    async def get_for(self, thread_id: uuid.UUID, visitor_id: str) -> Thread | None:
+        return self._threads.get(thread_id) if self._owners.get(thread_id) == visitor_id else None
+
+    async def recent(self, limit: int, visitor_id: str) -> list[Thread]:
+        mine = [t for t in self._threads.values() if self._owners.get(t.id) == visitor_id]
+        return sorted(mine, key=lambda t: t.updated_at, reverse=True)[:limit]
 
     async def set_title_if_empty(self, thread_id: uuid.UUID, title: str) -> None:
         t = self._threads[thread_id]

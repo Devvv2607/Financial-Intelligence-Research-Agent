@@ -1,4 +1,9 @@
-"""Threads: create/list, history from the checkpointer, runs and resumes streamed as SSE."""
+"""Threads: create/list, history from the checkpointer, runs and resumes streamed as SSE.
+
+Every route is scoped to the caller's anonymous visitor id (api/visitor.py): a thread
+owned by someone else, or by nobody (created before per-visitor threads, or by the CLI),
+answers 404 exactly like a thread that doesn't exist.
+"""
 
 import uuid
 from collections.abc import AsyncIterator
@@ -22,6 +27,7 @@ from api.schemas import (
     Thread,
     ThreadDetail,
 )
+from api.visitor import VisitorId
 from core.config import Settings
 from core.threads import title_from
 
@@ -42,8 +48,8 @@ def runtime_of(request: Request) -> AgentRuntime:
     return rt
 
 
-async def _thread_or_404(rt: AgentRuntime, thread_id: uuid.UUID) -> Thread:
-    thread = await rt.threads.get(thread_id)
+async def _thread_or_404(rt: AgentRuntime, thread_id: uuid.UUID, visitor: str) -> Thread:
+    thread = await rt.threads.get_for(thread_id, visitor)
     if thread is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Thread not found.")
     return thread
@@ -70,19 +76,19 @@ def _stream(log: RunLog, after: int = 0) -> EventSourceResponse:
 
 
 @router.post("", response_model=Thread, status_code=status.HTTP_201_CREATED)
-async def create_thread(body: CreateThread, request: Request) -> Thread:
-    return await runtime_of(request).threads.create(body.title)
+async def create_thread(body: CreateThread, request: Request, visitor: VisitorId) -> Thread:
+    return await runtime_of(request).threads.create(body.title, visitor)
 
 
 @router.get("", response_model=list[Thread])
-async def list_threads(request: Request, limit: int = 50) -> list[Thread]:
-    return await runtime_of(request).threads.recent(min(max(limit, 1), 200))
+async def list_threads(request: Request, visitor: VisitorId, limit: int = 50) -> list[Thread]:
+    return await runtime_of(request).threads.recent(min(max(limit, 1), 200), visitor)
 
 
 @router.get("/{thread_id}", response_model=ThreadDetail)
-async def get_thread(thread_id: uuid.UUID, request: Request) -> ThreadDetail:
+async def get_thread(thread_id: uuid.UUID, request: Request, visitor: VisitorId) -> ThreadDetail:
     rt = runtime_of(request)
-    thread = await _thread_or_404(rt, thread_id)
+    thread = await _thread_or_404(rt, thread_id, visitor)
     snap = await rt.graph.aget_state(thread_config(thread_id))
     values: dict[str, Any] = snap.values or {}
     messages = [
@@ -119,7 +125,7 @@ async def get_thread(thread_id: uuid.UUID, request: Request) -> ThreadDetail:
 
 @router.post("/{thread_id}/runs", responses=SSE_DOC, dependencies=[Depends(limit_runs)])
 async def start_run(
-    thread_id: uuid.UUID, body: RunRequest, request: Request
+    thread_id: uuid.UUID, body: RunRequest, request: Request, visitor: VisitorId
 ) -> EventSourceResponse:
     """Start a research run; the response is the SSE stream of its typed events."""
     rt = runtime_of(request)
@@ -130,7 +136,7 @@ async def start_run(
             status.HTTP_422_UNPROCESSABLE_CONTENT,
             f"The question must be 1-{settings.api_max_question_chars} characters.",
         )
-    await _thread_or_404(rt, thread_id)
+    await _thread_or_404(rt, thread_id, visitor)
     if rt.runs.is_active(thread_id):
         raise HTTPException(
             status.HTTP_409_CONFLICT, "A run is already in progress on this thread."
@@ -158,11 +164,11 @@ async def start_run(
 
 @router.post("/{thread_id}/resume", responses=SSE_DOC, dependencies=[Depends(limit_runs)])
 async def resume_run(
-    thread_id: uuid.UUID, body: ResumeRequest, request: Request
+    thread_id: uuid.UUID, body: ResumeRequest, request: Request, visitor: VisitorId
 ) -> EventSourceResponse:
     """Answer the pending clarification (`Command(resume=...)`); streams the rest of the run."""
     rt = runtime_of(request)
-    await _thread_or_404(rt, thread_id)
+    await _thread_or_404(rt, thread_id, visitor)
     if rt.runs.is_active(thread_id):
         raise HTTPException(
             status.HTTP_409_CONFLICT, "A run is already in progress on this thread."
@@ -185,6 +191,7 @@ async def resume_run(
 async def follow_events(
     thread_id: uuid.UUID,
     request: Request,
+    visitor: VisitorId,
     after: int | None = Query(None, ge=0, description="Last event id received"),
     run_id: str | None = Query(None, description="Only if this is still the thread's run"),
     last_event_id: str | None = Header(None),
@@ -196,7 +203,7 @@ async def follow_events(
     more than EVENT_LOG_TTL_S ago or the API restarted. Read GET /api/threads/{id}
     instead, which has the finished state (D-043)."""
     rt = runtime_of(request)
-    await _thread_or_404(rt, thread_id)
+    await _thread_or_404(rt, thread_id, visitor)
     log = rt.runs.log_for(thread_id)
     if log is None or (run_id is not None and log.run_id != run_id):
         raise HTTPException(

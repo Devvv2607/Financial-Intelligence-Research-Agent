@@ -887,7 +887,9 @@ export interface operations {
             query?: {
                 limit?: number;
             };
-            header?: never;
+            header?: {
+                "x-visitor-id"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -916,7 +918,9 @@ export interface operations {
     create_thread_api_threads_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "x-visitor-id"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -949,7 +953,9 @@ export interface operations {
     get_thread_api_threads__thread_id__get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "x-visitor-id"?: string | null;
+            };
             path: {
                 thread_id: string;
             };
@@ -987,6 +993,7 @@ export interface operations {
             };
             header?: {
                 "last-event-id"?: string | null;
+                "x-visitor-id"?: string | null;
             };
             path: {
                 thread_id: string;
@@ -1019,7 +1026,9 @@ export interface operations {
     resume_run_api_threads__thread_id__resume_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "x-visitor-id"?: string | null;
+            };
             path: {
                 thread_id: string;
             };
@@ -1055,7 +1064,9 @@ export interface operations {
     start_run_api_threads__thread_id__runs_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "x-visitor-id"?: string | null;
+            };
             path: {
                 thread_id: string;
             };
