@@ -15,7 +15,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.types import Command
 
 from api.events import RunLog
-from api.ratelimit import DailyCap, cap_reached, client_ip, limit_runs
+from api.ratelimit import LIMIT_HEADER, DailyCap, cap_reached, client_ip, limit_runs
 from api.runtime import AgentRuntime, RunConflictError, thread_config
 from api.schemas import (
     CreateThread,
@@ -53,6 +53,16 @@ async def _thread_or_404(rt: AgentRuntime, thread_id: uuid.UUID, visitor: str) -
     if thread is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Thread not found.")
     return thread
+
+
+def _refuse_if_queue_full(rt: AgentRuntime) -> None:
+    if rt.runs.gate.would_queue_overflow():
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            f"The demo runs one live question at a time and {rt.runs.gate.waiting} are "
+            "already waiting. Try again in a minute, or watch a recorded run.",
+            headers={"Retry-After": "60", LIMIT_HEADER: "queue-full"},
+        )
 
 
 async def sse(log: RunLog, after: int = 0) -> AsyncIterator[bytes]:
@@ -157,6 +167,7 @@ async def start_run(
     # both take a visitor's last run.
     if not cap.allowed(visitor, ip):
         raise cap_reached(cap)
+    _refuse_if_queue_full(rt)
     try:
         log = rt.runs.start(
             thread_id,
@@ -188,6 +199,7 @@ async def resume_run(
         raise HTTPException(status.HTTP_409_CONFLICT, "Nothing to resume on this thread.")
     # Same run id as the paused question: one run, recorded once.
     run_id = str(snap.values.get("run_id") or uuid.uuid4())
+    _refuse_if_queue_full(rt)
     try:
         log = rt.runs.start(thread_id, Command(resume=body.answer.strip()), run_id, resumed=True)
     except RunConflictError:

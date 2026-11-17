@@ -470,6 +470,26 @@
       "title": "PlanStep",
       "type": "object"
     },
+    "Queued": {
+      "description": "The run waits for the one live slot (api/gate.py); sent again whenever its place\nchanges. 1 = next. The first event that isn't `queued` means the run has started.",
+      "properties": {
+        "event": {
+          "const": "queued",
+          "title": "Event",
+          "type": "string"
+        },
+        "position": {
+          "title": "Position",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "event",
+        "position"
+      ],
+      "title": "Queued",
+      "type": "object"
+    },
     "Replan": {
       "properties": {
         "event": {
@@ -753,6 +773,7 @@
       "final": "#/$defs/Final",
       "node": "#/$defs/NodeEvent",
       "plan_created": "#/$defs/PlanCreated",
+      "queued": "#/$defs/Queued",
       "replan": "#/$defs/Replan",
       "run_started": "#/$defs/RunStarted",
       "step_completed": "#/$defs/StepCompleted",
@@ -765,6 +786,9 @@
   "oneOf": [
     {
       "$ref": "#/$defs/RunStarted"
+    },
+    {
+      "$ref": "#/$defs/Queued"
     },
     {
       "$ref": "#/$defs/PlanCreated"

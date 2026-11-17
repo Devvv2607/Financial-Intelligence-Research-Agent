@@ -94,6 +94,9 @@ class Settings(BaseSettings):
     # Request header holding the real client IP behind a proxy ("X-Real-IP" on Railway).
     # Unset: the socket peer address (local, tests). Only set it behind a proxy that sets it.
     client_ip_header: str | None = None
+    # Live runs at once (Groq free tier: 8K tokens/minute) and how many may wait in line.
+    live_concurrency: int = Field(1, ge=1)
+    live_queue_max: int = Field(5, ge=0)
     api_max_question_chars: int = 1_000
     # "scripted": replay canned scenarios with no LLM or tools (zero-token browser E2E,
     # api/scripted.py). Refused in production.

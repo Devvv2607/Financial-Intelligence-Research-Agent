@@ -45,6 +45,14 @@ class RunStarted(_Event):
     resumed: bool = False
 
 
+class Queued(_Event):
+    """The run waits for the one live slot (api/gate.py); sent again whenever its place
+    changes. 1 = next. The first event that isn't `queued` means the run has started."""
+
+    event: Literal["queued"]
+    position: int
+
+
 class PlanCreated(_Event):
     event: Literal["plan_created"]
     round: int
@@ -137,6 +145,7 @@ class ErrorEvent(_Event):
 
 AgentEvent = Annotated[
     RunStarted
+    | Queued
     | PlanCreated
     | Replan
     | StepStarted

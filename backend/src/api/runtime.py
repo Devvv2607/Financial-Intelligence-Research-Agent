@@ -34,6 +34,7 @@ from agent.tools import call_tool
 from agent.tools.base import ToolContext
 from agent.tools.common import Company, fiscal_periods, resolve_tickers
 from api.events import NodeTracker, RunLog
+from api.gate import RunGate
 from api.schemas import AGENT_EVENT
 from core.config import Settings
 from core.db.llm_store import PostgresLLMStore
@@ -61,6 +62,7 @@ def thread_config(thread_id: uuid.UUID, run_id: str | None = None) -> RunnableCo
 class RunManager:
     graph: Any  # CompiledStateGraph
     threads: ThreadStore
+    gate: RunGate = field(default_factory=RunGate)
     clock: Callable[[], float] = time.monotonic
     _active: dict[uuid.UUID, asyncio.Task[None]] = field(default_factory=dict)
     _logs: dict[uuid.UUID, RunLog] = field(default_factory=dict)
@@ -122,21 +124,22 @@ class RunManager:
             },
         )
         try:
-            async for ns, mode, chunk in self.graph.astream(
-                payload, config, stream_mode=["custom", "messages", "tasks"], subgraphs=True
-            ):
-                if mode == "custom" and isinstance(chunk, dict):
-                    self._put(log, chunk)
-                elif mode == "tasks":
-                    self._put(log, nodes.event(ns, chunk))
-                elif mode == "messages":
-                    msg, meta = chunk
-                    if (
-                        meta.get("langgraph_node") == "synthesizer"
-                        and isinstance(msg, AIMessageChunk)
-                        and msg.content
-                    ):
-                        self._put(log, {"event": "token", "text": str(msg.content)})
+            async with self.gate.slot(lambda n: self._put(log, {"event": "queued", "position": n})):
+                async for ns, mode, chunk in self.graph.astream(
+                    payload, config, stream_mode=["custom", "messages", "tasks"], subgraphs=True
+                ):
+                    if mode == "custom" and isinstance(chunk, dict):
+                        self._put(log, chunk)
+                    elif mode == "tasks":
+                        self._put(log, nodes.event(ns, chunk))
+                    elif mode == "messages":
+                        msg, meta = chunk
+                        if (
+                            meta.get("langgraph_node") == "synthesizer"
+                            and isinstance(msg, AIMessageChunk)
+                            and msg.content
+                        ):
+                            self._put(log, {"event": "token", "text": str(msg.content)})
             snap = await self.graph.aget_state(config)
             if snap.interrupts:
                 status = "awaiting_clarification"
@@ -227,7 +230,7 @@ async def live_runtime(
             embed=embedder.embed,
         )
         saver = await stack.enter_async_context(postgres_saver(settings.database_url))
-        runtime = make_runtime(deps, saver, PostgresThreadStore(engine))
+        runtime = make_runtime(deps, saver, PostgresThreadStore(engine), gate_from(settings))
         try:
             yield runtime
         finally:
@@ -235,7 +238,15 @@ async def live_runtime(
 
 
 def make_runtime(
-    deps: AgentDeps, saver: BaseCheckpointSaver[Any], threads: ThreadStore
+    deps: AgentDeps,
+    saver: BaseCheckpointSaver[Any],
+    threads: ThreadStore,
+    gate: RunGate | None = None,
 ) -> AgentRuntime:
     graph = build_graph(deps, saver)
-    return AgentRuntime(graph=graph, threads=threads, runs=RunManager(graph, threads))
+    runs = RunManager(graph, threads, gate or RunGate())
+    return AgentRuntime(graph=graph, threads=threads, runs=runs)
+
+
+def gate_from(settings: Settings) -> RunGate:
+    return RunGate(settings.live_concurrency, settings.live_queue_max)

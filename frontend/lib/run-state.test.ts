@@ -62,4 +62,17 @@ describe("run reducer", () => {
     const i = events.findIndex(([, e]) => e.event === "node" && e.node === "finalize");
     expect(replay(events.slice(0, i + 1)).phase).toBe("verifying");
   });
+
+  it("shows the queue position until the run gets its slot", () => {
+    const [[, started], ...rest] = compare as Rec;
+    let s = applyEvent(initialRun, started, 1);
+    s = applyEvent(s, { event: "queued", position: 2 }, 2);
+    expect([s.phase, statusLine(s)]).toEqual(["queued", expect.stringMatching(/position 2/)]);
+    s = applyEvent(s, { event: "queued", position: 1 }, 3);
+    expect(statusLine(s)).toMatch(/you're next/);
+    // the slot is granted: the run's own events follow (ids shifted past the queue's)
+    s = rest.reduce((acc, [id, e]) => applyEvent(acc, e, id + 3), s);
+    expect(s.queuePosition).toBeNull();
+    expect(s.phase).toBe("done");
+  });
 });

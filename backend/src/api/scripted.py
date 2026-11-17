@@ -32,7 +32,7 @@ from agent.deps import AgentDeps
 from agent.scripted import ScriptedLLM, ScriptedTools, ToolHandler
 from agent.tools.base import Evidence, ToolResult
 from agent.tools.common import Company, freshness_note
-from api.runtime import AgentRuntime, make_runtime
+from api.runtime import AgentRuntime, gate_from, make_runtime
 from core.config import Settings
 from core.threads import MemoryThreadStore
 
@@ -533,7 +533,9 @@ async def scripted_runtime(
     """In-memory checkpointer and thread store: nothing is written to the database.
     Recorded runs stay in memory, so GET /api/runs/{id} has nothing for them."""
     recorded: list[dict[str, Any]] = []
-    runtime = make_runtime(scripted_deps(recorded), memory_saver(), MemoryThreadStore(recorded))
+    runtime = make_runtime(
+        scripted_deps(recorded), memory_saver(), MemoryThreadStore(recorded), gate_from(settings)
+    )
     try:
         yield runtime
     finally:
