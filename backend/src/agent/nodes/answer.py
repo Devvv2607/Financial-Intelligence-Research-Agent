@@ -18,6 +18,7 @@ from langgraph.config import get_stream_writer
 
 from agent import prompts
 from agent.citecheck import CitationReport, verify_citations
+from agent.consistency import ConsistencyReport, check_answer
 from agent.deps import AgentDeps
 from agent.nodes.intake import run_id_of
 from agent.nodes.planning import _step_status_lines
@@ -36,6 +37,14 @@ FOOTER = (
     "NewsAPI headlines, as cited above.*"
 )
 UNVERIFIED_NOTE = "\n*Claims marked [unverified] could not be matched to any retrieved source.*"
+STATUS_NOTE = (
+    "\n*{n} statement(s) removed: they gave a risk factor a different status (new, removed, "
+    "changed or unchanged) than the filing comparison found.*"
+)
+EIGHT_K_NOTE = (
+    "\n*{n} 8-K description(s) replaced by the item's official name: the wording went beyond "
+    "the filing excerpt.*"
+)
 FOOTER_NO_SOURCES = "\n\n---\n*Not investment advice.*"
 STALE_CHECK_DAYS = 2
 logger = logging.getLogger(__name__)
@@ -199,6 +208,14 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
                 )
             except Exception:  # a local-model failure must not cost the user the answer
                 logger.exception("citation check failed", extra={"run_id": run_id_of(config)})
+        consistency = ConsistencyReport()
+        if order and all(sid in by_id for sid in order):
+            # Still in the synthesizer's numbering: sources[n-1] is [n].
+            answer, consistency = check_answer(answer, [by_id[sid] for sid in order])
+        if consistency.checked:
+            logger.info(
+                "answer consistency", extra={"run_id": run_id_of(config), **consistency.summary()}
+            )
         answer, citations = resolve_citations(answer, state)
         answer, citations, renumbered = renumber_citations(answer, citations)
         footer = FOOTER if citations else FOOTER_NO_SOURCES
@@ -207,8 +224,14 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
             footer += "\n" + freshness
         if report and report.unverified_claims:
             footer += UNVERIFIED_NOTE
+        if consistency.status_mismatches:
+            footer += STATUS_NOTE.format(n=len(consistency.status_mismatches))
+        if consistency.eight_k_rewrites:
+            footer += EIGHT_K_NOTE.format(n=len(consistency.eight_k_rewrites))
         answer = answer.rstrip() + footer
-        check = report.summary() if report else None
+        check: dict[str, Any] | None = dict(report.summary()) if report else None
+        if consistency.checked:
+            check = (check or {}) | consistency.summary()
         if check:
             logger.info("citation check", extra={"run_id": run_id_of(config), **check})
         cfg = config.get("configurable") or {}
@@ -273,6 +296,11 @@ def synthesis_sections(
             else ""
         )
         + (f" — {dated_label(e)}" if e.filed_or_published else "")
+        + (
+            f" — COMPARISON STATUS: {e.compare_status.upper()} ({e.compare_note})"
+            if e.compare_status
+            else ""
+        )
         + f"\n{source_text(e)}"
         for i, e in enumerate(sources, start=1)
     ]
@@ -287,6 +315,31 @@ def synthesis_sections(
         ("limits", "Known limits:\n" + ("\n".join(limits) or "none")),
         ("freshness", "Data freshness:\n" + ("\n".join(freshness) or "none")),
         ("sources", "Sources:\n" + ("\n\n".join(source_lines) or "(no sources were retrieved)")),
+        *comparison_section(state, sources),
+    ]
+
+
+def comparison_section(state: ResearchState, sources: list[Evidence]) -> list[tuple[str, str]]:
+    """Every compared risk with the status compare_risk_factors gave it, numbered when it
+    is a source. Includes risks that didn't make the numbered list (often the unchanged
+    ones), so the answer can name them by citing the comparison summary."""
+    number = {e.source_id: i for i, e in enumerate(sources, start=1)}
+    labeled = [e for e in state.get("evidence", []) if e.compare_status]
+    if not labeled:
+        return []
+    rank = {"new": 0, "removed": 1, "changed": 2, "unchanged": 3}
+    lines = [
+        f"- {(e.compare_status or '').upper()}"
+        + (f" [{number[e.source_id]}]" if e.source_id in number else " (not numbered)")
+        + f" {e.title.split(': ', 1)[-1]} ({e.compare_note})"
+        for e in sorted(labeled, key=lambda e: rank[e.compare_status or "unchanged"])
+    ]
+    return [
+        (
+            "comparison",
+            "Risk factor comparison (statuses decided by compare_risk_factors; use them "
+            "exactly):\n" + "\n".join(lines),
+        )
     ]
 
 

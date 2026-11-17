@@ -378,6 +378,34 @@
       "Evidence": {
         "description": "One citable source. `source_id` is stable across runs (used to dedupe).",
         "properties": {
+          "compare_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compare Note"
+          },
+          "compare_status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "new",
+                  "removed",
+                  "changed",
+                  "unchanged"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compare Status"
+          },
           "filed_or_published": {
             "anyOf": [
               {

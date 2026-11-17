@@ -130,12 +130,15 @@ def merge_keyed(left: dict[str, Any] | None, right: dict[str, Any] | str) -> dic
 def evidence_reducer(left: list[Evidence] | None, right: list[Evidence] | str) -> list[Evidence]:
     if isinstance(right, str):  # RESET
         return []
-    seen = {e.source_id for e in left or []}
     out = list(left or [])
+    index = {e.source_id: i for i, e in enumerate(out)}
     for e in right:
-        if e.source_id not in seen:
-            seen.add(e.source_id)
+        i = index.get(e.source_id)
+        if i is None:
+            index[e.source_id] = len(out)
             out.append(e)
+        elif e.compare_status and not out[i].compare_status:
+            out[i] = e  # keep the comparison label, whichever step fetched the risk first
     return out
 
 

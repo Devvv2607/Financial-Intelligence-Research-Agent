@@ -1106,3 +1106,43 @@ days earlier. A quiet company is up to date if EDGAR was checked today.
   free-tier server, about 30–60s" and retries every 5 s, then refetches failed queries.
 - **ingest-daily freshness.** Confirmed `run --daily` records `sec_check`/`news_check`
   through `Pipeline._record_check`; tests now cover it.
+
+## D-051 · Answers must keep the tools' own labels (risk status, 8-K items)
+
+**Status:** Implemented (branch `fix/compare-answer-consistency`). Zero LLM calls.
+
+Two replay recordings of 2026-11-17 scored citation precision 1.0 but said the wrong
+thing about the right source. Apple called reworded risks "unchanged ... identical
+language" (the comparison counted 20 materially changed). Boeing turned the title of 8-K
+Item 5.02 into an event ("departure of certain officers and the appointment of new
+directors") that the filing doesn't report (it appoints a new SVP and Controller). The
+embedding citation check can't catch either, because the claim is *about* the cited source.
+
+- **Labels travel with the evidence.** `compare_risk_factors` sets
+  `Evidence.compare_status` (new / removed / changed / unchanged) and `compare_note` on
+  every risk it returns, and now also returns the unchanged risks (last, lowest
+  priority). The evidence reducer keeps the labeled copy when another step fetched the
+  same risk first.
+- **The synthesizer gets them explicitly.** Each labeled source line says "COMPARISON
+  STATUS: CHANGED (reworded; FY2026 wording)". A "Risk factor comparison" section lists
+  every compared risk by status, including those not in the numbered list. Prompt v8
+  requires those statuses and limits 8-K descriptions to the excerpt or the item's
+  official name.
+- **finalize enforces them deterministically** (`agent/consistency.py`, word lists, no
+  model), on the synthesizer's numbering, before renumbering:
+  - *Status:* a sentence, bullet or table row that asserts a status while every label
+    it cites says otherwise is removed. List items inherit their lead line's status
+    ("remained unchanged, including:"), and a lead left with no items goes too.
+  - *8-K:* in a claim citing only 8-Ks, event words (appoint, depart, director,
+    compensation, credit agreement, ...) must appear in the filing excerpt with its item
+    headings stripped. Quoting the official item description as a name is allowed.
+    Otherwise the claim is replaced by "Reported under Item 5.02 (Departure or
+    appointment of directors or officers; compensation arrangements) [n]", which keeps
+    the table shape.
+  - Both add a footer note, are counted in `citation_check` (`status_mismatches`,
+    `eight_k_rewrites`) and are logged per run ("answer consistency").
+- **Removed, not marked.** Unlike `[unverified]`, a contradicted status is removed: the
+  sentence is wrong, not merely unsupported. Rewriting the 8-K wording rather than
+  deleting it keeps the event row, which is correct apart from its description.
+- Tests use the two real answers and their cited sources as fixtures
+  (`backend/tests/fixtures/consistency/`).

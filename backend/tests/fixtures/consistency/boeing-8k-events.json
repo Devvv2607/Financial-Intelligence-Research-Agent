@@ -1,0 +1,97 @@
+{
+ "note": "Real production run of 2026-11-17 (replay-boeing-8k-events-HELD): the final answer and its cited sources in citation order (sources[n-1] is [n]).",
+ "answer": "**Boeing’s material events reported in Form 8‑K filings during 2026**\n\n| Filing date | Items disclosed | Brief description of the material event |\n|-------------|----------------|------------------------------------------|\n| 27 Oct 2026 | 2.02 – Results of operations and financial condition; 9.01 – Financial statements and exhibits | The company issued a press release reporting its financial results for the third quarter of 2026 and furnished the release as Exhibit 99.1 [1] |\n| 28 Aug 2026 | 1.01 – Entry into a material definitive agreement; 2.03 – Creation of a direct financial obligation or off‑balance‑sheet arrangement; 9.01 – Financial statements and exhibits | Boeing entered into a $3.0 billion, 364‑day revolving credit agreement and disclosed the related obligation and accompanying exhibits [2] |\n| 21 Aug 2026 | 5.02 – Departure or appointment of directors or officers; compensation arrangements | The Board reported the departure of certain officers and the appointment of new directors/officers, together with related compensation arrangements [3] |\n| 28 Jul 2026 | 2.02 – Results of operations and financial condition; 9.01 – Financial statements and exhibits | The company issued a press release reporting its financial results for the second quarter of 2026 and furnished the release as Exhibit 99.1 [4] |\n| 22 Apr 2026 | 2.02 – Results of operations and financial condition; 9.01 – Financial statements and exhibits | The company issued a press release reporting its financial results for the first quarter of 2026 and furnished the release as Exhibit 99.1 [5] |\n| 17 Apr 2026 | 5.07 – Submission of matters to a vote of security holders | Boeing held its Annual Meeting of Shareholders and disclosed the final voting results for each matter submitted to shareholders [6] |\n| 27 Jan 2026 | 2.02 – Results of operations and financial condition; 9.01 – Financial statements and exhibits | The company issued a press release reporting its financial results for the fourth quarter of 2025 and furnished the release as Exhibit 99.1 [7] |\n\n**Limits** – No additional material events were found in the SEC filings checked through 16 Nov 2026.\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*\n*Data: SEC filings checked 16 Nov 2026 (latest 8-K filed 27 Oct 2026).*",
+ "sources": [
+  {
+   "source_id": "8k:0001628280-26-067411",
+   "source_type": "8k",
+   "ticker": "BA",
+   "title": "BA 8-K 2026-10-27: 2.02 Results of operations and financial condition; 9.01 Financial statements and exhibits",
+   "snippet": "Item 2.02 Results of Operations and Financial Condition. On October 27, 2026, The Boeing Company issued a press release reporting its financial results for the third quarter of 2026. A copy of the Company’s press release is furnished as Exhibit 99.1 to this Current Report on Form 8-K. Item 9.01 Financial Statements and Exhibits. (d) Exhibits. Exhibit Number Description Press Release issued by The Boeing Company dated October 27, 2026, reporting Boeing's financial results for the third quarter of 2026, furnished herewith. Cover Page Interactive Data File (embedded within the Inline XBRL…",
+   "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026067411/ba-20261027.htm",
+   "form_type": "8-K",
+   "fiscal_year": null,
+   "section": null,
+   "filed_or_published": "2026-10-27",
+   "score": null
+  },
+  {
+   "source_id": "8k:0001628280-26-059427",
+   "source_type": "8k",
+   "ticker": "BA",
+   "title": "BA 8-K 2026-08-28: 1.01 Entry into a material definitive agreement; 2.03 Creation of a direct financial obligation or off-balance-sheet arrangement; 9.01 Financial statements and exhibits",
+   "snippet": "Item 1.01. Entry into a Material Definitive Agreement. On August 24, 2026, The Boeing Company (“Boeing”) entered into a $3.0 billion, 364-day revolving credit agreement (the “364-Day Credit Agreement”) with Citibank, N.A. (“Citibank”) and JPMorgan Chase Bank, N.A. (“JPMorgan”) as joint lead arrangers and joint book managers, Citibank as administrative agent, JPMorgan as syndication agent, and a syndicate of lenders as defined in the 364-Day Credit Agreement. This facility replaces Boeing’s previous $3.0 billion, 364-day revolving credit agreement, which was scheduled to terminate on August…",
+   "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026059427/ba-20260824.htm",
+   "form_type": "8-K",
+   "fiscal_year": null,
+   "section": null,
+   "filed_or_published": "2026-08-28",
+   "score": null
+  },
+  {
+   "source_id": "8k:0001628280-26-058481",
+   "source_type": "8k",
+   "ticker": "BA",
+   "title": "BA 8-K 2026-08-21: 5.02 Departure or appointment of directors or officers; compensation arrangements",
+   "snippet": "Item 5.02. Departure of Directors or Certain Officers; Election of Directors; Appointment of Certain Officers; Compensatory Arrangements of Certain Officers. On August 19, 2026, the Board of Directors of The Boeing Company (the “Company”) appointed Ryan L. Shedd as the Company’s Senior Vice President and Controller, to be effective as of the first business day following the Company’s filing of its Annual Report on Form 10-K for the year ended December 31, 2026 (the “Effective Date”). In that position, Mr. Shedd will also act as the Company’s principal accounting officer. Mr. Shedd will join…",
+   "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026058481/ba-20260819.htm",
+   "form_type": "8-K",
+   "fiscal_year": null,
+   "section": null,
+   "filed_or_published": "2026-08-21",
+   "score": null
+  },
+  {
+   "source_id": "8k:0001628280-26-049929",
+   "source_type": "8k",
+   "ticker": "BA",
+   "title": "BA 8-K 2026-07-28: 2.02 Results of operations and financial condition; 9.01 Financial statements and exhibits",
+   "snippet": "Item 2.02 Results of Operations and Financial Condition. On July 28, 2026, The Boeing Company issued a press release reporting its financial results for the second quarter of 2026. A copy of the Company’s press release is furnished as Exhibit 99.1 to this Current Report on Form 8-K. Item 9.01 Financial Statements and Exhibits. (d) Exhibits. Exhibit Number Description Press Release issued by The Boeing Company dated July 28, 2026, reporting Boeing's financial results for the second quarter of 2026, furnished herewith. Cover Page Interactive Data File (embedded within the Inline XBRL document)…",
+   "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026049929/ba-20260728.htm",
+   "form_type": "8-K",
+   "fiscal_year": null,
+   "section": null,
+   "filed_or_published": "2026-07-28",
+   "score": null
+  },
+  {
+   "source_id": "8k:0001628280-26-026391",
+   "source_type": "8k",
+   "ticker": "BA",
+   "title": "BA 8-K 2026-04-22: 2.02 Results of operations and financial condition; 9.01 Financial statements and exhibits",
+   "snippet": "Item 2.02 Results of Operations and Financial Condition. On April 22, 2026, The Boeing Company issued a press release reporting its financial results for the first quarter of 2026. A copy of the Company’s press release is furnished as Exhibit 99.1 to this Current Report on Form 8-K. Item 9.01 Financial Statements and Exhibits. (d) Exhibits. Exhibit Number Description Press Release issued by The Boeing Company dated April 22, 2026, reporting Boeing's financial results for the first quarter of 2026, furnished herewith. Cover Page Interactive Data File (embedded within the Inline XBRL document)…",
+   "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026026391/ba-20260422.htm",
+   "form_type": "8-K",
+   "fiscal_year": null,
+   "section": null,
+   "filed_or_published": "2026-04-22",
+   "score": null
+  },
+  {
+   "source_id": "8k:0001628280-26-025684",
+   "source_type": "8k",
+   "ticker": "BA",
+   "title": "BA 8-K 2026-04-17: 5.07 Submission of matters to a vote of security holders",
+   "snippet": "Item 5.07. Submission of Matters to a Vote of Security Holders. The Boeing Company held its Annual Meeting of Shareholders on April 17, 2026. Set forth below are the final voting results for each of the proposals submitted to a vote of the shareholders. 1. Election of Directors NAME FOR AGAINST ABSTAIN BROKER NON-VOTES Robert A. Bradway Mortimer \"Tim\" J. Buckley Lynne M. Doughtie David L. Gitlin Lynn J. Good Stayce D. Harris Akhil Johri David L. Joyce Steven M. Mollenkopf Robert Kelly Ortberg John M. Richardson Bradley D. Tilden 2. Approve, on an Advisory Basis, Named Executive Officer…",
+   "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026025684/ba-20260417.htm",
+   "form_type": "8-K",
+   "fiscal_year": null,
+   "section": null,
+   "filed_or_published": "2026-04-17",
+   "score": null
+  },
+  {
+   "source_id": "8k:0001628280-26-003518",
+   "source_type": "8k",
+   "ticker": "BA",
+   "title": "BA 8-K 2026-01-27: 2.02 Results of operations and financial condition; 9.01 Financial statements and exhibits",
+   "snippet": "Item 2.02 Results of Operations and Financial Condition. On January 27, 2026, The Boeing Company issued a press release reporting its financial results for the fourth quarter of 2025. A copy of the Company’s press release is furnished as Exhibit 99.1 to this Current Report on Form 8-K. Item 9.01 Financial Statements and Exhibits. (d) Exhibits. Exhibit Number Description Press Release issued by The Boeing Company dated January 27, 2026, reporting Boeing's financial results for the fourth quarter of 2025, furnished herewith. Cover Page Interactive Data File (embedded within the Inline XBRL…",
+   "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026003518/ba-20260127.htm",
+   "form_type": "8-K",
+   "fiscal_year": null,
+   "section": null,
+   "filed_or_published": "2026-01-27",
+   "score": null
+  }
+ ]
+}

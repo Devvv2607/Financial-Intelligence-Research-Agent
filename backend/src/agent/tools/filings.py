@@ -12,7 +12,15 @@ from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 from weaviate.classes.query import Filter, MetadataQuery
 
-from agent.tools.base import Evidence, Output, ToolContext, ToolFailure, snippet, tool
+from agent.tools.base import (
+    CompareStatus,
+    Evidence,
+    Output,
+    ToolContext,
+    ToolFailure,
+    snippet,
+    tool,
+)
 from agent.tools.common import fetch_dicts, freshness_note, missing_warning, resolve_tickers
 from agent.tools.eight_k_items import describe_items, event_excerpt
 from core.db.schema import eight_k_events, filings, risk_factors
@@ -447,12 +455,26 @@ async def compare_risk_factors(ctx: ToolContext, inp: CompareRiskFactorsInput) -
         category_counts_b=_category_counts(b),
     )
     by_id = {r["id"]: r for r in rows}
+    # Every risk carries the tool's own status, so the answer can't relabel it (D-051).
+    labels: dict[str, tuple[CompareStatus, str]] = {}
+    for r in new:
+        labels[r["id"]] = ("new", f"new in FY{year_b}")
+    for r in removed:
+        labels[r["id"]] = ("removed", f"in FY{year_a}, not in FY{year_b}")
+    for c in changed:
+        how = c.kind.replace("_", " ")
+        labels[c.after.id] = ("changed", f"{how}; FY{year_b} wording")
+        labels[c.before.id] = ("changed", f"{how}; FY{year_a} wording")
+    for u in unchanged:
+        labels[u.risk.id] = ("unchanged", f"same text in FY{year_a} and FY{year_b}")
     # Evidence order is priority order (the synthesizer gets the first items of each step):
     # new and removed first, then each changed risk's later and earlier wording side by side,
-    # so a cap never keeps one side of a comparison without the other.
-    cited = [r["id"] for r in new + removed] + [
-        i for c in changed for i in (c.after.id, c.before.id)
-    ]
+    # so a cap never keeps one side of a comparison without the other; unchanged last.
+    cited = (
+        [r["id"] for r in new + removed]
+        + [i for c in changed for i in (c.after.id, c.before.id)]
+        + [u.risk.id for u in unchanged]
+    )
     summary_url = next((str(r["url"]) for r in b), None)
     summary = Evidence(
         source_id=f"compare:{company.ticker}:{year_a}:{year_b}",
@@ -469,7 +491,12 @@ async def compare_risk_factors(ctx: ToolContext, inp: CompareRiskFactorsInput) -
         fiscal_year=year_b,
         section="item_1a",
     )
-    evidence = [summary] + [_risk_evidence(company.ticker, by_id[i]) for i in dict.fromkeys(cited)]
+    evidence = [summary] + [
+        _risk_evidence(company.ticker, by_id[i]).model_copy(
+            update={"compare_status": labels[i][0], "compare_note": labels[i][1]}
+        )
+        for i in dict.fromkeys(cited)
+    ]
     return Output(out, evidence)
 
 

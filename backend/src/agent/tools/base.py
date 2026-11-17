@@ -33,6 +33,9 @@ logger = logging.getLogger(__name__)
 SourceType = Literal["filing_chunk", "risk_factor", "8k", "financial_fact", "news", "sql"]
 
 
+CompareStatus = Literal["new", "removed", "changed", "unchanged"]
+
+
 class Evidence(BaseModel):
     """One citable source. `source_id` is stable across runs (used to dedupe)."""
 
@@ -47,6 +50,10 @@ class Evidence(BaseModel):
     section: str | None = None
     filed_or_published: date | datetime | None = None
     score: float | None = None
+    # Set by compare_risk_factors: the risk's status between the two 10-Ks, exactly as the
+    # tool decided it. The synthesizer must use it and finalize checks the answer against it.
+    compare_status: CompareStatus | None = None
+    compare_note: str | None = None  # e.g. "reworded; FY2026 wording"
 
 
 class ToolError(BaseModel):
