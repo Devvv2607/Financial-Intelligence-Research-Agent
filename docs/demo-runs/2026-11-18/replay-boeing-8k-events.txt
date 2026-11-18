@@ -1,0 +1,69 @@
+Recorded 2026-11-18T06:31:29.819447Z from https://api-production-08d8051f.up.railway.app (production, live runtime) with api.replay_recorder
+Question: What material events has Boeing reported in 8-Ks this year?
+Counted tokens (from /api/runs): 8707
+Citation check: {'checked': 13, 'supported': 13, 'reattached': 0, 'dropped': 0, 'unverified_claims': 0, 'precision': 1.0, 'status_mismatches': 0, 'eight_k_rewrites': 1}
+
+===== FINAL ANSWER =====
+**Boeing’s material events reported in Form 8‑K filings during 2026**
+
+1. **Form 8‑K filed 27 Oct 2026** (accession 0001628280‑26‑067411) disclosed:  
+   * Item 2.02 – Results of Operations and Financial Condition (press release reporting Boeing’s third‑quarter 2026 financial results) [1];  
+   * Item 9.01 – Financial Statements and Exhibits (press release furnished as Exhibit 99.1) [1].
+
+2. **Form 8‑K filed 28 Aug 2026** (accession 0001628280‑26‑059427) disclosed:  
+   * Item 1.01 – Entry into a Material Definitive Agreement (Boeing entered a $3.0 billion, 364‑day revolving credit agreement on 24 Aug 2026) [2];  
+   * Item 2.03 – Creation of a Direct Financial Obligation or Off‑Balance‑Sheet Arrangement [2];  
+   * Item 9.01 – Financial Statements and Exhibits (press release furnished) [2].
+
+3. **Form 8‑K filed 21 Aug 2026** disclosed:  
+   * The 8-K filed 21 Aug 2026 reports Item 5.02 (Departure or appointment of directors or officers; compensation arrangements) [3].
+
+4. **Form 8‑K filed 28 Jul 2026** disclosed:  
+   * Item 2.02 – Results of Operations and Financial Condition (press release reporting Boeing’s second‑quarter 2026 financial results) [4];  
+   * Item 9.01 – Financial Statements and Exhibits (press release furnished) [4].
+
+5. **Form 8‑K filed 22 Apr 2026** disclosed:  
+   * Item 2.02 – Results of Operations and Financial Condition (press release reporting Boeing’s first‑quarter 2026 financial results) [5];  
+   * Item 9.01 – Financial Statements and Exhibits (press release furnished) [5].
+
+6. **Form 8‑K filed 17 Apr 2026** disclosed:  
+   * Item 5.07 – Submission of Matters to a Vote of Security Holders (annual shareholders’ meeting held on 17 Apr 2026 with final voting results) [6].
+
+7. **Form 8‑K filed 27 Jan 2026** disclosed:  
+   * Item 2.02 – Results of Operations and Financial Condition (press release reporting Boeing’s fourth‑quarter 2025 financial results) [7];  
+   * Item 9.01 – Financial Statements and Exhibits (press release furnished) [7].
+
+---
+*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*
+*Data: SEC filings checked 16 Nov 2026 (latest 8-K filed 27 Oct 2026).*
+*1 8-K description(s) replaced by the item's official name: the wording went beyond the filing excerpt.*
+
+===== STREAMED DRAFT (before finalize) =====
+**Boeing’s material events reported in Form 8‑K filings during 2026**
+
+1. **Form 8‑K filed 27 Oct 2026** (accession 0001628280‑26‑067411) disclosed:  
+   * Item 2.02 – Results of Operations and Financial Condition (press release reporting Boeing’s third‑quarter 2026 financial results) [1];  
+   * Item 9.01 – Financial Statements and Exhibits (press release furnished as Exhibit 99.1) [1].
+
+2. **Form 8‑K filed 28 Aug 2026** (accession 0001628280‑26‑059427) disclosed:  
+   * Item 1.01 – Entry into a Material Definitive Agreement (Boeing entered a $3.0 billion, 364‑day revolving credit agreement on 24 Aug 2026) [2];  
+   * Item 2.03 – Creation of a Direct Financial Obligation or Off‑Balance‑Sheet Arrangement [2];  
+   * Item 9.01 – Financial Statements and Exhibits (press release furnished) [2].
+
+3. **Form 8‑K filed 21 Aug 2026** disclosed:  
+   * Item 5.02 – Departure or Appointment of Directors or Officers; Compensation Arrangements (board departures and officer appointments on 19 Aug 2026) [3].
+
+4. **Form 8‑K filed 28 Jul 2026** disclosed:  
+   * Item 2.02 – Results of Operations and Financial Condition (press release reporting Boeing’s second‑quarter 2026 financial results) [4];  
+   * Item 9.01 – Financial Statements and Exhibits (press release furnished) [4].
+
+5. **Form 8‑K filed 22 Apr 2026** disclosed:  
+   * Item 2.02 – Results of Operations and Financial Condition (press release reporting Boeing’s first‑quarter 2026 financial results) [5];  
+   * Item 9.01 – Financial Statements and Exhibits (press release furnished) [5].
+
+6. **Form 8‑K filed 17 Apr 2026** disclosed:  
+   * Item 5.07 – Submission of Matters to a Vote of Security Holders (annual shareholders’ meeting held on 17 Apr 2026 with final voting results) [6].
+
+7. **Form 8‑K filed 27 Jan 2026** disclosed:  
+   * Item 2.02 – Results of Operations and Financial Condition (press release reporting Boeing’s fourth‑quarter 2025 financial results) [7];  
+   * Item 9.01 – Financial Statements and Exhibits (press release furnished) [7].

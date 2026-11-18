@@ -1,0 +1,4145 @@
+{
+ "slug": "apple-risk-changes",
+ "question": "How did Apple's risk factors change between its last two 10-Ks?",
+ "recorded_at": "2026-11-18T06:28:59.820259Z",
+ "source": "live",
+ "api_url": "https://api-production-08d8051f.up.railway.app",
+ "tokens": 11144,
+ "segments": [
+  {
+   "input": {
+    "kind": "run",
+    "text": "How did Apple's risk factors change between its last two 10-Ks?"
+   },
+   "events": [
+    {
+     "t_ms": 437,
+     "event": {
+      "event": "run_started",
+      "run_id": "eceb2d86-f054-436a-8438-750c906acc38",
+      "thread_id": "dc6d82cf-8dc2-4d46-a620-a7f4097630ae",
+      "resumed": false
+     }
+    },
+    {
+     "t_ms": 437,
+     "event": {
+      "event": "node",
+      "node": "start_turn",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 437,
+     "event": {
+      "event": "node",
+      "node": "start_turn",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 437,
+     "event": {
+      "event": "node",
+      "node": "guardrail",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 437,
+     "event": {
+      "event": "node",
+      "node": "guardrail",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 437,
+     "event": {
+      "event": "node",
+      "node": "entity_resolver",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 437,
+     "event": {
+      "event": "node",
+      "node": "entity_resolver",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 437,
+     "event": {
+      "event": "node",
+      "node": "query_analyzer",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 890,
+     "event": {
+      "event": "node",
+      "node": "query_analyzer",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 890,
+     "event": {
+      "event": "node",
+      "node": "planner",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3546,
+     "event": {
+      "event": "plan_created",
+      "round": 1,
+      "steps": [
+       {
+        "id": "r1s1",
+        "goal": "Compare Apple's risk factors between its two most recent 10-K filings",
+        "agent": "filings",
+        "entities": [
+         "AAPL"
+        ],
+        "depends_on": [],
+        "tool_calls": [
+         {
+          "tool": "compare_risk_factors",
+          "args_json": "{\"ticker\":\"AAPL\"}"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 3546,
+     "event": {
+      "event": "node",
+      "node": "planner",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3546,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3546,
+     "event": {
+      "event": "step_started",
+      "step_id": "r1s1",
+      "agent": "filings",
+      "mode": "direct"
+     }
+    },
+    {
+     "t_ms": 3546,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3546,
+     "event": {
+      "event": "node",
+      "node": "filings_agent",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3562,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:prepare",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3562,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:prepare",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 3562,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:direct",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 34218,
+     "event": {
+      "event": "tool_called",
+      "step_id": "r1s1",
+      "tool": "compare_risk_factors",
+      "args": {
+       "ticker": "AAPL"
+      },
+      "ok": true,
+      "evidence": 49,
+      "reused": false
+     }
+    },
+    {
+     "t_ms": 34343,
+     "event": {
+      "event": "evidence_added",
+      "step_id": "r1s1",
+      "sources": [
+       {
+        "source_id": "compare:AAPL:2025:2026",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL risk factors, FY2025 vs FY2026 10-K (comparison)",
+        "snippet": "Comparing AAPL's FY2025 10-K (27 risk factors) with its FY2026 10-K (28 risk factors): 1 new, 0 removed, 20 materially changed, 7 unchanged.",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": null,
+        "score": null,
+        "compare_status": null,
+        "compare_note": null
+       },
+       {
+        "source_id": "rf:5369d8aedaa59fbef750e83429cc3f66",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: Issues related to artificial intelligence may result in reputational, competitive and financial harm to the Company, regulatory action, legal liability, and other adverse effects to the Company’s business.",
+        "snippet": "Issues related to artificial intelligence may result in reputational, competitive and financial harm to the Company, regulatory action, legal liability, and other adverse effects to the Company’s business. Artificial intelligence technologies are increasingly integrated into the Company’s products and services and its business and operations. These technologies present emerging legal, regulatory, ethical and operational risks. For example, the Company’s artificial intelligence efforts may give rise to risks related to, among other things: competition and strategy; recouping costs and returns…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "new",
+        "compare_note": "new in FY2026"
+       },
+       {
+        "source_id": "rf:d9f14b0bd1b7e9990464b10bd65d2fb6",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: Future operating results depend upon the Company’s ability to obtain components, compute capacity and storage resources in sufficient quantities and on commercially reasonable terms.",
+        "snippet": "Future operating results depend upon the Company’s ability to obtain components, compute capacity and storage resources in sufficient quantities and on commercially reasonable terms. The Company currently obtains certain components from single or limited sources, which exposes it to significant supply and pricing risks. In addition, many components, including those that are available from multiple sources, are at times subject to industry-wide shortages and significant commodity pricing fluctuations. For example, the Company is experiencing supply constraints and rising costs driven by…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:9e4b35f0eb32a49315c478245fc8aecb",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: Future operating results depend upon the Company’s ability to obtain components in sufficient quantities on commercially reasonable terms.",
+        "snippet": "Future operating results depend upon the Company’s ability to obtain components in sufficient quantities on commercially reasonable terms. Because the Company currently obtains certain components from single or limited sources, the Company is subject to significant supply and pricing risks. Many components, including those that are available from multiple sources, are at times subject to industry-wide shortages and significant commodity pricing fluctuations that can materially adversely affect the Company’s business, results of operations, financial condition and stock price. For example,…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:2074a30b0d50ae3ffdcaee7592f6a769",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company’s products, services and technologies, including artificial intelligence technologies and features, may be affected from time to time by design and manufacturing defects.",
+        "snippet": "The Company’s products, services and technologies, including artificial intelligence technologies and features, may be affected from time to time by design and manufacturing defects. The Company offers complex hardware and software products, services and technologies, including artificial intelligence technologies and features, that can be affected by design and manufacturing defects. Defects can exist in components and products designed by the Company or that the Company purchases from third parties. Defects could make the Company’s products unsafe and create a risk of environmental or…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:a70581be6c819888b9f966b633eef369",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: The Company’s products and services may be affected from time to time by design and manufacturing defects that could materially adversely affect the Company’s business and result in harm to the Company’s reputation.",
+        "snippet": "The Company’s products and services may be affected from time to time by design and manufacturing defects that could materially adversely affect the Company’s business and result in harm to the Company’s reputation. The Company offers complex hardware and software products and services that can be affected by design and manufacturing defects. Sophisticated operating system software and applications, such as those offered by the Company, often have issues that can unexpectedly interfere with the intended operation of hardware or software products and services. Defects can also exist in…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:38992d9ed37aa6c266b2dcfe5886ac5c",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company is subject to the risks of adverse impacts from legal proceedings and government investigations.",
+        "snippet": "The Company is subject to the risks of adverse impacts from legal proceedings and government investigations. The Company is subject to various claims, legal proceedings and government investigations that have arisen in the ordinary course of business and have not yet been fully resolved, and new matters may arise in the future. In addition, the Company enters into agreements that include indemnification provisions that can subject the Company to costs and damages in the event of a claim against an indemnified third party. The number of claims, legal proceedings and government investigations…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:c323af0cf731a2e21e5a343e66fc7c17",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: The Company’s business, results of operations and financial condition could be adversely impacted by unfavorable results of legal proceedings or government investigations.",
+        "snippet": "The Company’s business, results of operations and financial condition could be adversely impacted by unfavorable results of legal proceedings or government investigations. The Company is subject to various claims, legal proceedings and government investigations that have arisen in the ordinary course of business and have not yet been fully resolved, and new matters may arise in the future. In addition, the Company enters into agreements that include indemnification provisions that can subject the Company to costs and damages in the event of a claim against an indemnified third party. The…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:edccf1a3fd327f296b9b7006ef666191",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company experiences cybersecurity incidents and inadvertent losses and unauthorized access to or releases of confidential information, including personal information.",
+        "snippet": "The Company experiences cybersecurity incidents and inadvertent losses and unauthorized access to or releases of confidential information, including personal information. The Company’s business requires it to use and store confidential information, including personal and sensitive health and financial information with respect to the Company’s customers and employees. The Company’s business also requires it to share confidential information with suppliers, service providers and other third parties. The Company relies on global suppliers that are also exposed to cybersecurity, ransomware and…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:90e794ab96612392501c57607ae03cc1",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: Losses or unauthorized access to or releases of confidential information, including personal information, could subject the Company to significant reputational, financial, legal and operational consequences.",
+        "snippet": "Losses or unauthorized access to or releases of confidential information, including personal information, could subject the Company to significant reputational, financial, legal and operational consequences. The Company’s business requires it to use and store confidential information, including personal and sensitive health and financial information with respect to the Company’s customers and employees. The Company devotes significant resources to systems and data security, including through the use of encryption and other security measures intended to protect its systems and data. But these…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:677014fa0fd2d2e3789b888cd14f5c52",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company’s future performance depends in part on support from third-party software developers.",
+        "snippet": "The Company’s future performance depends in part on support from third-party software developers. The Company believes decisions by customers to purchase its hardware products depend in part on the availability of third-party software applications and services. Third-party developers may discontinue the development and maintenance of software applications and services for the Company’s products, which could cause customers to choose not to buy the Company’s products. The Company believes that third-party developer support depends on the perceived benefits of creating software and services…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:1a9c3166e04d55b364e623734449124b",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: The Company’s future performance depends in part on support from third-party software developers.",
+        "snippet": "The Company’s future performance depends in part on support from third-party software developers. The Company believes decisions by customers to purchase its hardware products depend in part on the availability of third-party software applications and services. Third-party developers may discontinue the development and maintenance of software applications and services for the Company’s products. If third-party software applications and services cease to be developed and maintained for the Company’s products, customers may choose not to buy the Company’s products, adversely impacting the…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:be467041c748254432ebb154215751c5",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: Investment in new business strategies, commercial relationships and acquisitions could disrupt the Company’s ongoing business and present risks not originally contemplated.",
+        "snippet": "Investment in new business strategies, commercial relationships and acquisitions could disrupt the Company’s ongoing business and present risks not originally contemplated. The Company has invested, and in the future may invest, in new business strategies, commercial relationships and acquisitions. Such endeavors may involve significant risks and uncertainties, including diversion of management’s efforts from current operations, greater-than-expected liabilities and expenses, economic, political, legal and regulatory challenges associated with operating in new businesses, regions or…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:b7eeba99b58a22f3a21cb13c687270bf",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: Investment in new business strategies, commercial relationships and acquisitions could disrupt the Company’s ongoing business, present risks not originally contemplated, and materially adversely affect the Company’s business, reputation, results of operations and financ",
+        "snippet": "Investment in new business strategies, commercial relationships and acquisitions could disrupt the Company’s ongoing business, present risks not originally contemplated, and materially adversely affect the Company’s business, reputation, results of operations and financial condition. The Company has invested, and in the future may invest, in new business strategies, commercial relationships and acquisitions. Such endeavors may involve significant risks and uncertainties, including distraction of management from current operations, greater-than-expected liabilities and expenses, economic,…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:a121eafdcbac67e6fabc10f2ecbdc3b7",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company is subject to the risks and costs of complex and changing laws and regulations worldwide.",
+        "snippet": "The Company is subject to the risks and costs of complex and changing laws and regulations worldwide. The Company’s global operations are subject to complex and changing laws and regulations worldwide on subjects including antitrust; privacy, data security and data localization; online safety; age verification; consumer protection; advertising, sales, billing and e-commerce; financial services and technology, including gift cards; product liability; intellectual property ownership and infringement; digital platforms; data centers and technical infrastructure; machine learning, artificial…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:925704234942b31d592e9bcd34264d7a",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: The Company is subject to complex and changing laws and regulations worldwide, which exposes the Company to potential liabilities, increased costs and other adverse effects on the Company’s business.",
+        "snippet": "The Company is subject to complex and changing laws and regulations worldwide, which exposes the Company to potential liabilities, increased costs and other adverse effects on the Company’s business. The Company’s global operations are subject to complex and changing laws and regulations worldwide on subjects including antitrust; privacy, data security and data localization; online safety; age verification; consumer protection; advertising, sales, billing and e-commerce; financial services and technology; product liability; intellectual property ownership and infringement; digital platforms;…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:417819ea52c4d74b873fc3d0f4c23cbf",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company relies on access to third-party intellectual property, which may not be available to the Company on commercially reasonable terms, or at all.",
+        "snippet": "The Company relies on access to third-party intellectual property, which may not be available to the Company on commercially reasonable terms, or at all. The Company’s products and services include technology or intellectual property that must be licensed from third parties. In addition, the Company’s products and services have been, and may in the future be, alleged to infringe the intellectual property rights of others due to extensive existing intellectual property coverage, the rapid pace of new intellectual property rights generation, and technological changes in the industries in which…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:96a374b7298702ae76cb4983b63e343d",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: The Company relies on access to third-party intellectual property, which may not be available to the Company on commercially reasonable terms, or at all.",
+        "snippet": "The Company relies on access to third-party intellectual property, which may not be available to the Company on commercially reasonable terms, or at all. The Company’s products and services include technology or intellectual property that must be licensed from third parties. In addition, because of technological changes in the industries in which the Company currently competes or in the future may compete, current extensive intellectual property coverage and the rapid rate of new intellectual property rights generation, the Company’s products and services may be alleged to infringe existing…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:e63832510499afc3db31d99c37f8a94c",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company’s net sales, gross margins and results of operations are subject to volatility and downward pressure due to a variety of factors.",
+        "snippet": "The Company’s net sales, gross margins and results of operations are subject to volatility and downward pressure due to a variety of factors. The Company’s gross margins vary significantly across its products, services, geographic segments and distribution channels and can change over time. The Company’s net sales, gross margins and results of operations are subject to volatility and downward pressure due to a variety of factors, including: industry-wide supply constraints and rising costs for key components such as advanced semiconductors, memory and storage; product pricing pressures and…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:6ae00694cc5e9e9028688bb61e315046",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: The Company’s net sales and gross margins are subject to volatility and downward pressure due to a variety of factors.",
+        "snippet": "The Company’s net sales and gross margins are subject to volatility and downward pressure due to a variety of factors. The Company’s gross margins vary significantly across its products, services, geographic segments and distribution channels and can change over time. The Company’s net sales and gross margins are subject to volatility and downward pressure due to a variety of factors, including: continued industry-wide global product pricing pressures and product pricing actions that the Company may take in response to such pressures; increased competition; the Company’s ability to…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:73dc055f55fa89ddeaa6190ec43a5ea4",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The technology industry, including, in some instances, the Company, is subject to intense media, political and regulatory scrutiny, which exposes the Company to increasing regulation, government investigations, legal actions and penalties.",
+        "snippet": "The technology industry, including, in some instances, the Company, is subject to intense media, political and regulatory scrutiny, which exposes the Company to increasing regulation, government investigations, legal actions and penalties. From time to time, the Company has made changes to its business, including actions taken in response to litigation, competition, market conditions and legal and regulatory requirements. The Company expects to make further business changes in the future. For example, in the U.S., the Company has implemented changes to how developers communicate with…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:e4b9c7d43b6f217b6f78813de8209ab2",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: The technology industry, including, in some instances, the Company, is subject to intense media, political and regulatory scrutiny, which exposes the Company to increasing regulation, government investigations, legal actions and penalties.",
+        "snippet": "The technology industry, including, in some instances, the Company, is subject to intense media, political and regulatory scrutiny, which exposes the Company to increasing regulation, government investigations, legal actions and penalties. From time to time, the Company has made changes to its business, including actions taken in response to litigation, competition, market conditions and legal and regulatory requirements. The Company expects to make further business changes in the future. For example, in the U.S., the Company has implemented changes to how developers communicate with…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:3caf88bbfb305bc8a0fe0cfa61464b87",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: To remain competitive and stimulate customer demand, the Company must successfully manage frequent introductions and transitions of products, services and technologies.",
+        "snippet": "To remain competitive and stimulate customer demand, the Company must successfully manage frequent introductions and transitions of products, services and technologies. Due to the highly volatile and competitive nature of the markets and industries in which the Company competes, the Company must continually introduce new products, services and technologies, enhance existing products and services, effectively stimulate customer demand for new and upgraded products, services and technologies, navigate global regulatory requirements and barriers to market access, and successfully manage the…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:cf3c988323ee0cdf2d7c323c32c9d75d",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: To remain competitive and stimulate customer demand, the Company must successfully manage frequent introductions and transitions of products and services.",
+        "snippet": "To remain competitive and stimulate customer demand, the Company must successfully manage frequent introductions and transitions of products and services. Due to the highly volatile and competitive nature of the markets and industries in which the Company competes, the Company must continually introduce new products, services and technologies, enhance existing products and services, effectively stimulate customer demand for new and upgraded products and services, navigate global regulatory requirements and barriers to market access, and successfully manage the transition to these new and…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:e7cd321ca3b6596b54276a6ef75d11d9",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company’s business is subject to a variety of U.S. and international laws, rules, policies and other obligations regarding the collection, use, protection and transfer of personal data.",
+        "snippet": "The Company’s business is subject to a variety of U.S. and international laws, rules, policies and other obligations regarding the collection, use, protection and transfer of personal data. The Company is subject to an increasing number of federal, state and international laws relating to the collection, use, retention, protection and transfer of various types of personal data. In many cases, these laws apply not only to third-party transactions, but also restrict transfers of personal data among the Company and its international subsidiaries. Several jurisdictions have passed laws in this…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:188b88d075ab681f67acabc40370c624",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: The Company’s business is subject to a variety of U.S. and international laws, rules, policies and other obligations regarding the collection, use, protection and transfer of personal data.",
+        "snippet": "The Company’s business is subject to a variety of U.S. and international laws, rules, policies and other obligations regarding the collection, use, protection and transfer of personal data. The Company is subject to an increasing number of federal, state and international laws relating to the collection, use, retention, protection and transfer of various types of personal data. In many cases, these laws apply not only to third-party transactions, but also restrict transfers of personal data among the Company and its international subsidiaries. Several jurisdictions have passed laws in this…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:693c7e9acd396735b03fb5453f0a1a3f",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company’s business can be impacted by political events, trade and other international disputes, geopolitical tensions, conflict, terrorism, natural disasters, public health issues, industrial accidents and other business interruptions.",
+        "snippet": "The Company’s business can be impacted by political events, trade and other international disputes, geopolitical tensions, conflict, terrorism, natural disasters, public health issues, industrial accidents and other business interruptions. Political events, trade and other international disputes, geopolitical tensions, conflict, terrorism, natural disasters, public health issues, industrial accidents and other business interruptions can have a material adverse effect on the Company and its customers, employees, developers, suppliers, contract manufacturers, logistics providers, distributors,…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:c1844aae9db24872f97a6ece1d79fa38",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: The Company’s business can be impacted by political events, trade and other international disputes, geopolitical tensions, conflict, terrorism, natural disasters, public health issues, industrial accidents and other business interruptions.",
+        "snippet": "The Company’s business can be impacted by political events, trade and other international disputes, geopolitical tensions, conflict, terrorism, natural disasters, public health issues, industrial accidents and other business interruptions. Political events, trade and other international disputes, geopolitical tensions, conflict, terrorism, natural disasters, public health issues, industrial accidents and other business interruptions can have a material adverse effect on the Company and its customers, employees, suppliers, contract manufacturers, logistics providers, distributors, cellular…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:5f8241c9cbeea102fb749c26a636b51e",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company’s business and reputation are impacted by information technology system failures and network disruptions.",
+        "snippet": "The Company’s business and reputation are impacted by information technology system failures and network disruptions. The Company and its global supply chain are dependent on complex information technology systems and are exposed to information technology system failures or network disruptions caused by natural disasters, accidents, power disruptions, telecommunications failures, acts of terrorism or war, computer viruses, physical or electronic break-ins, ransomware or other cybersecurity incidents, or other events or disruptions. Additionally, the implementation of upgrades or replacements…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:fc68307ff45cb12cb0df6d88db8906d5",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: The Company’s business and reputation are impacted by information technology system failures and network disruptions.",
+        "snippet": "The Company’s business and reputation are impacted by information technology system failures and network disruptions. The Company and its global supply chain are dependent on complex information technology systems and are exposed to information technology system failures or network disruptions caused by natural disasters, accidents, power disruptions, telecommunications failures, acts of terrorism or war, computer viruses, physical or electronic break-ins, ransomware or other cybersecurity incidents, or other events or disruptions. System upgrades, redundancy and other continuity measures…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:e3cb17df761b69d9b4e6c62e2cddcd87",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company’s operations and performance depend significantly on global and regional economic conditions.",
+        "snippet": "The Company’s operations and performance depend significantly on global and regional economic conditions. The Company has international operations with sales outside the U.S. representing a majority of the Company’s total net sales. In addition, the Company’s global supply chain is large and complex and a majority of the Company’s supplier facilities, including manufacturing and assembly sites, are located outside the U.S. Adverse macroeconomic conditions, including slow growth or recession, high unemployment, inflation, tighter credit, higher interest rates, and currency fluctuations, can…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:19d29114abf3ce62b5ba986e1577ec6b",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: The Company’s operations and performance depend significantly on global and regional economic conditions and adverse economic conditions can materially adversely affect the Company’s business, results of operations, financial condition and stock price.",
+        "snippet": "The Company’s operations and performance depend significantly on global and regional economic conditions and adverse economic conditions can materially adversely affect the Company’s business, results of operations, financial condition and stock price. The Company has international operations with sales outside the U.S. representing a majority of the Company’s total net sales. In addition, the Company’s global supply chain is large and complex and a majority of the Company’s supplier facilities, including manufacturing and assembly sites, are located outside the U.S. As a result, the…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:60a574b86b370f320283566e43b35bb4",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: Global markets for the Company’s products and services are highly competitive and subject to rapid technological change, and the Company may be unable to compete effectively in these markets.",
+        "snippet": "Global markets for the Company’s products and services are highly competitive and subject to rapid technological change, and the Company may be unable to compete effectively in these markets. The Company’s products and services are offered in highly competitive global markets characterized by aggressive price competition, downward pressure on gross margins, continual improvement in product performance, and price sensitivity on the part of consumers and businesses. These markets are further defined by frequent introduction of new products and services, short product life cycles, evolving…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:b66cd5da99c23e61850a90247c9711a2",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: Global markets for the Company’s products and services are highly competitive and subject to rapid technological change, and the Company may be unable to compete effectively in these markets.",
+        "snippet": "Global markets for the Company’s products and services are highly competitive and subject to rapid technological change, and the Company may be unable to compete effectively in these markets. The Company’s products and services are offered in highly competitive global markets. These markets are characterized by aggressive price competition, downward pressure on gross margins, continual improvement in product performance, and price sensitivity on the part of consumers and businesses. These markets are further defined by frequent introduction of new products and services, short product life…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:725eaec46b0ac06038c34e1a7f09732c",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company depends on component and product manufacturing and logistical services provided by outsourcing partners, many of which are located outside of the U.S.",
+        "snippet": "The Company depends on component and product manufacturing and logistical services provided by outsourcing partners, many of which are located outside of the U.S. A significant majority of the Company’s manufacturing is performed in whole or in part by outsourcing partners located primarily in China mainland, India, Japan, South Korea, Taiwan and Vietnam, in addition to sourcing from partners and facilities in the U.S. The Company relies on single-source partners in the U.S., Asia and Europe to supply and manufacture many components, and on partners primarily located in Asia for final…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:6e6ea71b4d8362109748c39cae833d1a",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: The Company depends on component and product manufacturing and logistical services provided by outsourcing partners, many of which are located outside of the U.S.",
+        "snippet": "The Company depends on component and product manufacturing and logistical services provided by outsourcing partners, many of which are located outside of the U.S. A significant majority of the Company’s manufacturing is performed in whole or in part by outsourcing partners located primarily in China mainland, India, Japan, South Korea, Taiwan and Vietnam, in addition to sourcing from partners and facilities located in the U.S. The Company relies on single-source partners in the U.S., Asia and Europe to supply and manufacture many components, and on partners primarily located in Asia, for…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:81603c48ec626e85d18dedc00ba2f37e",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The price of the Company’s stock is subject to volatility.",
+        "snippet": "The price of the Company’s stock is subject to volatility. The Company’s stock has experienced substantial price volatility in the past and may continue to do so in the future. Additionally, the Company, the technology industry and the stock market as a whole have, from time to time, experienced extreme stock price and volume fluctuations that have affected stock prices in ways that may have been unrelated to these companies’ operating performance. Price volatility may cause the average price at which the Company repurchases its stock in a given period to exceed the stock’s price at a given…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:bb9ac6faa4f162a7c8f6e5022e156812",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: The price of the Company’s stock is subject to volatility.",
+        "snippet": "The price of the Company’s stock is subject to volatility. The Company’s stock has experienced substantial price volatility in the past and may continue to do so in the future. Additionally, the Company, the technology industry and the stock market as a whole have, from time to time, experienced extreme stock price and volume fluctuations that have affected stock prices in ways that may have been unrelated to these companies’ operating performance. Price volatility may cause the average price at which the Company repurchases its stock in a given period to exceed the stock’s price at a given…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:9a0036ca86bed30ccd0d731732d2d299",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company’s success depends largely on the talents and efforts of its team members, the continued service and availability of highly skilled employees, including key personnel, and the Company’s ability to nurture its distinctive and inclusive culture.",
+        "snippet": "The Company’s success depends largely on the talents and efforts of its team members, the continued service and availability of highly skilled employees, including key personnel, and the Company’s ability to nurture its distinctive and inclusive culture. Much of the Company’s future success depends on the talents and efforts of its team members and the continued availability and service of key personnel, including its Chief Executive Officer, executive team and other highly skilled employees. Experienced personnel in the technology industry are in high demand and competition for their…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:3acbe0327846ff50ce974a98b5ec9508",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: The Company’s success depends largely on the talents and efforts of its team members, the continued service and availability of highly skilled employees, including key personnel, and the Company’s ability to nurture its distinctive and inclusive culture.",
+        "snippet": "The Company’s success depends largely on the talents and efforts of its team members, the continued service and availability of highly skilled employees, including key personnel, and the Company’s ability to nurture its distinctive and inclusive culture. Much of the Company’s future success depends on the talents and efforts of its team members and the continued availability and service of key personnel, including its Chief Executive Officer, executive team and other highly skilled employees. Experienced personnel in the technology industry are in high demand and competition for their…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:61b82ee9b5d8aa48dfed4a18649b6999",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company may be unable to obtain or create digital content that appeals to the Company’s customers or to make such content available on commercially reasonable terms.",
+        "snippet": "The Company may be unable to obtain or create digital content that appeals to the Company’s customers or to make such content available on commercially reasonable terms. The Company contracts with numerous third parties to offer their digital content to customers. This includes the right to sell, or offer subscriptions to, third-party content, as well as the right to incorporate specific content into the Company’s own services. The licensing or other distribution arrangements for this content can be for relatively short time periods and do not guarantee the continuation or renewal of these…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2026 wording"
+       },
+       {
+        "source_id": "rf:ddd292068cafdcfa72c14d501652c152",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2025 risk factor: Failure to obtain or create digital content that appeals to the Company’s customers, or to make such content available on commercially reasonable terms, could have a material adverse impact on the Company’s business, results of operations and financial condition.",
+        "snippet": "Failure to obtain or create digital content that appeals to the Company’s customers, or to make such content available on commercially reasonable terms, could have a material adverse impact on the Company’s business, results of operations and financial condition. The Company contracts with numerous third parties to offer their digital content to customers. This includes the right to sell, or offer subscriptions to, third-party content, as well as the right to incorporate specific content into the Company’s own services. The licensing or other distribution arrangements for this content can be…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2025,
+        "section": "item_1a",
+        "filed_or_published": "2025-10-31",
+        "score": null,
+        "compare_status": "changed",
+        "compare_note": "reworded; FY2025 wording"
+       },
+       {
+        "source_id": "rf:717b86819f7a04d01b917c087e7fa90d",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company’s financial performance is subject to risks associated with changes in the value of the U.S. dollar relative to local currencies.",
+        "snippet": "The Company’s financial performance is subject to risks associated with changes in the value of the U.S. dollar relative to local currencies. The Company’s primary exposure to movements in foreign exchange rates relates to non–U.S. dollar–denominated sales, cost of sales and operating expenses worldwide. Gross margins on the Company’s products in foreign countries and on products that include components obtained from foreign suppliers have in the past been adversely affected and could in the future be materially adversely affected by foreign exchange rate fluctuations. The weakening of…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "unchanged",
+        "compare_note": "same text in FY2025 and FY2026"
+       },
+       {
+        "source_id": "rf:5c8a278177a8b25a4bc59bbae519b727",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company is subject to changes in tax rates, the adoption of new U.S. or international tax legislation and exposure to additional tax liabilities.",
+        "snippet": "The Company is subject to changes in tax rates, the adoption of new U.S. or international tax legislation and exposure to additional tax liabilities. The Company is subject to taxes in the U.S. and numerous foreign jurisdictions, including Ireland and Singapore, where a number of the Company’s subsidiaries are organized. Due to economic and political conditions, tax laws and tax rates for income taxes and other non-income taxes in various jurisdictions may be subject to significant change. For example, the Organisation for Economic Co-operation and Development continues to advance proposals…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "unchanged",
+        "compare_note": "same text in FY2025 and FY2026"
+       },
+       {
+        "source_id": "rf:4ccd66554d75b9f934512484f37cebbe",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company depends on the performance of carriers and other resellers.",
+        "snippet": "The Company depends on the performance of carriers and other resellers. The Company distributes its products and certain of its services through cellular network carriers and other resellers, many of which distribute products and services from competitors. Resellers offer financing, installment payment plans or subsidies for users’ purchases of devices, and such plans may be discontinued or modified at any time. The Company has invested and will continue to invest in programs to enhance reseller sales, including staffing selected resellers’ stores with Company employees and contractors,…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "unchanged",
+        "compare_note": "same text in FY2025 and FY2026"
+       },
+       {
+        "source_id": "rf:461bb6495875d6eecd27ee9f77f5f880",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company is exposed to credit risk on its trade accounts receivable, vendor non-trade receivables and prepayments related to long-term supply agreements, and this risk is heightened during periods when economic conditions worsen.",
+        "snippet": "The Company is exposed to credit risk on its trade accounts receivable, vendor non-trade receivables and prepayments related to long-term supply agreements, and this risk is heightened during periods when economic conditions worsen. The Company distributes its products and certain of its services through third-party cellular network carriers and other resellers. The Company also sells its products and services directly to small and mid-sized businesses and education, enterprise and government customers. A substantial majority of the Company’s outstanding trade receivables are not covered by…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "unchanged",
+        "compare_note": "same text in FY2025 and FY2026"
+       },
+       {
+        "source_id": "rf:6f2d5c34edc52ec93af95a8f267cbcce",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company is exposed to credit risk and fluctuations in the values of its investment portfolio.",
+        "snippet": "The Company is exposed to credit risk and fluctuations in the values of its investment portfolio. The Company’s investments can be negatively affected by changes in liquidity, credit deterioration, financial results, market and economic conditions, political risk, sovereign risk, interest rate fluctuations or other factors. As a result, the value and liquidity of the Company’s cash, cash equivalents and marketable securities may fluctuate substantially. Although the Company has not realized significant losses on its cash, cash equivalents and marketable securities, future fluctuations in…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "unchanged",
+        "compare_note": "same text in FY2025 and FY2026"
+       },
+       {
+        "source_id": "rf:4539d5721fa56db7dd5a48beca89bf9f",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: Varied stakeholder expectations about social and other issues expose the Company to potential liabilities, increased costs, reputational harm, and other adverse effects on the Company’s business.",
+        "snippet": "Varied stakeholder expectations about social and other issues expose the Company to potential liabilities, increased costs, reputational harm, and other adverse effects on the Company’s business. Various stakeholders, including governments, regulators, investors, employees, customers and others, have differing expectations about a wide range of social and other issues related to the Company’s business. The Company makes statements about its values, including the environmental and societal impact of its business, products and services, through various reports, information provided on the…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "unchanged",
+        "compare_note": "same text in FY2025 and FY2026"
+       },
+       {
+        "source_id": "rf:b45504040c163ea6733c13d343a1c0fa",
+        "source_type": "risk_factor",
+        "ticker": "AAPL",
+        "title": "AAPL 10-K FY2026 risk factor: The Company is exposed to the risk of write-downs on the value of its inventory and other assets, in addition to purchase commitment cancellation risk.",
+        "snippet": "The Company is exposed to the risk of write-downs on the value of its inventory and other assets, in addition to purchase commitment cancellation risk. The Company records a write-down for product and component inventories if cost exceeds net realizable value. The Company reviews other assets, including capital assets held at its suppliers’ facilities, inventory prepayments and other long-lived assets, for impairment whenever events or circumstances indicate the assets may not be recoverable. Although the Company believes its inventory, capital assets, inventory prepayments and other assets…",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "form_type": "10-K",
+        "fiscal_year": 2026,
+        "section": "item_1a",
+        "filed_or_published": "2026-11-03",
+        "score": null,
+        "compare_status": "unchanged",
+        "compare_note": "same text in FY2025 and FY2026"
+       }
+      ]
+     }
+    },
+    {
+     "t_ms": 34343,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:direct",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 34343,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "start",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 34343,
+     "event": {
+      "event": "step_completed",
+      "step_id": "r1s1",
+      "status": "done",
+      "mode": "direct",
+      "summary": "compare_risk_factors: 49 sources (direct calls)",
+      "error": null,
+      "reason": null,
+      "duration_ms": 30628
+     }
+    },
+    {
+     "t_ms": 34343,
+     "event": {
+      "event": "node",
+      "node": "filings_agent:finish",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 34343,
+     "event": {
+      "event": "node",
+      "node": "filings_agent",
+      "phase": "end",
+      "step_id": "r1s1",
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 34343,
+     "event": {
+      "event": "node",
+      "node": "join",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 34343,
+     "event": {
+      "event": "node",
+      "node": "join",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 34343,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 34343,
+     "event": {
+      "event": "node",
+      "node": "dispatcher",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 34343,
+     "event": {
+      "event": "node",
+      "node": "critic",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 34890,
+     "event": {
+      "event": "critique",
+      "verdict": "ok",
+      "gaps": [],
+      "replanning": false
+     }
+    },
+    {
+     "t_ms": 34890,
+     "event": {
+      "event": "node",
+      "node": "critic",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 34890,
+     "event": {
+      "event": "node",
+      "node": "synthesizer",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "Apple"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "’s"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "factor"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": " changes"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": " between"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "**\n\n"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": " Apple"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "’s"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": " Form"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "10"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "K"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": " ("
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "file"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": "d"
+     }
+    },
+    {
+     "t_ms": 36765,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36781,
+     "event": {
+      "event": "token",
+      "text": "3"
+     }
+    },
+    {
+     "t_ms": 36781,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36781,
+     "event": {
+      "event": "token",
+      "text": "Nov"
+     }
+    },
+    {
+     "t_ms": 36781,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36781,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 36781,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 36781,
+     "event": {
+      "event": "token",
+      "text": ")"
+     }
+    },
+    {
+     "t_ms": 36796,
+     "event": {
+      "event": "token",
+      "text": " lists"
+     }
+    },
+    {
+     "t_ms": 36796,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36796,
+     "event": {
+      "event": "token",
+      "text": "28"
+     }
+    },
+    {
+     "t_ms": 36796,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 36796,
+     "event": {
+      "event": "token",
+      "text": " factors"
+     }
+    },
+    {
+     "t_ms": 36796,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 36796,
+     "event": {
+      "event": "token",
+      "text": " compared"
+     }
+    },
+    {
+     "t_ms": 36812,
+     "event": {
+      "event": "token",
+      "text": " with"
+     }
+    },
+    {
+     "t_ms": 36812,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36812,
+     "event": {
+      "event": "token",
+      "text": "27"
+     }
+    },
+    {
+     "t_ms": 36812,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 36812,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 36812,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36812,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 36812,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 36812,
+     "event": {
+      "event": "token",
+      "text": " ("
+     }
+    },
+    {
+     "t_ms": 36828,
+     "event": {
+      "event": "token",
+      "text": "file"
+     }
+    },
+    {
+     "t_ms": 36828,
+     "event": {
+      "event": "token",
+      "text": "d"
+     }
+    },
+    {
+     "t_ms": 36828,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36828,
+     "event": {
+      "event": "token",
+      "text": "31"
+     }
+    },
+    {
+     "t_ms": 36828,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36828,
+     "event": {
+      "event": "token",
+      "text": "Oct"
+     }
+    },
+    {
+     "t_ms": 36843,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36843,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 36843,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 36843,
+     "event": {
+      "event": "token",
+      "text": ")"
+     }
+    },
+    {
+     "t_ms": 36843,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 36843,
+     "event": {
+      "event": "token",
+      "text": "1"
+     }
+    },
+    {
+     "t_ms": 36843,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " The"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " comparison"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " shows"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "1"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " new"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " factor"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "0"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " removed"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "**,"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "20"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " materially"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " changed"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "**,"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "7"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " unchanged"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " factors"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "1"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " The"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "new"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " factor"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " addresses"
+     }
+    },
+    {
+     "t_ms": 36937,
+     "event": {
+      "event": "token",
+      "text": " artificial"
+     }
+    },
+    {
+     "t_ms": 36953,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 36953,
+     "event": {
+      "event": "token",
+      "text": "int"
+     }
+    },
+    {
+     "t_ms": 36953,
+     "event": {
+      "event": "token",
+      "text": "elligence"
+     }
+    },
+    {
+     "t_ms": 36953,
+     "event": {
+      "event": "token",
+      "text": " exposure"
+     }
+    },
+    {
+     "t_ms": 36953,
+     "event": {
+      "event": "token",
+      "text": ":"
+     }
+    },
+    {
+     "t_ms": 36953,
+     "event": {
+      "event": "token",
+      "text": " “"
+     }
+    },
+    {
+     "t_ms": 36968,
+     "event": {
+      "event": "token",
+      "text": "Issues"
+     }
+    },
+    {
+     "t_ms": 36968,
+     "event": {
+      "event": "token",
+      "text": " related"
+     }
+    },
+    {
+     "t_ms": 36968,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 36968,
+     "event": {
+      "event": "token",
+      "text": " artificial"
+     }
+    },
+    {
+     "t_ms": 36968,
+     "event": {
+      "event": "token",
+      "text": " intelligence"
+     }
+    },
+    {
+     "t_ms": 36968,
+     "event": {
+      "event": "token",
+      "text": " may"
+     }
+    },
+    {
+     "t_ms": 36968,
+     "event": {
+      "event": "token",
+      "text": " result"
+     }
+    },
+    {
+     "t_ms": 36968,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 36984,
+     "event": {
+      "event": "token",
+      "text": " reput"
+     }
+    },
+    {
+     "t_ms": 36984,
+     "event": {
+      "event": "token",
+      "text": "ational"
+     }
+    },
+    {
+     "t_ms": 36984,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 36984,
+     "event": {
+      "event": "token",
+      "text": " competitive"
+     }
+    },
+    {
+     "t_ms": 36984,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 36984,
+     "event": {
+      "event": "token",
+      "text": " financial"
+     }
+    },
+    {
+     "t_ms": 36984,
+     "event": {
+      "event": "token",
+      "text": " harm"
+     }
+    },
+    {
+     "t_ms": 36984,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 36984,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 37000,
+     "event": {
+      "event": "token",
+      "text": " Company"
+     }
+    },
+    {
+     "t_ms": 37000,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 37000,
+     "event": {
+      "event": "token",
+      "text": " regulatory"
+     }
+    },
+    {
+     "t_ms": 37000,
+     "event": {
+      "event": "token",
+      "text": " action"
+     }
+    },
+    {
+     "t_ms": 37000,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 37000,
+     "event": {
+      "event": "token",
+      "text": " legal"
+     }
+    },
+    {
+     "t_ms": 37000,
+     "event": {
+      "event": "token",
+      "text": " liability"
+     }
+    },
+    {
+     "t_ms": 37000,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 37015,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 37015,
+     "event": {
+      "event": "token",
+      "text": " other"
+     }
+    },
+    {
+     "t_ms": 37015,
+     "event": {
+      "event": "token",
+      "text": " adverse"
+     }
+    },
+    {
+     "t_ms": 37015,
+     "event": {
+      "event": "token",
+      "text": " effects"
+     }
+    },
+    {
+     "t_ms": 37015,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 37015,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 37015,
+     "event": {
+      "event": "token",
+      "text": " Company"
+     }
+    },
+    {
+     "t_ms": 37031,
+     "event": {
+      "event": "token",
+      "text": "’s"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " business"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": ".”"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": "2"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " A"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " major"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": "changed"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " factor"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " expands"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " supply"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": "chain"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " wording"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " include"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " compute"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " capacity"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " storage"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " resources"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": ":"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " “"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": "Future"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " operating"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " results"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " depend"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " upon"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " Company"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": "’s"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " ability"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " obtain"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " components"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " compute"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " capacity"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " storage"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " resources"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " sufficient"
+     }
+    },
+    {
+     "t_ms": 37125,
+     "event": {
+      "event": "token",
+      "text": " quantities"
+     }
+    },
+    {
+     "t_ms": 37140,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 37140,
+     "event": {
+      "event": "token",
+      "text": " on"
+     }
+    },
+    {
+     "t_ms": 37140,
+     "event": {
+      "event": "token",
+      "text": " commercially"
+     }
+    },
+    {
+     "t_ms": 37140,
+     "event": {
+      "event": "token",
+      "text": " reasonable"
+     }
+    },
+    {
+     "t_ms": 37156,
+     "event": {
+      "event": "token",
+      "text": " terms"
+     }
+    },
+    {
+     "t_ms": 37156,
+     "event": {
+      "event": "token",
+      "text": ".”"
+     }
+    },
+    {
+     "t_ms": 37156,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 37156,
+     "event": {
+      "event": "token",
+      "text": "3"
+     }
+    },
+    {
+     "t_ms": 37156,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 37156,
+     "event": {
+      "event": "token",
+      "text": " ("
+     }
+    },
+    {
+     "t_ms": 37156,
+     "event": {
+      "event": "token",
+      "text": "FY"
+     }
+    },
+    {
+     "t_ms": 37156,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 37156,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 37156,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 37156,
+     "event": {
+      "event": "token",
+      "text": ")"
+     }
+    },
+    {
+     "t_ms": 37156,
+     "event": {
+      "event": "token",
+      "text": " vs"
+     }
+    },
+    {
+     "t_ms": 37171,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 37171,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 37171,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 37171,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 37171,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 37171,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 37187,
+     "event": {
+      "event": "token",
+      "text": " wording"
+     }
+    },
+    {
+     "t_ms": 37187,
+     "event": {
+      "event": "token",
+      "text": " that"
+     }
+    },
+    {
+     "t_ms": 37187,
+     "event": {
+      "event": "token",
+      "text": " mentioned"
+     }
+    },
+    {
+     "t_ms": 37187,
+     "event": {
+      "event": "token",
+      "text": " only"
+     }
+    },
+    {
+     "t_ms": 37187,
+     "event": {
+      "event": "token",
+      "text": " components"
+     }
+    },
+    {
+     "t_ms": 37187,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 37187,
+     "event": {
+      "event": "token",
+      "text": "4"
+     }
+    },
+    {
+     "t_ms": 37187,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 37203,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 37203,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 37203,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 37203,
+     "event": {
+      "event": "token",
+      "text": " The"
+     }
+    },
+    {
+     "t_ms": 37203,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 37203,
+     "event": {
+      "event": "token",
+      "text": "design"
+     }
+    },
+    {
+     "t_ms": 37218,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 37218,
+     "event": {
+      "event": "token",
+      "text": "and"
+     }
+    },
+    {
+     "t_ms": 37218,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 37218,
+     "event": {
+      "event": "token",
+      "text": "manufact"
+     }
+    },
+    {
+     "t_ms": 37218,
+     "event": {
+      "event": "token",
+      "text": "uring"
+     }
+    },
+    {
+     "t_ms": 37218,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 37218,
+     "event": {
+      "event": "token",
+      "text": "def"
+     }
+    },
+    {
+     "t_ms": 37218,
+     "event": {
+      "event": "token",
+      "text": "ects"
+     }
+    },
+    {
+     "t_ms": 37218,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 37218,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 37234,
+     "event": {
+      "event": "token",
+      "text": " was"
+     }
+    },
+    {
+     "t_ms": 37234,
+     "event": {
+      "event": "token",
+      "text": " revised"
+     }
+    },
+    {
+     "t_ms": 37234,
+     "event": {
+      "event": "token",
+      "text": " to"
+     }
+    },
+    {
+     "t_ms": 37234,
+     "event": {
+      "event": "token",
+      "text": " reference"
+     }
+    },
+    {
+     "t_ms": 37234,
+     "event": {
+      "event": "token",
+      "text": " AI"
+     }
+    },
+    {
+     "t_ms": 37234,
+     "event": {
+      "event": "token",
+      "text": " technologies"
+     }
+    },
+    {
+     "t_ms": 37234,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 37234,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 37250,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 37250,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 37250,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 37250,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 37250,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 37250,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 37265,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 37265,
+     "event": {
+      "event": "token",
+      "text": " whereas"
+     }
+    },
+    {
+     "t_ms": 37265,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 37265,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 37265,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 37265,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 37265,
+     "event": {
+      "event": "token",
+      "text": "’s"
+     }
+    },
+    {
+     "t_ms": 37265,
+     "event": {
+      "event": "token",
+      "text": " version"
+     }
+    },
+    {
+     "t_ms": 37265,
+     "event": {
+      "event": "token",
+      "text": " did"
+     }
+    },
+    {
+     "t_ms": 37265,
+     "event": {
+      "event": "token",
+      "text": " not"
+     }
+    },
+    {
+     "t_ms": 37281,
+     "event": {
+      "event": "token",
+      "text": " mention"
+     }
+    },
+    {
+     "t_ms": 37281,
+     "event": {
+      "event": "token",
+      "text": " AI"
+     }
+    },
+    {
+     "t_ms": 37281,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 37281,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 37281,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 37281,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 37296,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 37296,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 37296,
+     "event": {
+      "event": "token",
+      "text": " The"
+     }
+    },
+    {
+     "t_ms": 37296,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 37296,
+     "event": {
+      "event": "token",
+      "text": "legal"
+     }
+    },
+    {
+     "t_ms": 37296,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 37296,
+     "event": {
+      "event": "token",
+      "text": "pro"
+     }
+    },
+    {
+     "t_ms": 37296,
+     "event": {
+      "event": "token",
+      "text": "ceed"
+     }
+    },
+    {
+     "t_ms": 37312,
+     "event": {
+      "event": "token",
+      "text": "ings"
+     }
+    },
+    {
+     "t_ms": 37312,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 37312,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 37312,
+     "event": {
+      "event": "token",
+      "text": " wording"
+     }
+    },
+    {
+     "t_ms": 37312,
+     "event": {
+      "event": "token",
+      "text": " was"
+     }
+    },
+    {
+     "t_ms": 37312,
+     "event": {
+      "event": "token",
+      "text": " updated"
+     }
+    },
+    {
+     "t_ms": 37312,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 37312,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 37328,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 37328,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 37328,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 37328,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 37328,
+     "event": {
+      "event": "token",
+      "text": "7"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": " differing"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": " from"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": " phr"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": "asing"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": "8"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": " The"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": "cy"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": "ber"
+     }
+    },
+    {
+     "t_ms": 37421,
+     "event": {
+      "event": "token",
+      "text": "security"
+     }
+    },
+    {
+     "t_ms": 37687,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 37687,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 37687,
+     "event": {
+      "event": "token",
+      "text": " description"
+     }
+    },
+    {
+     "t_ms": 37687,
+     "event": {
+      "event": "token",
+      "text": " was"
+     }
+    },
+    {
+     "t_ms": 37687,
+     "event": {
+      "event": "token",
+      "text": " re"
+     }
+    },
+    {
+     "t_ms": 37687,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 37687,
+     "event": {
+      "event": "token",
+      "text": "word"
+     }
+    },
+    {
+     "t_ms": 37687,
+     "event": {
+      "event": "token",
+      "text": "ed"
+     }
+    },
+    {
+     "t_ms": 37687,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 37687,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 37687,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 37687,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 37687,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 37687,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "9"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": ","
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " compared"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " with"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " version"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "10"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " The"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " concerning"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " reliance"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " on"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "third"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "‑"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "party"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " software"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " developers"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " was"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " rest"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "ated"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " in"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "6"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "11"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " and"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " differs"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " from"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " FY"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " "
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "202"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "5"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " wording"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "12"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "  \n"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "-"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " **"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "Seven"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": "**"
+     }
+    },
+    {
+     "t_ms": 37703,
+     "event": {
+      "event": "token",
+      "text": " risk"
+     }
+    },
+    {
+     "t_ms": 37937,
+     "event": {
+      "event": "token",
+      "text": " factors"
+     }
+    },
+    {
+     "t_ms": 37937,
+     "event": {
+      "event": "token",
+      "text": " remained"
+     }
+    },
+    {
+     "t_ms": 37937,
+     "event": {
+      "event": "token",
+      "text": " unchanged"
+     }
+    },
+    {
+     "t_ms": 37937,
+     "event": {
+      "event": "token",
+      "text": " verb"
+     }
+    },
+    {
+     "t_ms": 37937,
+     "event": {
+      "event": "token",
+      "text": "atim"
+     }
+    },
+    {
+     "t_ms": 37937,
+     "event": {
+      "event": "token",
+      "text": " across"
+     }
+    },
+    {
+     "t_ms": 37937,
+     "event": {
+      "event": "token",
+      "text": " the"
+     }
+    },
+    {
+     "t_ms": 37937,
+     "event": {
+      "event": "token",
+      "text": " two"
+     }
+    },
+    {
+     "t_ms": 37937,
+     "event": {
+      "event": "token",
+      "text": " filings"
+     }
+    },
+    {
+     "t_ms": 37937,
+     "event": {
+      "event": "token",
+      "text": "【"
+     }
+    },
+    {
+     "t_ms": 37937,
+     "event": {
+      "event": "token",
+      "text": "1"
+     }
+    },
+    {
+     "t_ms": 37937,
+     "event": {
+      "event": "token",
+      "text": "】"
+     }
+    },
+    {
+     "t_ms": 37937,
+     "event": {
+      "event": "token",
+      "text": "."
+     }
+    },
+    {
+     "t_ms": 37937,
+     "event": {
+      "event": "node",
+      "node": "synthesizer",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 37937,
+     "event": {
+      "event": "node",
+      "node": "finalize",
+      "phase": "start",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    },
+    {
+     "t_ms": 50687,
+     "event": {
+      "event": "final",
+      "answer": "**Apple’s risk‑factor changes between FY 2025 and FY 2026**\n\n- Apple’s FY 2026 Form 10‑K (filed 3 Nov 2026) lists 28 risk factors, compared with 27 in FY 2025 (filed 31 Oct 2025)[1].  \n- The comparison shows **1 new** risk factor, **0 removed**, **20 materially changed**, and **7 unchanged** risk factors[1].  \n- The **new** risk factor in FY 2026 addresses artificial‑intelligence exposure: “Issues related to artificial intelligence may result in reputational, competitive and financial harm to the Company, regulatory action, legal liability, and other adverse effects to the Company’s business.”[2].  \n- A major **changed** risk factor expands the supply‑chain wording to include compute capacity and storage resources: “Future operating results depend upon the Company’s ability to obtain components, compute capacity and storage resources in sufficient quantities and on commercially reasonable terms.”[3] (FY 2026) vs. the FY 2025 wording that mentioned only components[4].  \n- The **design‑and‑manufacturing‑defects** risk was revised to reference AI technologies in FY 2026[5], whereas FY 2025’s version did not mention AI[unverified].  \n- The **legal‑proceedings** risk wording was updated in FY 2026[6], differing from the FY 2025 phrasing[unverified].  \n- The **cybersecurity** risk description was re‑worded in FY 2026[7], compared with the FY 2025 version[unverified].  \n- The risk concerning reliance on **third‑party software developers** was restated in FY 2026[8] and differs from the FY 2025 wording[9].  \n- **Seven** risk factors remained unchanged verbatim across the two filings[1].\n\n---\n*Not investment advice. Sources: SEC EDGAR filings (10-K, 8-K, XBRL) and NewsAPI headlines, as cited above.*\n*Claims marked [unverified] could not be matched to any retrieved source.*",
+      "citations": [
+       {
+        "n": 1,
+        "source_id": "compare:AAPL:2025:2026",
+        "title": "AAPL risk factors, FY2025 vs FY2026 10-K (comparison)",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm"
+       },
+       {
+        "n": 2,
+        "source_id": "rf:5369d8aedaa59fbef750e83429cc3f66",
+        "title": "AAPL 10-K FY2026 risk factor: Issues related to artificial intelligence may result in reputational, competitive and financial harm to the Company, regulatory action, legal liability, and other adverse effects to the Company’s business.",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm"
+       },
+       {
+        "n": 3,
+        "source_id": "rf:d9f14b0bd1b7e9990464b10bd65d2fb6",
+        "title": "AAPL 10-K FY2026 risk factor: Future operating results depend upon the Company’s ability to obtain components, compute capacity and storage resources in sufficient quantities and on commercially reasonable terms.",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm"
+       },
+       {
+        "n": 4,
+        "source_id": "rf:9e4b35f0eb32a49315c478245fc8aecb",
+        "title": "AAPL 10-K FY2025 risk factor: Future operating results depend upon the Company’s ability to obtain components in sufficient quantities on commercially reasonable terms.",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm"
+       },
+       {
+        "n": 5,
+        "source_id": "rf:2074a30b0d50ae3ffdcaee7592f6a769",
+        "title": "AAPL 10-K FY2026 risk factor: The Company’s products, services and technologies, including artificial intelligence technologies and features, may be affected from time to time by design and manufacturing defects.",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm"
+       },
+       {
+        "n": 6,
+        "source_id": "rf:38992d9ed37aa6c266b2dcfe5886ac5c",
+        "title": "AAPL 10-K FY2026 risk factor: The Company is subject to the risks of adverse impacts from legal proceedings and government investigations.",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm"
+       },
+       {
+        "n": 7,
+        "source_id": "rf:edccf1a3fd327f296b9b7006ef666191",
+        "title": "AAPL 10-K FY2026 risk factor: The Company experiences cybersecurity incidents and inadvertent losses and unauthorized access to or releases of confidential information, including personal information.",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm"
+       },
+       {
+        "n": 8,
+        "source_id": "rf:677014fa0fd2d2e3789b888cd14f5c52",
+        "title": "AAPL 10-K FY2026 risk factor: The Company’s future performance depends in part on support from third-party software developers.",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm"
+       },
+       {
+        "n": 9,
+        "source_id": "rf:1a9c3166e04d55b364e623734449124b",
+        "title": "AAPL 10-K FY2025 risk factor: The Company’s future performance depends in part on support from third-party software developers.",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm"
+       }
+      ],
+      "citation_check": {
+       "checked": 14,
+       "supported": 11,
+       "reattached": 0,
+       "dropped": 3,
+       "unverified_claims": 3,
+       "precision": 0.786,
+       "status_mismatches": 0,
+       "eight_k_rewrites": 0
+      },
+      "renumbered": {
+       "1": 1,
+       "2": 2,
+       "3": 3,
+       "4": 4,
+       "5": 5,
+       "7": 6,
+       "9": 7,
+       "11": 8,
+       "12": 9
+      }
+     }
+    },
+    {
+     "t_ms": 50687,
+     "event": {
+      "event": "node",
+      "node": "finalize",
+      "phase": "end",
+      "step_id": null,
+      "error": false,
+      "interrupted": false
+     }
+    }
+   ]
+  }
+ ]
+}
