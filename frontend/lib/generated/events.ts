@@ -52,6 +52,8 @@ export type Reused = boolean;
 export type StepId1 = string;
 export type Tool1 = string;
 export type Event6 = "evidence_added";
+export type CompareNote = string | null;
+export type CompareStatus = ("new" | "removed" | "changed" | "unchanged") | null;
 export type FiledOrPublished = string | null;
 export type FiscalYear = number | null;
 export type FormType = string | null;
@@ -169,6 +171,8 @@ export interface EvidenceAdded {
  * One citable source. `source_id` is stable across runs (used to dedupe).
  */
 export interface Evidence1 {
+  compare_note?: CompareNote;
+  compare_status?: CompareStatus;
   filed_or_published?: FiledOrPublished;
   fiscal_year?: FiscalYear;
   form_type?: FormType;

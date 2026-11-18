@@ -68,6 +68,13 @@ async def test_compare_risk_factors_partitions_every_risk(live_ctx: ToolContext)
     assert c["changed"] == len(d["changed"]) and c["unchanged"] == len(d["unchanged"])
     assert all(x["text_similarity"] >= 0.95 for x in d["unchanged"])
     assert r.evidence[0].source_id == f"compare:{row}:{d['year_a']}:{d['year_b']}"
+    # Every risk carries the tool's own label (D-051): new and unchanged once each, changed
+    # as a before/after pair, and the summary none.
+    labels = [e.compare_status for e in r.evidence[1:]]
+    assert r.evidence[0].compare_status is None and None not in labels
+    assert labels.count("new") == c["new"] and labels.count("removed") == c["removed"]
+    assert labels.count("unchanged") == c["unchanged"]
+    assert labels.count("changed") == 2 * c["changed"]
     # Years passed newest-first must not flip "new" and "removed" (demo 2 regression).
     flipped = await call_tool(
         live_ctx,

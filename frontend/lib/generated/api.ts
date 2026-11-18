@@ -378,6 +378,10 @@ export interface components {
          * @description One citable source. `source_id` is stable across runs (used to dedupe).
          */
         Evidence: {
+            /** Compare Note */
+            compare_note?: string | null;
+            /** Compare Status */
+            compare_status?: ("new" | "removed" | "changed" | "unchanged") | null;
             /** Filed Or Published */
             filed_or_published?: string | null;
             /** Fiscal Year */
