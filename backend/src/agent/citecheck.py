@@ -5,6 +5,11 @@ finalize already guarantees that every [n] exists. This checks that it fits: the
 each cited source's title + snippet. A citation below the threshold is moved to the best
 matching source if one clearly matches; otherwise it's dropped, and a claim left without any
 citation is marked [unverified]. Precision = supported / checked citations, per run.
+
+Change claims ("FY 2026 adds ...", "was reworded") are about the *difference* between two
+wordings, which neither wording states. When such a claim cites a compared risk whose diff
+is a numbered source, it is scored against that diff too, and a citation the diff supports
+is moved to the diff (D-052). Nothing else is relaxed: the threshold is the same.
 """
 
 import re
@@ -15,6 +20,7 @@ from typing import Literal
 import numpy as np
 from numpy.typing import NDArray
 
+from agent.consistency import is_change_claim
 from agent.tools.base import Evidence
 
 Embed = Callable[[list[str]], Awaitable[NDArray[np.float32]]]
@@ -59,6 +65,7 @@ class CitationReport:
     reattached: int = 0
     dropped: int = 0
     unverified_claims: int = 0
+    via_diff: int = 0  # change-claim citations supported by the risk's diff source
     checks: list[CitationCheck] = field(default_factory=list)
 
     @property
@@ -72,6 +79,7 @@ class CitationReport:
             "reattached": self.reattached,
             "dropped": self.dropped,
             "unverified_claims": self.unverified_claims,
+            "via_diff": self.via_diff,
             "precision": self.precision,
         }
 
@@ -113,8 +121,11 @@ async def verify_citations(
     sources: list[Evidence],
     embed: Embed,
     threshold: float = SUPPORT_THRESHOLD,
+    links: dict[int, int] | None = None,
 ) -> tuple[str, CitationReport]:
-    """`sources[n-1]` is source [n]. Returns the corrected answer and the report."""
+    """`sources[n-1]` is source [n]. Returns the corrected answer and the report.
+    `links`: source number of a compared risk -> number of its diff source."""
+    links = links or {}
     report = CitationReport()
     claims = [c for c in extract_claims(answer) if c.text]
     if not claims or not sources:
@@ -129,8 +140,16 @@ async def verify_citations(
             continue  # numbers that aren't sources: resolve_citations removes them
         sim = {n: round(float(sims[i, n - 1]), 3) for n in valid}
         kept = [n for n in valid if sim[n] >= threshold]
+        if links and len(kept) < len(valid) and is_change_claim(c.text):
+            for n in [n for n in valid if n not in kept and n in links]:
+                d = links[n]
+                sim[d] = round(float(sims[i, d - 1]), 3)
+                if sim[d] >= threshold:
+                    kept.append(d)  # the diff is what a change claim rests on
+                    report.via_diff += 1
+            kept = list(dict.fromkeys(kept))
         report.checked += len(valid)
-        report.supported += len(kept)
+        report.supported += min(len(kept), len(valid))
         action: Literal["supported", "reattached", "partly_dropped", "unverified"] = "supported"
         if kept and len(kept) < len(valid):
             action = "partly_dropped"

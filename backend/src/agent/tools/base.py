@@ -54,6 +54,8 @@ class Evidence(BaseModel):
     # tool decided it. The synthesizer must use it and finalize checks the answer against it.
     compare_status: CompareStatus | None = None
     compare_note: str | None = None  # e.g. "reworded; FY2026 wording"
+    # A diff source: the risk sources (later, earlier wording) whose change it describes.
+    linked_source_ids: list[str] = Field(default_factory=list)
 
 
 class ToolError(BaseModel):

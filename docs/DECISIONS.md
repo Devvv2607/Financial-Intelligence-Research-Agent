@@ -1146,3 +1146,42 @@ embedding citation check can't catch either, because the claim is *about* the ci
   deleting it keeps the event row, which is correct apart from its description.
 - Tests use the two real answers and their cited sources as fixtures
   (`backend/tests/fixtures/consistency/`).
+
+## D-052 · Change claims rest on a diff source
+
+**Status:** Implemented (branch `fix/change-claim-evidence`). Zero LLM calls. The citation
+check's threshold is unchanged.
+
+The 2026-11-18 Apple re-recording had correct statuses and counts (D-051) but precision
+0.786. Three bullets added a contrast with the earlier text ("whereas FY 2025's version
+did not mention AI", "differing from the FY 2025 phrasing", "compared with the FY 2025
+version") and cited the FY2025 wording. A statement about what a text lacks can't match
+that text, so the check marked all three [unverified] (similarities 0.50-0.55).
+
+- **The diff is its own source.** `compare_risk_factors` adds one `diff:<risk id>`
+  evidence per changed risk. Its snippet is "FY2026 adds: “…” FY2026 drops: “…”" (the
+  largest added and removed passages; `word_diff` now also returns the removed one) plus
+  any category move. `Evidence.linked_source_ids` links it to the later and earlier
+  wording. Evidence order puts each later wording next to its diff, then the earlier
+  wordings, which the diff summarises.
+- **Synthesizer (prompt v9):** state changes positively from the diff ("FY 2026 adds
+  …") and cite it. Describe what the earlier text lacked only if the diff's passages
+  show it. The comparison list marks each changed risk "diff [n]".
+- **finalize, before the citation check** (`relink_change_claims`): a contrast clause
+  (", whereas FY 2025 …", "differing from / compared with / unlike / vs. the FY 2025 …")
+  is re-cited to its risk's diff when the diff's passages contain the clause's content
+  words ("AI" also matches "artificial intelligence"). Otherwise it is removed with a
+  footer note. Content-free contrasts ("differing from the FY 2025 phrasing") are
+  always removed: the diff already says the wording changed.
+- **Citation check:** a change claim ("adds", "drops", "reworded", "no longer", or a
+  contrast) whose cited risk scores below the threshold is also scored against that
+  risk's diff. If the diff supports it, the citation moves to the diff (`via_diff`). The
+  threshold is the same 0.585 and other claims are unaffected.
+- **Measured on the real draft** (local copy of the production model): before, precision
+  0.786 with 3 [unverified], the production numbers exactly. After, precision 1.0, the
+  AI clause supported by the diff at 0.731, and four content-free or unbacked contrasts
+  removed.
+- **8-K rewrite wording (D-051 follow-up):** a rewritten list item is now just the item
+  name ("Item 5.02 (Departure or appointment …) [3]."), because its lead line already
+  names the filing. Running text keeps the dated sentence and tables keep "Reported
+  under …".

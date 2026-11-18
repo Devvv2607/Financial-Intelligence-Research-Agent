@@ -388,6 +388,8 @@ export interface components {
             fiscal_year?: number | null;
             /** Form Type */
             form_type?: string | null;
+            /** Linked Source Ids */
+            linked_source_ids?: string[];
             /** Score */
             score?: number | null;
             /** Section */

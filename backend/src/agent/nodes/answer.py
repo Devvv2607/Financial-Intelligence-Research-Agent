@@ -18,7 +18,12 @@ from langgraph.config import get_stream_writer
 
 from agent import prompts
 from agent.citecheck import CitationReport, verify_citations
-from agent.consistency import ConsistencyReport, check_answer
+from agent.consistency import (
+    ConsistencyReport,
+    check_answer,
+    diff_links,
+    relink_change_claims,
+)
 from agent.deps import AgentDeps
 from agent.nodes.intake import run_id_of
 from agent.nodes.planning import _step_status_lines
@@ -40,6 +45,10 @@ UNVERIFIED_NOTE = "\n*Claims marked [unverified] could not be matched to any ret
 STATUS_NOTE = (
     "\n*{n} statement(s) removed: they gave a risk factor a different status (new, removed, "
     "changed or unchanged) than the filing comparison found.*"
+)
+CHANGE_NOTE = (
+    "\n*{n} comparison(s) with the earlier 10-K removed: no added or dropped passage of "
+    "that risk backs them.*"
 )
 EIGHT_K_NOTE = (
     "\n*{n} 8-K description(s) replaced by the item's official name: the wording went beyond "
@@ -201,17 +210,22 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
         report: CitationReport | None = None
         order = state.get("evidence_order", [])
         by_id = {e.source_id: e for e in state.get("evidence", [])}
-        if deps.embed is not None and order and all(sid in by_id for sid in order):
+        # All checks work in the synthesizer's numbering: numbered[n-1] is [n].
+        numbered = [by_id[sid] for sid in order] if all(sid in by_id for sid in order) else []
+        consistency = ConsistencyReport()
+        if numbered:
+            # Before the citation check, so a clause re-cited to a diff is scored against it.
+            answer = relink_change_claims(answer, numbered, consistency)
+        if deps.embed is not None and numbered:
             try:
                 answer, report = await verify_citations(
-                    answer, [by_id[sid] for sid in order], deps.embed
+                    answer, numbered, deps.embed, links=diff_links(numbered)
                 )
             except Exception:  # a local-model failure must not cost the user the answer
                 logger.exception("citation check failed", extra={"run_id": run_id_of(config)})
-        consistency = ConsistencyReport()
-        if order and all(sid in by_id for sid in order):
-            # Still in the synthesizer's numbering: sources[n-1] is [n].
-            answer, consistency = check_answer(answer, [by_id[sid] for sid in order])
+        if numbered:
+            answer, after_check = check_answer(answer, numbered)
+            consistency.merge(after_check)
         if consistency.checked:
             logger.info(
                 "answer consistency", extra={"run_id": run_id_of(config), **consistency.summary()}
@@ -228,6 +242,8 @@ def make_answer_nodes(deps: AgentDeps) -> dict[str, Any]:
             footer += STATUS_NOTE.format(n=len(consistency.status_mismatches))
         if consistency.eight_k_rewrites:
             footer += EIGHT_K_NOTE.format(n=len(consistency.eight_k_rewrites))
+        if consistency.change_claims_removed:
+            footer += CHANGE_NOTE.format(n=len(consistency.change_claims_removed))
         answer = answer.rstrip() + footer
         check: dict[str, Any] | None = dict(report.summary()) if report else None
         if consistency.checked:
@@ -324,7 +340,14 @@ def comparison_section(state: ResearchState, sources: list[Evidence]) -> list[tu
     is a source. Includes risks that didn't make the numbered list (often the unchanged
     ones), so the answer can name them by citing the comparison summary."""
     number = {e.source_id: i for i, e in enumerate(sources, start=1)}
-    labeled = [e for e in state.get("evidence", []) if e.compare_status]
+    evidence = state.get("evidence", [])
+    # A diff is listed with its risk ("diff [n]"), not as a risk of its own.
+    diff_of = {
+        e.linked_source_ids[0]: number[e.source_id]
+        for e in evidence
+        if e.linked_source_ids and e.source_id in number
+    }
+    labeled = [e for e in evidence if e.compare_status and not e.linked_source_ids]
     if not labeled:
         return []
     rank = {"new": 0, "removed": 1, "changed": 2, "unchanged": 3}
@@ -332,6 +355,7 @@ def comparison_section(state: ResearchState, sources: list[Evidence]) -> list[tu
         f"- {(e.compare_status or '').upper()}"
         + (f" [{number[e.source_id]}]" if e.source_id in number else " (not numbered)")
         + f" {e.title.split(': ', 1)[-1]} ({e.compare_note})"
+        + (f"; diff [{diff_of[e.source_id]}]" if e.source_id in diff_of else "")
         for e in sorted(labeled, key=lambda e: rank[e.compare_status or "unchanged"])
     ]
     return [

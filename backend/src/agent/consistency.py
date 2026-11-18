@@ -18,7 +18,12 @@ filing doesn't report. Both scored precision 1.0. Two rules close that gap:
    the item's official description is allowed when quoted as the item's name. Otherwise
    the claim is replaced by the item codes and official descriptions.
 
-Both are counted in the run's citation_check and logged. Word lists, not a model: the
+3. Change claims (D-052). A clause that describes the earlier 10-K by contrast
+   ("whereas FY 2025's version did not mention AI", "differing from the FY 2025
+   phrasing") is re-cited to the risk's diff source when the diff's added or dropped
+   passage contains its content words, and removed otherwise.
+
+All three are counted in the run's citation_check and logged. Word lists, not a model: the
 point is a check that behaves the same way every time and can be read in one screen.
 """
 
@@ -91,13 +96,25 @@ class Finding:
 class ConsistencyReport:
     status_mismatches: list[Finding] = field(default_factory=list)
     eight_k_rewrites: list[Finding] = field(default_factory=list)
+    change_claims_recited: list[Finding] = field(default_factory=list)
+    change_claims_removed: list[Finding] = field(default_factory=list)
     checked: bool = False  # the answer cited a labeled risk or an 8-K
 
     def summary(self) -> dict[str, int]:
         return {
             "status_mismatches": len(self.status_mismatches),
             "eight_k_rewrites": len(self.eight_k_rewrites),
+            "change_claims_recited": len(self.change_claims_recited),
+            "change_claims_removed": len(self.change_claims_removed),
         }
+
+    def merge(self, other: "ConsistencyReport") -> "ConsistencyReport":
+        self.status_mismatches += other.status_mismatches
+        self.eight_k_rewrites += other.eight_k_rewrites
+        self.change_claims_recited += other.change_claims_recited
+        self.change_claims_removed += other.change_claims_removed
+        self.checked = self.checked or other.checked
+        return self
 
 
 def asserted_statuses(text: str) -> set[CompareStatus]:
@@ -216,11 +233,15 @@ def _unsupported_terms(text: str, cited: list[Evidence]) -> list[str]:
     return [t for t in terms if not re.search(rf"\b{re.escape(t)}", ground, re.I)]
 
 
-def _item_wording(cited: list[Evidence], cites: str, sentence: bool) -> str:
+def _item_wording(cited: list[Evidence], cites: str, style: str) -> str:
+    """cell: a table cell; item: a list item (its lead line already names the filing);
+    sentence: running text, which needs the filing date to stand alone."""
     items = [f"Item {code} ({desc})" for e in cited for code, desc in _items_of(e)]
     names = "; ".join(dict.fromkeys(items)) or "its items"
-    if sentence:
+    if style == "sentence":
         return f"The 8-K filed {_day(cited[0].filed_or_published)} reports {names} {cites}."
+    if style == "item":
+        return f"{names} {cites}."
     return f"Reported under {names} {cites}"
 
 
@@ -232,18 +253,19 @@ def check_8k_descriptions(answer: str, sources: list[Evidence], report: Consiste
     for line in answer.split("\n"):
         if line.strip().startswith("|"):  # table: check each cell
             cells = line.split("|")
-            out.append("|".join(_fix_8k_unit(c, sources, report, sentence=False) for c in cells))
+            out.append("|".join(_fix_8k_unit(c, sources, report, style="cell") for c in cells))
             continue
         item = _LIST_ITEM.match(line)
         prefix, body = (item.group(0), line[item.end() :]) if item else ("", line)
         spans = [(0, len(body))] if item else _sentences(body)
-        parts = [_fix_8k_unit(body[a:b], sources, report, sentence=True) for a, b in spans]
+        style = "item" if item else "sentence"
+        parts = [_fix_8k_unit(body[a:b], sources, report, style=style) for a, b in spans]
         out.append(prefix + " ".join(p.strip() if len(parts) > 1 else p for p in parts))
     return "\n".join(out)
 
 
 def _fix_8k_unit(
-    unit: str, sources: list[Evidence], report: ConsistencyReport, *, sentence: bool
+    unit: str, sources: list[Evidence], report: ConsistencyReport, *, style: str
 ) -> str:
     cited = _cited(unit, sources)
     if not cited or any(e.source_type != "8k" for e in cited):
@@ -257,7 +279,97 @@ def _fix_8k_unit(
     )
     lead = unit[: len(unit) - len(unit.lstrip())]
     trail = unit[len(unit.rstrip()) :]
-    return lead + _item_wording(cited, cites, sentence) + trail
+    return lead + _item_wording(cited, cites, style) + trail
+
+
+# A clause describing the earlier 10-K by contrast, with the citation group closing it.
+_CONTRAST = re.compile(
+    r"(?:,\s*|\s+)(?:(?:whereas|while|but)\s+(?:the\s+)?FY\s*\d{4}\b"
+    r"|(?:and\s+)?(?:differ(?:s|ing|ed)?\s+from|compared\s+(?:with|to)|unlike|versus|vs\.?)"
+    r"\s+(?:the\s+)?FY\s*\d{4}\b)"
+    r"[^.;\n\[]*(?:\s*(?:\[\d{1,3}\]|\[unverified\])+)?",
+    re.I,
+)
+# Words that carry no content in such a clause: what remains must be in the diff.
+_CONTRAST_STOP_WORDS = (
+    "a", "an", "and", "as", "at", "but", "by", "compared", "description", "did", "differ",
+    "differed", "differing", "differs", "does", "earlier", "factor", "filing", "for",
+    "from", "fy", "in", "include", "included", "includes", "is", "it", "its",
+    "language", "mention", "mentioned", "mentions", "not", "of", "only", "or", "phrasing",
+    "previous", "prior", "reference", "referenced", "references", "risk", "s", "text",
+    "than", "that", "the", "to", "unlike", "version", "versions", "versus", "vs", "was",
+    "were", "whereas", "which", "while", "with", "wording", "year",
+
+)  # fmt: skip
+_CONTRAST_STOP = frozenset(_CONTRAST_STOP_WORDS)
+_ALIASES = {"ai": ("ai", "artificial intelligence")}
+_CHANGE_WORDS = re.compile(
+    r"\b(?:adds?|added|drops?|dropped|no longer|now (?:includes?|covers?|mentions?|refers?))\b",
+    re.I,
+)
+
+
+def is_change_claim(text: str) -> bool:
+    """A claim about how a risk changed: scored against the risk's diff source too."""
+    return "changed" in asserted_statuses(text) or bool(
+        _CHANGE_WORDS.search(text) or _CONTRAST.search(text)
+    )
+
+
+def diff_links(sources: list[Evidence]) -> dict[int, int]:
+    """Source number of each compared risk -> number of its diff source, when numbered."""
+    number = {e.source_id: i for i, e in enumerate(sources, start=1)}
+    return {
+        number[sid]: i
+        for i, e in enumerate(sources, start=1)
+        for sid in e.linked_source_ids
+        if sid in number
+    }
+
+
+def _content_terms(clause: str) -> list[str]:
+    words = re.findall(r"[a-z][a-z0-9-]*", _HYPHENS.sub("-", _plain(clause)).lower())
+    return [w for w in dict.fromkeys(words) if w not in _CONTRAST_STOP and len(w) > 1]
+
+
+def _backed(term: str, passage: str) -> bool:
+    return any(re.search(rf"\b{re.escape(t)}", passage, re.I) for t in _ALIASES.get(term, (term,)))
+
+
+def relink_change_claims(answer: str, sources: list[Evidence], report: ConsistencyReport) -> str:
+    """Re-cite contrast clauses to the diff that backs them; remove the rest (D-052).
+    Runs before the citation check, so a re-cited clause is scored against the diff."""
+    if not any(e.compare_status for e in sources):
+        return answer
+    report.checked = True
+    links = diff_links(sources)
+    out = []
+    for line in answer.split("\n"):
+        nums = [int(n) for n in _NUM_RE.findall(line)]
+        diffs = list(
+            dict.fromkeys(
+                [links[n] for n in nums if n in links]
+                + [n for n in nums if 1 <= n <= len(sources) and sources[n - 1].linked_source_ids]
+            )
+        )
+        for m in reversed(list(_CONTRAST.finditer(line))):
+            clause = m.group(0)
+            terms = _content_terms(_NUM_RE.sub(" ", clause).replace("[unverified]", " "))
+            own = [links[int(n)] for n in _NUM_RE.findall(clause) if int(n) in links]
+            candidates = own or diffs  # the clause's own citation's diff first
+            diff = candidates[0] if candidates else None
+            passage = sources[diff - 1].snippet if diff else ""
+            if terms and diff and all(_backed(t, passage) for t in terms):
+                bare = re.sub(r"\s*(?:\[\d{1,3}\]|\[unverified\])+$", "", clause)
+                new = f"{bare} [{diff}]"
+                report.change_claims_recited.append(Finding(_plain(clause), f"diff [{diff}]"))
+            else:
+                new = ""
+                why = "no diff passage contains: " + ", ".join(terms) if terms else "no content"
+                report.change_claims_removed.append(Finding(_plain(clause), why))
+            line = line[: m.start()] + new + line[m.end() :]
+        out.append(line)
+    return "\n".join(out)
 
 
 def check_answer(answer: str, sources: list[Evidence]) -> tuple[str, ConsistencyReport]:
