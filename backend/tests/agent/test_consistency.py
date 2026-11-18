@@ -66,7 +66,8 @@ def test_apple_unchanged_claims_about_changed_risks_are_removed() -> None:
         "No risk factors were removed",
     ):
         assert kept in fixed
-    assert report.summary() == {"status_mismatches": 4, "eight_k_rewrites": 0}
+    assert report.summary()["status_mismatches"] == 4
+    assert report.summary()["eight_k_rewrites"] == 0
 
 
 def test_status_words_are_read_with_negations_and_typographic_hyphens() -> None:

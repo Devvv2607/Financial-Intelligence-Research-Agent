@@ -276,6 +276,7 @@ class ChangedRisk(BaseModel):
     words_added: int
     words_removed: int
     added_excerpt: str = Field(description="start of the largest added passage, if any")
+    removed_excerpt: str = Field(description="start of the largest removed passage, if any")
 
 
 class UnchangedRisk(BaseModel):
@@ -302,22 +303,33 @@ class WordDiff:
     added: int
     removed: int
     added_excerpt: str
+    removed_excerpt: str
 
 
 def word_diff(before: str, after: str, excerpt_chars: int = 300) -> WordDiff:
-    """Word-level diff: similarity ratio, words added/removed, largest added passage."""
+    """Word-level diff: similarity ratio, words added/removed, largest added and removed
+    passages."""
     a, b = before.split(), after.split()
     sm = difflib.SequenceMatcher(None, a, b, autojunk=False)
     added = removed = 0
-    largest: list[str] = []
+    largest_added: list[str] = []
+    largest_removed: list[str] = []
     for op, i1, i2, j1, j2 in sm.get_opcodes():
         if op in ("insert", "replace"):
             added += j2 - j1
-            if j2 - j1 > len(largest):
-                largest = b[j1:j2]
+            if j2 - j1 > len(largest_added):
+                largest_added = b[j1:j2]
         if op in ("delete", "replace"):
             removed += i2 - i1
-    return WordDiff(round(sm.ratio(), 3), added, removed, snippet(" ".join(largest), excerpt_chars))
+            if i2 - i1 > len(largest_removed):
+                largest_removed = a[i1:i2]
+    return WordDiff(
+        round(sm.ratio(), 3),
+        added,
+        removed,
+        snippet(" ".join(largest_added), excerpt_chars),
+        snippet(" ".join(largest_removed), excerpt_chars),
+    )
 
 
 def match_risks(
@@ -431,6 +443,7 @@ async def compare_risk_factors(ctx: ToolContext, inp: CompareRiskFactorsInput) -
                 words_added=diff.added,
                 words_removed=diff.removed,
                 added_excerpt=diff.added_excerpt,
+                removed_excerpt=diff.removed_excerpt,
             )
         )
     changed.sort(key=lambda c: c.text_similarity)  # most rewritten first
@@ -468,13 +481,13 @@ async def compare_risk_factors(ctx: ToolContext, inp: CompareRiskFactorsInput) -
     for u in unchanged:
         labels[u.risk.id] = ("unchanged", f"same text in FY{year_a} and FY{year_b}")
     # Evidence order is priority order (the synthesizer gets the first items of each step):
-    # new and removed first, then each changed risk's later and earlier wording side by side,
-    # so a cap never keeps one side of a comparison without the other; unchanged last.
-    cited = (
-        [r["id"] for r in new + removed]
-        + [i for c in changed for i in (c.after.id, c.before.id)]
-        + [u.risk.id for u in unchanged]
-    )
+    # new and removed first, then each changed risk's later wording with its diff (what the
+    # change claims cite, so a cap keeps them together), then the earlier wordings (the
+    # diff already carries the removed passage), unchanged last.
+    diffs = {c.after.id: _diff_evidence(company.ticker, c, by_id, year_a, year_b) for c in changed}
+    first = [r["id"] for r in new + removed]
+    pairs_ = [x for c in changed for x in (c.after.id, f"diff:{c.after.id}")]
+    later = [c.before.id for c in changed] + [u.risk.id for u in unchanged]
     summary_url = next((str(r["url"]) for r in b), None)
     summary = Evidence(
         source_id=f"compare:{company.ticker}:{year_a}:{year_b}",
@@ -491,13 +504,47 @@ async def compare_risk_factors(ctx: ToolContext, inp: CompareRiskFactorsInput) -
         fiscal_year=year_b,
         section="item_1a",
     )
-    evidence = [summary] + [
-        _risk_evidence(company.ticker, by_id[i]).model_copy(
+
+    def item(i: str) -> Evidence:
+        if i.startswith("diff:"):
+            return diffs[i.removeprefix("diff:")]
+        return _risk_evidence(company.ticker, by_id[i]).model_copy(
             update={"compare_status": labels[i][0], "compare_note": labels[i][1]}
         )
-        for i in dict.fromkeys(cited)
-    ]
+
+    evidence = [summary] + [item(i) for i in dict.fromkeys(first + pairs_ + later)]
     return Output(out, evidence)
+
+
+def _diff_evidence(
+    ticker: str, c: ChangedRisk, by_id: Mapping[str, Mapping[str, Any]], year_a: int, year_b: int
+) -> Evidence:
+    """A changed risk's diff as its own citable source: what the later 10-K adds and drops
+    (D-052). Change claims ("FY 2026 adds ...") cite this, not one side's full text."""
+    parts = []
+    if c.added_excerpt:
+        parts.append(f"FY{year_b} adds: \u201c{c.added_excerpt}\u201d")
+    if c.removed_excerpt:
+        parts.append(f"FY{year_b} drops: \u201c{c.removed_excerpt}\u201d")
+    if c.kind != "reworded":
+        before, after = c.before.category or "untagged", c.after.category or "untagged"
+        parts.append(f"Category: {before} -> {after}.")
+    after_row = by_id[c.after.id]
+    return Evidence(
+        source_id=f"diff:{c.after.id}",
+        source_type="risk_factor",
+        ticker=ticker,
+        title=f"{ticker} risk factor change, FY{year_a} vs FY{year_b}: {c.after.heading}"[:300],
+        snippet=" ".join(parts) or "Wording changed (no single passage stands out).",
+        url=str(after_row["url"]),
+        form_type="10-K",
+        fiscal_year=year_b,
+        section="item_1a",
+        filed_or_published=after_row.get("filing_date"),
+        compare_status="changed",
+        compare_note=f"diff, {c.kind.replace('_', ' ')}; +{c.words_added}/-{c.words_removed} words",
+        linked_source_ids=[f"rf:{c.after.id}", f"rf:{c.before.id}"],
+    )
 
 
 # ---------------------------------------------------------------- get_8k_events

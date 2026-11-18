@@ -217,6 +217,13 @@
           "default": null,
           "title": "Form Type"
         },
+        "linked_source_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Linked Source Ids",
+          "type": "array"
+        },
         "score": {
           "anyOf": [
             {

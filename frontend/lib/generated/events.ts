@@ -57,6 +57,7 @@ export type CompareStatus = ("new" | "removed" | "changed" | "unchanged") | null
 export type FiledOrPublished = string | null;
 export type FiscalYear = number | null;
 export type FormType = string | null;
+export type LinkedSourceIds = string[];
 export type Score = number | null;
 export type Section = string | null;
 /**
@@ -176,6 +177,7 @@ export interface Evidence1 {
   filed_or_published?: FiledOrPublished;
   fiscal_year?: FiscalYear;
   form_type?: FormType;
+  linked_source_ids?: LinkedSourceIds;
   score?: Score;
   section?: Section;
   snippet: Snippet;

@@ -70,11 +70,21 @@ async def test_compare_risk_factors_partitions_every_risk(live_ctx: ToolContext)
     assert r.evidence[0].source_id == f"compare:{row}:{d['year_a']}:{d['year_b']}"
     # Every risk carries the tool's own label (D-051): new and unchanged once each, changed
     # as a before/after pair, and the summary none.
-    labels = [e.compare_status for e in r.evidence[1:]]
+    risks = [e for e in r.evidence[1:] if not e.source_id.startswith("diff:")]
+    labels = [e.compare_status for e in risks]
     assert r.evidence[0].compare_status is None and None not in labels
     assert labels.count("new") == c["new"] and labels.count("removed") == c["removed"]
     assert labels.count("unchanged") == c["unchanged"]
     assert labels.count("changed") == 2 * c["changed"]
+    # One diff source per changed risk (D-052), right after its later wording, linked to
+    # both wordings and quoting what was added or dropped.
+    diffs = [e for e in r.evidence if e.source_id.startswith("diff:")]
+    assert len(diffs) == c["changed"]
+    ids = [e.source_id for e in r.evidence]
+    for diff in diffs:
+        after, before = diff.linked_source_ids
+        assert ids.index(diff.source_id) == ids.index(after) + 1 and before in ids
+        assert any(k in diff.snippet for k in ("adds:", "drops:", "Category:"))
     # Years passed newest-first must not flip "new" and "removed" (demo 2 regression).
     flipped = await call_tool(
         live_ctx,
