@@ -27,6 +27,8 @@ applied to earlier transcripts, and each fix is logged in `docs/DECISIONS.md`.
 | 2026-11-17 | Replay: healthcare growth + regulatory risks | `replay-healthcare-growth.txt` | 27,346 | precision 1.0 (17/17); growth math checked (UNH +11.8%, JNJ +6.0%); **saved** |
 | 2026-11-17 | Replay: Boeing 8-Ks this year | `replay-boeing-8k-events-HELD.txt` | 7,942 | precision 1.0; freshness line correct; **held, not saved**: the 21 Aug 5.02 row restates the item title ("new directors/officers"); the filing appoints Ryan L. Shedd as SVP and Controller |
 | 2026-11-17 | Replay: "How risky is the bank?" → JPMorgan | `replay-bank-clarification.txt` | 10,261 | clarification flow (BAC/JPM/C/WFC offered); precision 1.0 (13/13); **saved** |
+| 2026-11-18 | Replay re-record: Apple risk changes | `2026-11-18/replay-apple-risk-changes-FAILED.txt` | 11,144 | after D-051: status_mismatches 0 and stated counts match the tool (1 new / 0 removed / 20 changed / 7 unchanged), but precision 0.786 (11/14): 3 FY2025-side claims ("did not mention AI", "differing from the FY 2025 phrasing") marked [unverified]. **Failed the gate, not saved** |
+| 2026-11-18 | Replay re-record: Boeing 8-Ks this year | `2026-11-18/replay-boeing-8k-events.txt` | 8,707 | precision 1.0 (13/13); freshness correct; status_mismatches 0; eight_k_rewrites 1: the draft's 5.02 note "(board departures and officer appointments)" was replaced by the item's official name (D-051). **Saved** to `replays/` |
 
 Data caveats:
 - **2026-11-04:** the stored risk factors still had the "Table of Contents" split from
