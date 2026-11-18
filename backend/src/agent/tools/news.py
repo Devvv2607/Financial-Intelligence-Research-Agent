@@ -8,6 +8,7 @@ daily request cap. Any NewsAPI failure degrades to store results plus a warning.
 
 import re
 from datetime import UTC, date, datetime, timedelta
+from typing import Any
 
 import numpy as np
 from pydantic import BaseModel, Field
@@ -23,7 +24,7 @@ from agent.tools.news_relevance import PageKind, load_policy, relevance
 from core.db.schema import news_articles
 from core.db.source_checks import last_checks, record_check
 from core.newsapi import Article, NewsApiError, build_query, parse_articles
-from core.vectorstore import NEWS_ARTICLE
+from core.vectorstore import NEWS_ARTICLE, with_reconnect
 
 STALE_AFTER = timedelta(days=3)
 MAX_LIVE_FETCHES = 3  # per call: protects the shared 100/day NewsAPI quota
@@ -126,28 +127,30 @@ async def _store(ctx: ToolContext, company: Company, articles: list[Article]) ->
             .on_conflict_do_nothing(index_elements=["id"])
         )
     vectors = await ctx.embedder.embed([f"{a.title}\n{a.description or ''}" for a in articles])  # type: ignore[union-attr]
-    col = ctx.weaviate.collections.get(NEWS_ARTICLE)  # type: ignore[union-attr]
-    await col.data.insert_many(
-        [
-            DataObject(
-                uuid=generate_uuid5(f"{NEWS_ARTICLE}:{a.id}"),
-                vector=vec.tolist(),
-                properties={
-                    "title": a.title,
-                    "description": a.description or "",
-                    "content": a.content_snippet or "",
-                    "ticker": company.ticker,
-                    "cik": company.cik,
-                    "company": company.name,
-                    "sector": company.sector or "",
-                    "source_name": a.source_name or "",
-                    "published_at": a.published_at,
-                    "source_url": a.url,
-                    "article_id": a.id,
-                },
-            )
-            for a, vec in zip(articles, vectors, strict=True)
-        ]
+    objects: list[DataObject[Any, Any]] = [
+        DataObject(
+            uuid=generate_uuid5(f"{NEWS_ARTICLE}:{a.id}"),
+            vector=vec.tolist(),
+            properties={
+                "title": a.title,
+                "description": a.description or "",
+                "content": a.content_snippet or "",
+                "ticker": company.ticker,
+                "cik": company.cik,
+                "company": company.name,
+                "sector": company.sector or "",
+                "source_name": a.source_name or "",
+                "published_at": a.published_at,
+                "source_url": a.url,
+                "article_id": a.id,
+            },
+        )
+        for a, vec in zip(articles, vectors, strict=True)
+    ]
+    # Deterministic uuids: repeating the insert after a reconnect can't duplicate objects.
+    await with_reconnect(
+        ctx.weaviate,  # type: ignore[arg-type]
+        lambda c: c.collections.get(NEWS_ARTICLE).data.insert_many(objects),
     )
 
 
@@ -221,22 +224,24 @@ async def search_news(ctx: ToolContext, inp: SearchNewsInput) -> Output:
     fetched, warnings = await _live_refresh(ctx, [c for c in known if c.cik in stale_ciks])
 
     vector = (await ctx.embedder.embed([inp.query]))[0]
-    col = ctx.weaviate.collections.get(NEWS_ARTICLE)
     # Hybrid search only *collects candidates*; ranking uses our absolute score
     # (news_relevance), because hybrid fusion scores are relative to each result list.
-    res = await col.query.hybrid(
-        query=inp.query,
-        vector=vector.tolist(),
-        alpha=0.5,
-        limit=CANDIDATES,
-        include_vector=True,
-        filters=Filter.all_of(
-            [
-                Filter.by_property("ticker").contains_any([c.ticker for c in known]),
-                Filter.by_property("published_at").greater_or_equal(
-                    datetime(since.year, since.month, since.day, tzinfo=UTC)
-                ),
-            ]
+    res = await with_reconnect(
+        ctx.weaviate,
+        lambda c: c.collections.get(NEWS_ARTICLE).query.hybrid(
+            query=inp.query,
+            vector=vector.tolist(),
+            alpha=0.5,
+            limit=CANDIDATES,
+            include_vector=True,
+            filters=Filter.all_of(
+                [
+                    Filter.by_property("ticker").contains_any([c.ticker for c in known]),
+                    Filter.by_property("published_at").greater_or_equal(
+                        datetime(since.year, since.month, since.day, tzinfo=UTC)
+                    ),
+                ]
+            ),
         ),
     )
     by_ticker = {c.ticker: c for c in known}

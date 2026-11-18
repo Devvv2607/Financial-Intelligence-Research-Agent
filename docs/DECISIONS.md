@@ -1185,3 +1185,40 @@ that text, so the check marked all three [unverified] (similarities 0.50-0.55).
   name ("Item 5.02 (Departure or appointment …) [3]."), because its lead line already
   names the filing. Running text keeps the dated sentence and tables keep "Reported
   under …".
+
+## D-053 · Weaviate client: connect at startup, reconnect once, real readiness query
+
+**Status:** Implemented (branch `fix/weaviate-client-lifecycle`).
+
+**Root cause (production, 2026-11-18).** The API created its Weaviate client in the
+lifespan but never connected it. Only `/ready` (`ensure_ready`) connected it. After every
+API deploy or restart, every Weaviate query (the heatmap chunk count, `search_filings`,
+`search_news`, the news insert) raised `WeaviateClosedClientError` until something
+opened `/ready`. Railway logs:
+
+| Time (UTC) | Event |
+|---|---|
+| 07:20:27 | api deployment `4fe01ed6` |
+| 07:21:06 | process started |
+| 07:22:39 | heatmap fails with WeaviateClosedClientError; no `/ready` before it |
+| 07:23:10 | first `/ready`, which connects the client |
+| 07:27:13 | heatmap returns 1568 chunks |
+
+Weaviate's last start was 2026-11-16 21:03, so it didn't restart. The site's top bar polls
+`/ready`, which usually connected the client by accident: that's why the bug was
+intermittent. Reproduced locally on `main` (first heatmap request: `chunks = null`).
+
+**Fix.**
+- The client is still created once per process. Outside `APP_ENV=test` it is connected
+  in the lifespan, awaited with a timeout and best effort: if Weaviate is down the API
+  still boots. It's awaited because the client library's connect stalls the event loop
+  (~0.8 s measured locally), which must not hit in-flight requests.
+- Every query goes through `vectorstore.with_reconnect`. It connects a client that
+  isn't connected. On `WeaviateClosedClientError`, `WeaviateConnectionError` or
+  `WeaviateGRPCUnavailableError` it closes, reconnects once (under a per-client lock, so
+  concurrent failures reconnect once) and retries once. The news insert is safe to
+  repeat (uuid5 ids).
+- `/ready` runs a real query, a `FilingChunk` count over gRPC like the search tools,
+  so a client that can't query reports not ready.
+- Also fixed: the queue test raced on a fixed 0.2 s sleep (2 failures in 5 runs on
+  `main`). It now waits until the gate reports a running slot.

@@ -26,7 +26,7 @@ from agent.tools.eight_k_items import describe_items, event_excerpt
 from core.db.schema import eight_k_events, filings, risk_factors
 from core.db.source_checks import last_checks
 from core.taxonomy import RiskCategory
-from core.vectorstore import FILING_CHUNK
+from core.vectorstore import FILING_CHUNK, with_reconnect
 
 Section = Literal["item_1", "item_1a", "business_overview", "8k_body"]
 
@@ -103,14 +103,16 @@ async def search_filings(ctx: ToolContext, inp: SearchFilingsInput) -> Output:
     if inp.sections:
         filters.append(Filter.by_property("section").contains_any(list(inp.sections)))
     vector = (await ctx.embedder.embed([inp.query]))[0]  # type: ignore[union-attr]
-    col = ctx.weaviate.collections.get(FILING_CHUNK)  # type: ignore[union-attr]
-    res = await col.query.hybrid(
-        query=inp.query,
-        vector=vector.tolist(),
-        alpha=inp.alpha,
-        limit=inp.limit,
-        filters=Filter.all_of(filters),
-        return_metadata=MetadataQuery(score=True),
+    res = await with_reconnect(
+        ctx.weaviate,  # type: ignore[arg-type]
+        lambda c: c.collections.get(FILING_CHUNK).query.hybrid(
+            query=inp.query,
+            vector=vector.tolist(),
+            alpha=inp.alpha,
+            limit=inp.limit,
+            filters=Filter.all_of(filters),
+            return_metadata=MetadataQuery(score=True),
+        ),
     )
     hits = []
     for o in res.objects:

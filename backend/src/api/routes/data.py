@@ -26,7 +26,7 @@ from api.schemas import (
     RiskHeatmap,
     RunDetail,
 )
-from core.vectorstore import FILING_CHUNK
+from core.vectorstore import FILING_CHUNK, count_objects
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["data"])
@@ -211,10 +211,7 @@ async def _chunk_count(request: Request) -> int | None:
     wv: Any = request.app.state.weaviate
     timeout = request.app.state.settings.readiness_timeout_s
     try:
-        res = await asyncio.wait_for(
-            wv.collections.get(FILING_CHUNK).aggregate.over_all(total_count=True), timeout
-        )
-        return int(res.total_count) if res.total_count is not None else None
+        return await asyncio.wait_for(count_objects(wv, FILING_CHUNK), timeout)
     except Exception as exc:  # stats are secondary: show the rest without them
         logger.warning("chunk count unavailable", extra={"error": repr(exc)})
         return None
