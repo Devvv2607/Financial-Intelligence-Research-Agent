@@ -6,9 +6,11 @@ checkpointer, embedding model) are created once in the lifespan and stored on
 (scripted LLM, fake tools, in-memory checkpointer) or none at all.
 """
 
+import asyncio
+import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import Literal
+from typing import Any, Literal
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,6 +26,16 @@ from core.config import Settings, get_settings
 from core.logging import configure_logging
 
 FROM_SETTINGS: Literal["from_settings"] = "from_settings"
+logger = logging.getLogger(__name__)
+
+
+async def _connect_weaviate(client: Any, settings: Settings) -> None:
+    """Connect at startup (D-053). Best effort: if Weaviate is down the API still runs,
+    /ready reports it, and the first query connects (vectorstore.with_reconnect)."""
+    try:
+        await asyncio.wait_for(vectorstore.connect(client), settings.readiness_timeout_s * 2)
+    except Exception as exc:
+        logger.warning("weaviate not connected at startup", extra={"error": repr(exc)})
 
 
 def create_app(
@@ -47,6 +59,11 @@ def create_app(
         app.state.replays = load_replays(settings.replays_dir)
         app.state.engine = db.create_engine(settings.database_url)
         app.state.weaviate = vectorstore.create_client(settings)
+        if settings.app_env != "test":
+            # Awaited before serving: the client library's connect stalls the event loop
+            # (~0.8 s measured locally), which must not hit in-flight requests. Tests
+            # skip it; their first real query connects through with_reconnect.
+            await _connect_weaviate(app.state.weaviate, settings)
         app.state.runtime = None
         try:
             if runtime_factory is None:

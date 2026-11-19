@@ -31,6 +31,30 @@ async def _hang(*_: object) -> None:
     await asyncio.sleep(10)
 
 
+async def _count(*_: object) -> int:
+    return 1568
+
+
+async def _query_fails(*_: object) -> int:
+    raise RuntimeError("FilingChunk: Weaviate returned no count")
+
+
+async def test_startup_connects_weaviate_outside_tests(monkeypatch: pytest.MonkeyPatch) -> None:
+    """D-053: the API connects its client at startup (it used to wait for /ready)."""
+    calls: list[object] = []
+
+    async def connect(client: object) -> None:
+        calls.append(client)
+
+    monkeypatch.setattr(vectorstore, "connect", connect)
+    monkeypatch.setattr(db, "ping", _ok)
+    await _get(_settings().model_copy(update={"app_env": "local"}), "/health")
+    assert len(calls) == 1
+    calls.clear()
+    await _get(_settings(), "/health")  # APP_ENV=test: first query connects instead
+    assert calls == []
+
+
 def _settings(groq_key: str | None = "gsk_test") -> Settings:
     return Settings(
         _env_file=None,  # never let a developer's .env leak into tests
@@ -60,7 +84,7 @@ async def test_health_is_ok_without_dependencies(monkeypatch: pytest.MonkeyPatch
 
 async def test_ready_when_all_checks_pass(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(db, "ping", _ok)
-    monkeypatch.setattr(vectorstore, "ensure_ready", _true)
+    monkeypatch.setattr(vectorstore, "count_objects", _count)
     resp = await _get(_settings(), "/ready")
     assert resp.status_code == 200
     body = resp.json()
@@ -70,7 +94,7 @@ async def test_ready_when_all_checks_pass(monkeypatch: pytest.MonkeyPatch) -> No
 
 async def test_ready_503_when_postgres_down(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(db, "ping", _boom)
-    monkeypatch.setattr(vectorstore, "ensure_ready", _true)
+    monkeypatch.setattr(vectorstore, "count_objects", _count)
     resp = await _get(_settings(), "/ready")
     assert resp.status_code == 503
     checks = resp.json()["checks"]
@@ -80,16 +104,26 @@ async def test_ready_503_when_postgres_down(monkeypatch: pytest.MonkeyPatch) -> 
 
 async def test_ready_503_when_weaviate_hangs(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(db, "ping", _ok)
-    monkeypatch.setattr(vectorstore, "ensure_ready", _hang)
+    monkeypatch.setattr(vectorstore, "count_objects", _hang)
     resp = await _get(_settings(), "/ready")
     assert resp.status_code == 503
     assert "timed out" in resp.json()["checks"]["weaviate"]["detail"]
 
 
+async def test_ready_503_when_the_weaviate_query_fails(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Connected is not enough: /ready runs a real count, and a failing query is not
+    ready (the 2026-11-18 bug: liveness said ok while every query failed)."""
+    monkeypatch.setattr(db, "ping", _ok)
+    monkeypatch.setattr(vectorstore, "count_objects", _query_fails)
+    resp = await _get(_settings(), "/ready")
+    assert resp.status_code == 503
+    assert resp.json()["checks"]["weaviate"] == {"ok": False, "detail": "RuntimeError"}
+
+
 @pytest.mark.parametrize("key", [None, "", "   "])
 async def test_ready_503_without_groq_key(monkeypatch: pytest.MonkeyPatch, key: str | None) -> None:
     monkeypatch.setattr(db, "ping", _ok)
-    monkeypatch.setattr(vectorstore, "ensure_ready", _true)
+    monkeypatch.setattr(vectorstore, "count_objects", _count)
     resp = await _get(_settings(groq_key=key), "/ready")
     assert resp.status_code == 503
     assert resp.json()["checks"]["groq_key"] == {"ok": False, "detail": "GROQ_API_KEY is not set"}

@@ -3,7 +3,9 @@
 /health  — the process is up. Never touches dependencies, so orchestrators don't
            restart a healthy API just because Postgres blipped.
 /ready   — every dependency the agent needs is usable. Returns 503 otherwise, with
-           a per-check breakdown so the failure is obvious.
+           a per-check breakdown so the failure is obvious. The Weaviate check runs a
+           real query (a FilingChunk count over gRPC, like the search tools), not just
+           a liveness flag: a client that can't query is not ready (D-053).
 """
 
 import asyncio
@@ -68,7 +70,9 @@ async def ready(request: Request, response: Response) -> ReadyResponse:
 
     postgres, weaviate_ = await asyncio.gather(
         _run_check("postgres", db.ping(state.engine), timeout),
-        _run_check("weaviate", vectorstore.ensure_ready(state.weaviate), timeout),
+        _run_check(
+            "weaviate", vectorstore.count_objects(state.weaviate, vectorstore.FILING_CHUNK), timeout
+        ),
     )
     checks = {"postgres": postgres, "weaviate": weaviate_, "groq_key": _groq_key_check(settings)}
     response.headers["X-Agent-Runtime"] = settings.agent_runtime

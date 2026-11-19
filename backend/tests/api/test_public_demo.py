@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 import httpx
+from fastapi import FastAPI
 from pydantic import SecretStr
 
 from api.main import create_app
@@ -68,6 +69,12 @@ TESLA = "Should I buy Tesla?"  # the scripted runtime answers it at once, no LLM
 
 @asynccontextmanager
 async def scripted_app(**kw: Any) -> AsyncIterator[httpx.AsyncClient]:
+    async with scripted(**kw) as (_, client):
+        yield client
+
+
+@asynccontextmanager
+async def scripted(**kw: Any) -> AsyncIterator[tuple[FastAPI, httpx.AsyncClient]]:
     base: dict[str, Any] = {
         "_env_file": None,
         "app_env": "test",
@@ -82,7 +89,15 @@ async def scripted_app(**kw: Any) -> AsyncIterator[httpx.AsyncClient]:
         app.router.lifespan_context(app),
         httpx.AsyncClient(transport=transport, base_url="http://t", timeout=30) as c,
     ):
-        yield c
+        yield app, c
+
+
+async def slot_taken(app: FastAPI) -> None:
+    """Wait until a run holds the live slot (a fixed sleep raced on busy machines)."""
+    async with asyncio.timeout(10):
+        # Polls state the app owns; adding an Event to RunGate only for a test is not worth it.
+        while app.state.runtime.runs.gate.running == 0:  # noqa: ASYNC110
+            await asyncio.sleep(0.01)
 
 
 async def live_run(
@@ -158,9 +173,12 @@ COMPARE = "Compare the top risk factors NVIDIA and AMD disclosed in their latest
 
 
 async def test_a_second_run_waits_in_the_queue_and_then_runs() -> None:
-    async with scripted_app(live_runs_per_visitor_per_day=10, live_runs_per_ip_per_day=10) as c:
+    async with scripted(live_runs_per_visitor_per_day=10, live_runs_per_ip_per_day=10) as (
+        app,
+        c,
+    ):
         first = asyncio.create_task(live_run(c, visitor(), COMPARE))
-        await asyncio.sleep(0.2)  # the scripted comparison holds the slot for seconds
+        await slot_taken(app)  # the scripted comparison then holds the slot for seconds
         second = events(await live_run(c, visitor()))
         assert kinds(second)[:2] == ["run_started", "queued"]
         assert second[1]["position"] == 1
@@ -170,10 +188,10 @@ async def test_a_second_run_waits_in_the_queue_and_then_runs() -> None:
 
 async def test_a_full_queue_refuses_the_run_before_it_starts() -> None:
     caps = {"live_runs_per_visitor_per_day": 10, "live_runs_per_ip_per_day": 10}
-    async with scripted_app(live_queue_max=0, **caps) as c:
+    async with scripted(live_queue_max=0, **caps) as (app, c):
         me = visitor()
         first = asyncio.create_task(live_run(c, visitor(), COMPARE))
-        await asyncio.sleep(0.2)
+        await slot_taken(app)
         r = await live_run(c, me)
         assert r.status_code == 503 and r.headers["X-Limit-Reason"] == "queue-full"
         assert "one live question at a time" in r.json()["detail"]

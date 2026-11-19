@@ -32,6 +32,10 @@ class RunGate:
     def waiting(self) -> int:
         return len(self._waiters)
 
+    @property
+    def running(self) -> int:
+        return self._running
+
     def would_queue_overflow(self) -> bool:
         """True if one more run would have to wait and the queue is already full."""
         return self._running >= self.slots and len(self._waiters) >= self.max_waiting
